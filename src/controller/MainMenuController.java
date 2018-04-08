@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.MainMenuModel;
 import model.offline_game;
+import model.player.figures;
 import view.MainMenuView;
 import view.TicTacToeView;
 
@@ -43,10 +44,6 @@ public class MainMenuController {
 
         changeMenuMode(0,view);
 
-        view.exit_btn.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> {
-            if(menumode==0)System.exit(0); else menumode--; changeMenuMode(menumode,view);
-
-        });
 
 
         this.mediaPlayer = Player;
@@ -68,20 +65,51 @@ public class MainMenuController {
 
         menumode=MenuMode;
 
-        view.exit_btn.setImage(new Image("/res//img/back/back.png"));
-        view.row3.getChildren().get(1).setOnMouseEntered(t -> view.exit_btn.setImage(new Image("/res/img/back/back_hover.png")));
-        view.row3.getChildren().get(1).setOnMouseExited(t -> view.exit_btn.setImage(new Image("/res/img/back/back.png")));
 
+        view.row3.getChildren().clear();
 
+        ImageView exit_btn2 = new ImageView("/res//img/back/back.png");
+        HBox imageHolder6 =  new HBox();
+        imageHolder6.setMinSize(600,100);
+        imageHolder6.setMaxSize(600,100);
+        imageHolder6.getChildren().add(exit_btn2);
+
+        imageHolder6.setOnMouseEntered(t -> exit_btn2.setImage(new Image("/res/img/back/back_hover.png")));
+        imageHolder6.setOnMouseExited(t -> exit_btn2.setImage(new Image("/res/img/back/back.png")));
+        imageHolder6.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> changeMenuMode(menumode-1,view));
+        view.row3.getChildren().add(imageHolder6);
 
         if(MenuMode ==0){
             if(!view.row2.getChildren().isEmpty())
-            view.row2.getChildren().clear();
+                view.row2.getChildren().clear();
+            if(!view.row3.getChildren().isEmpty())
+                view.row3.getChildren().clear();
 
 
-            view.exit_btn.setImage(new Image("/res//img/exit/exit.png"));
-            view.row3.getChildren().get(1).setOnMouseEntered(t -> view.exit_btn.setImage(new Image("/res/img/exit/exit_hover.png")));
-            view.row3.getChildren().get(1).setOnMouseExited(t -> view.exit_btn.setImage(new Image("/res/img/exit/exit.png")));
+
+
+
+            ImageView settings_stats = new ImageView("/res//img/settings_stats/settings_stats.png");
+            HBox imageHolder2=  new HBox();
+            imageHolder2.setMinSize(600,100);
+            imageHolder2.setMaxSize(600,100);
+            imageHolder2.getChildren().add(settings_stats);
+
+            imageHolder2.setOnMouseEntered(t -> settings_stats.setImage(new Image("/res//img/settings_stats/settings_stats_hover.png")));
+            imageHolder2.setOnMouseExited(t -> settings_stats.setImage(new Image("/res//img/settings_stats/settings_stats.png")));
+            imageHolder2.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> changeMenuMode(-1,view));
+
+
+            ImageView exit_btn = new ImageView("/res//img/exit/exit.png");
+            HBox imageHolder3 =  new HBox();
+            imageHolder3.setMinSize(600,100);
+            imageHolder3.setMaxSize(600,100);
+            imageHolder3.getChildren().add(exit_btn);
+
+            imageHolder3.setOnMouseEntered(t -> exit_btn.setImage(new Image("/res//img/exit/exit_hover.png")));
+            imageHolder3.setOnMouseExited(t -> exit_btn.setImage(new Image("/res//img/exit/exit.png")));
+            imageHolder3.addEventHandler(MouseEvent.MOUSE_CLICKED,event ->System.exit(0));
+
 
             ImageView play_btn = new ImageView("/res//img/offline/offline.png");
             play_btn.setImage(new Image("/res/img/play/play.png"));
@@ -99,6 +127,12 @@ public class MainMenuController {
 
 
             view.row2.getChildren().addAll(imageHolder);
+            view.row3.getChildren().addAll(imageHolder2,imageHolder3);
+
+        }else{
+
+
+
 
         }
 
@@ -159,6 +193,35 @@ public class MainMenuController {
 
         }
 
+        if(MenuMode ==-1) {
+            ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().clear();
+
+            if (!view.row2.getChildren().isEmpty())
+                view.row2.getChildren().clear();
+
+            view.row3.getChildren().add(0,figures.getAllFigures(50));
+
+
+
+
+            imageHolder6.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> {
+            ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().clear();
+
+                ImageView IV3 = new ImageView("/res/img/title.gif");
+                IV3.setFitHeight(200);
+                IV3.setFitWidth(600);
+                IV3.setPreserveRatio(true);
+                Pane imageHolder3= new Pane();
+                imageHolder3.setMinSize(600,200);
+                imageHolder3.setMaxSize(600,200);
+                imageHolder3.getChildren().add(IV3);
+                ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().add(imageHolder3);
+
+                changeMenuMode(0,view);
+
+            });
+
+        }
 
         }
 

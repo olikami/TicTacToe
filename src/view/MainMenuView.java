@@ -22,7 +22,6 @@ public class MainMenuView {
     public VBox row2;
     public VBox row3;
     public Pane background = new Pane();
-    public ImageView exit_btn;
 
 
     public MainMenuView(Stage primaryStage) {
@@ -34,8 +33,8 @@ public class MainMenuView {
         row1.setMaxSize(600, 200);
         row1.setAlignment(Pos.CENTER);
 
-        ImageView IV3 = new ImageView();
-        IV3.setImage(new Image("/res/img/title.gif"));
+        ImageView IV3 = new ImageView("/res/img/title.gif");
+
         IV3.setFitHeight(200);
         IV3.setFitWidth(600);
         IV3.setPreserveRatio(true);
@@ -60,13 +59,8 @@ public class MainMenuView {
         row3.setMaxSize(600, 200);
         row3.setAlignment(Pos.CENTER);
 
-        exit_btn = new ImageView("/res//img/play/play.png");
-        HBox imageHolder4=  new HBox();
-        imageHolder4.setMinSize(600,100);
-        imageHolder4.setMaxSize(600,100);
-        imageHolder4.getChildren().add(exit_btn);
 
-        row3.getChildren().addAll(figures.getAllFigures(50),imageHolder4);
+
 
         rows_container.getChildren().addAll(row1, row2, row3);
         rows_container.setStyle("-fx-background-color: rgba(0,0,0,0.42);");

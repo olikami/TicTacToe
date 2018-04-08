@@ -11,6 +11,8 @@ import java.nio.file.Paths;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static model.player.userdata.loadUser;
+
 public class Intro {
 
 
@@ -25,6 +27,10 @@ public class Intro {
 
     public Intro(Stage primaryStage){
 
+
+
+        //LOAD THE DATA
+        loadUser();
 
 
         // OST: https://www.youtube.com/watch?v=Zuw_O5MU5CE
