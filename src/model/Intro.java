@@ -19,6 +19,7 @@ public class Intro {
     MainMenuView view;
     MainMenuController controller;
     public MediaPlayer mediaPlayer;
+    public Thread one;
 
 
 
@@ -27,7 +28,7 @@ public class Intro {
 
 
         // OST: https://www.youtube.com/watch?v=Zuw_O5MU5CE
-        Thread one = new Thread() {
+        one = new Thread() {
             public void run() {
                 int i = 0;
                 while(i <18){

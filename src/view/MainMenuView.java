@@ -20,6 +20,7 @@ public class MainMenuView {
 
     public StackPane mainPane = new StackPane();
     public VBox row2;
+    public VBox row3;
     public Pane background = new Pane();
     public ImageView exit_btn;
 
@@ -48,18 +49,24 @@ public class MainMenuView {
         row2 = new VBox();
         row2.setMinSize(600, 200);
         row2.setMaxSize(600, 200);
+
         row2.setAlignment(Pos.CENTER);
 
         ImageView offline_btn = new ImageView("/res/img/play/play.png");
         row2.getChildren().addAll(offline_btn);
 
-        VBox row3 = new VBox();
+        row3 = new VBox();
         row3.setMinSize(600, 200);
         row3.setMaxSize(600, 200);
         row3.setAlignment(Pos.CENTER);
 
         exit_btn = new ImageView("/res//img/play/play.png");
-        row3.getChildren().addAll(figures.getAllFigures(50),exit_btn);
+        HBox imageHolder4=  new HBox();
+        imageHolder4.setMinSize(600,100);
+        imageHolder4.setMaxSize(600,100);
+        imageHolder4.getChildren().add(exit_btn);
+
+        row3.getChildren().addAll(figures.getAllFigures(50),imageHolder4);
 
         rows_container.getChildren().addAll(row1, row2, row3);
         rows_container.setStyle("-fx-background-color: rgba(0,0,0,0.42);");

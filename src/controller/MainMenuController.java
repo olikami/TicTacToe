@@ -15,6 +15,7 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -68,8 +69,8 @@ public class MainMenuController {
         menumode=MenuMode;
 
         view.exit_btn.setImage(new Image("/res//img/back/back.png"));
-        view.exit_btn.setOnMouseEntered(t -> view.exit_btn.setImage(new Image("/res/img/back/back_hover.png")));
-        view.exit_btn.setOnMouseExited(t -> view.exit_btn.setImage(new Image("/res/img/back/back.png")));
+        view.row3.getChildren().get(1).setOnMouseEntered(t -> view.exit_btn.setImage(new Image("/res/img/back/back_hover.png")));
+        view.row3.getChildren().get(1).setOnMouseExited(t -> view.exit_btn.setImage(new Image("/res/img/back/back.png")));
 
 
 
@@ -77,45 +78,69 @@ public class MainMenuController {
             if(!view.row2.getChildren().isEmpty())
             view.row2.getChildren().clear();
 
+
             view.exit_btn.setImage(new Image("/res//img/exit/exit.png"));
-            view.exit_btn.setOnMouseEntered(t -> view.exit_btn.setImage(new Image("/res/img/exit/exit_hover.png")));
-            view.exit_btn.setOnMouseExited(t -> view.exit_btn.setImage(new Image("/res/img/exit/exit.png")));
+            view.row3.getChildren().get(1).setOnMouseEntered(t -> view.exit_btn.setImage(new Image("/res/img/exit/exit_hover.png")));
+            view.row3.getChildren().get(1).setOnMouseExited(t -> view.exit_btn.setImage(new Image("/res/img/exit/exit.png")));
 
             ImageView play_btn = new ImageView("/res//img/offline/offline.png");
             play_btn.setImage(new Image("/res/img/play/play.png"));
-            play_btn.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> changeMenuMode(1,view));
-            play_btn.setOnMouseEntered(t -> play_btn.setImage(new Image("/res/img/play/play_hover.png")));
-            play_btn.setOnMouseExited(t -> play_btn.setImage(new Image("/res/img/play/play.png")));
-            view.row2.getChildren().addAll(play_btn);
+
+
+            Pane imageHolder=  new Pane();
+            imageHolder.setMinSize(600,200);
+            imageHolder.setMaxSize(600,200);
+            imageHolder.getChildren().add(play_btn);
+
+            imageHolder.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> changeMenuMode(1,view));
+            imageHolder.setOnMouseEntered(t -> play_btn.setImage(new Image("/res/img/play/play_hover.png")));
+            imageHolder.setOnMouseExited(t -> play_btn.setImage(new Image("/res/img/play/play.png")));
+
+
+
+            view.row2.getChildren().addAll(imageHolder);
 
         }
 
 
         if(MenuMode ==1){
-            view.row2.getChildren().remove(0);
+            view.row2.getChildren().clear();
 
             ImageView offline_btn = new ImageView("/res//img/offline/offline.png");
-            offline_btn.addEventHandler(MouseEvent.MOUSE_CLICKED,event ->  {
+            HBox imageHolder=  new HBox();
+            imageHolder.setMinSize(600,100);
+            imageHolder.setMaxSize(600,100);
+            imageHolder.getChildren().add(offline_btn);
+
+            imageHolder.addEventHandler(MouseEvent.MOUSE_CLICKED,event ->  {
                 Stage stageTheEventSourceNodeBelongs = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 // these two of them return the same stage
                 // Swap screen::
+                mediaPlayer.stop();
 
                 offline_game gamemodel = new offline_game();
                 TicTacToeView gameView = new TicTacToeView(stageTheEventSourceNodeBelongs);
                 TicTacToeController game_1_controller = new TicTacToeController(gamemodel, gameView);
-                mediaPlayer.stop();
 
 
             });
 
-            offline_btn.setOnMouseEntered(t -> offline_btn.setImage(new Image("/res//img/offline/offline_hover.png")));
-            offline_btn.setOnMouseExited(t -> offline_btn.setImage(new Image("/res//img/offline/offline.png")));
+            imageHolder.setOnMouseEntered(t -> offline_btn.setImage(new Image("/res//img/offline/offline_hover.png")));
+            imageHolder.setOnMouseExited(t -> offline_btn.setImage(new Image("/res//img/offline/offline.png")));
 
-            view.row2.getChildren().addAll(offline_btn);
+            view.row2.getChildren().addAll(imageHolder);
 
 
             ImageView online_btn = new ImageView("/res//img/online/online.png");
-            online_btn.addEventHandler(MouseEvent.MOUSE_CLICKED,event ->  {
+
+            HBox imageHolder2=  new HBox();
+            imageHolder2.setMinSize(600,100);
+            imageHolder2.setMaxSize(600,100);
+            imageHolder2.getChildren().add(online_btn);
+
+
+
+            imageHolder2.addEventHandler(MouseEvent.MOUSE_CLICKED,event ->  {
                 Stage stageTheEventSourceNodeBelongs = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 // these two of them return the same stage
                 // Swap screen::
@@ -126,10 +151,10 @@ public class MainMenuController {
 */
             });
 
-            online_btn.setOnMouseEntered(t -> online_btn.setImage(new Image("/res//img/online/online_hover.png")));
-            online_btn.setOnMouseExited(t -> online_btn.setImage(new Image("/res//img/online/online.png")));
+            imageHolder2.setOnMouseEntered(t -> online_btn.setImage(new Image("/res//img/online/online_hover.png")));
+            imageHolder2.setOnMouseExited(t -> online_btn.setImage(new Image("/res//img/online/online.png")));
 
-            view.row2.getChildren().addAll(online_btn);
+            view.row2.getChildren().addAll(imageHolder2);
 
 
         }
@@ -146,7 +171,7 @@ public class MainMenuController {
         pane.setLayoutY(r.nextInt(350)+100);
 
         final int[] glitch_counter = {0};
-
+        final int[] nextGlitch = {r.nextInt(350) + 30};
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(20),
                 new EventHandler<ActionEvent>() {
 
@@ -161,7 +186,8 @@ public class MainMenuController {
 
                         ColorAdjust blackout = new ColorAdjust();
 
-                        if (glitch_counter[0] >100){
+
+                        if (glitch_counter[0] > nextGlitch[0]){
 
                             pane.setLayoutX(pane.getLayoutX()+10 + dx);
 
@@ -171,7 +197,8 @@ public class MainMenuController {
                             pane.setCache(true);
                             pane.setCacheHint(CacheHint.SPEED);
 
-                            if (glitch_counter[0] >105){
+                            if (glitch_counter[0] > nextGlitch[0] +5){
+                                nextGlitch[0] = r.nextInt(350) + 30;
                                 glitch_counter[0]=0;
                                 pane.setLayoutX(pane.getLayoutX()-(r.nextInt(50)+50) + dx);
                                 if(pane.getLayoutX()<-300 || pane.getLayoutX()>900 || pane.getLayoutY()<00 || pane.getLayoutY()>500) {

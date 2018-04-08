@@ -32,6 +32,7 @@ public class IntroView {
             MainMenuModel model = new MainMenuModel();
             MainMenuView view = new MainMenuView(primaryStage);
             MainMenuController controller = new MainMenuController(model, view,modelview.mediaPlayer);
+            modelview.one.stop();
         });
         Scene scene = new Scene(mainPane, 1200,
                 600);

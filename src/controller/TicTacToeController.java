@@ -2,10 +2,13 @@ package controller;
 
 import javafx.animation.*;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
+import javafx.scene.CacheHint;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.effect.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -14,6 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.MainMenuModel;
@@ -30,7 +34,13 @@ import java.util.Random;
 public class TicTacToeController {
     offline_game model;
     TicTacToeView view;
-    private int AIPlayerNr =1;
+    private int AIPlayerNr = 1;
+    Color AI_color;
+    Color Player_color;
+
+    Image AI_image;
+    Image Player_Image;
+
     public TicTacToeController(offline_game model, TicTacToeView view) {
         this.model = model;
         this.view = view;
@@ -41,15 +51,28 @@ public class TicTacToeController {
 
         Random r = new Random();
         figures_name fn = figures_name.values()[r.nextInt(figures_name.values().length)];
-        while(userdata.get_selected_figure()==fn)
+        while (userdata.get_selected_figure() == fn)
             fn = figures_name.values()[r.nextInt(figures_name.values().length)];
 
 
         //todo color adjust
-        Image AI_image = new Image("/res/img/"+fn+"/"+fn+".png");
 
 
-        Image Player_Image = new Image("/res/img/"+userdata.get_selected_figure()+"/"+userdata.get_selected_figure()+".png");
+        AI_image       = new Image("/res/img/" + fn + "/" + fn + ".png");
+        Player_Image   = new Image("/res/img/" + userdata.get_selected_figure() + "/" + userdata.get_selected_figure() + ".png");
+
+
+        //setting the color for the icons
+        String[] neon_colors = {
+                "#000cff",
+                "#2fa7e8",
+                "#e1e832",
+                "#41e831",
+                "#30e8d2"};
+        Player_color = hex2Rgb(neon_colors[r.nextInt(4)]);
+        AI_color = hex2Rgb(neon_colors[r.nextInt(4)]);
+        while(AI_color.equals(Player_color))
+            AI_color = hex2Rgb(neon_colors[r.nextInt(4)]);
 
 
 
@@ -65,7 +88,7 @@ public class TicTacToeController {
         alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
 
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == buttonTypeOne){
+        if (result.get() == buttonTypeOne) {
             // ... user chose "One"
             againstComputer = true;
 
@@ -74,20 +97,20 @@ public class TicTacToeController {
             alert.setHeaderText("Set strenghth of Computer");
             alert.setContentText("Choose your option.");
 
-             buttonTypeOne = new ButtonType("Easy");
-             buttonTypeTwo = new ButtonType("Medium");
-             buttonTypeCancel = new ButtonType("Hard");
+            buttonTypeOne = new ButtonType("Easy");
+            buttonTypeTwo = new ButtonType("Medium");
+            buttonTypeCancel = new ButtonType("Hard");
 
             alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
 
 
             result = alert.showAndWait();
-            if (result.get() == buttonTypeOne){
+            if (result.get() == buttonTypeOne) {
                 // ... user chose "One"
                 model.AI.depthLimiter = 0;
             } else if (result.get() == buttonTypeTwo) {
                 // ... user chose "Two"
-                model.AI.depthLimiter =1;
+                model.AI.depthLimiter = 1;
             } else {
                 // ... user chose CANCEL or closed the dialog
                 model.AI.depthLimiter = 10;
@@ -99,26 +122,28 @@ public class TicTacToeController {
             alert.setContentText("OK = AI starts  CANCEL = You start");
 
             result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
+            if (result.get() == ButtonType.OK) {
                 // ... user chose OK
-                ((ImageView)view.board[model.AiTurn(AIPlayerNr)].getChildren().get(0)).setImage(AI_image);
+
+                int i = model.AiTurn(AIPlayerNr);
+                setImage((ImageView) view.board[i].getChildren().get(0),AI_image);
+                animateMoves(view.board[i]);
+
+
             } else {
                 // ... user chose CANCEL or closed the dialog
-                AIPlayerNr =2;
+                AIPlayerNr = 2;
 
             }
 
 
-
-        } else if (result.get() == buttonTypeTwo) {
-            // ... user chose "Two"
-        } else {
+        } else if (result.get() == buttonTypeCancel) {
             // ... user chose CANCEL or closed the dialog
             System.exit(0);
         }
 
 
-        for(int i = 0;i<view.board.length;i++) {
+        for (int i = 0; i < view.board.length; i++) {
             int a = i;
             int finalAIPlayerNr = AIPlayerNr;
             Boolean finalAgainstComputer = againstComputer;
@@ -127,85 +152,84 @@ public class TicTacToeController {
                 //Check if it's a possible move
                 if (model.board.PlaceIsEmpty(a) && !model.board.isLocked()) {
 
-                //Play against computer
-                if (finalAgainstComputer) {
-
+                    //Play against computer
+                    if (finalAgainstComputer) {
 
 
                         //populate the gameboard
                         model.board.populateBoard(a, finalAIPlayerNr == 2 ? 1 : 2);
 
                         //set the image
-                        ((ImageView) view.board[a].getChildren().get(0)).setImage(Player_Image);
-
-                    animateMoves(view.board[a]).setOnFinished(event1 -> {
+                        setImage((ImageView) view.board[a].getChildren().get(0),Player_Image);
 
 
+                        animateMoves(view.board[a]).setOnFinished(event1 -> {
 
 
-                    //check for winner
-                        if (model.board.getWinner() != 0) {
-                            setWinner(model.board.getWinner());
-                            setWinnerStroke();
-                            return;
-                        }
+                            //check for winner
+                            if (model.board.getWinner() != 0) {
+                                setWinner(model.board.getWinner());
+                                setWinnerStroke();
+                                return;
+                            }
 
-                        int p = model.AiTurn(finalAIPlayerNr);
-                        ((ImageView) view.board[p].getChildren().get(0)).setImage(AI_image);
+                            int p = model.AiTurn(finalAIPlayerNr);
+                            setImage((ImageView) view.board[p].getChildren().get(0),AI_image);
 
-                        animateMoves(view.board[p]);
+                            animateMoves(view.board[p]);
 
-                        System.out.println(model.board.toString());
+                            System.out.println(model.board.toString());
 
-                        //check for winner
-                        if (model.board.getWinner() != 0) {
-                            setWinner(model.board.getWinner());
-                            setWinnerStroke();
-                            return;
-                        }
-                    });
+                            //check for winner
+                            if (model.board.getWinner() != 0) {
+                                setWinner(model.board.getWinner());
+                                setWinnerStroke();
+                                return;
+                            }
+                        });
 
-                } else {
-                    //Play against human
-                    if (turn[0]) {
-                        turn[0] = false;
-                        //populate the gameboard
-                        model.board.populateBoard(a, 1);
-
-                        //set the image
-                        ((ImageView) view.board[a].getChildren().get(0)).setImage(Player_Image);
-                        animateMoves(view.board[a]);
-
-                        //check for winner
-                        if (model.board.getWinner() != 0) {
-                            setWinner(model.board.getWinner());
-                            setWinnerStroke();
-                            return;
-                        }
                     } else {
-                        turn[0] = true;
-                        //populate the gameboard
-                        model.board.populateBoard(a, 2);
+                        //Play against human
+                        if (turn[0]) {
+                            turn[0] = false;
+                            //populate the gameboard
+                            model.board.populateBoard(a, 1);
 
-                        //set the image
-                        ((ImageView) view.board[a].getChildren().get(0)).setImage(AI_image);
-                        animateMoves(view.board[a]);
-                        //check for winner
-                        if (model.board.getWinner() != 0) {
-                            setWinner(model.board.getWinner());
-                            setWinnerStroke();
-                            return;
+                            //set the image
+                            setImage((ImageView) view.board[a].getChildren().get(0),Player_Image);
+
+                            animateMoves(view.board[a]);
+
+                            //check for winner
+                            if (model.board.getWinner() != 0) {
+                                setWinner(model.board.getWinner());
+                                setWinnerStroke();
+                                return;
+                            }
+                        } else {
+                            turn[0] = true;
+                            //populate the gameboard
+                            model.board.populateBoard(a, 2);
+
+                            //set the image
+                            setImage((ImageView) view.board[a].getChildren().get(0),AI_image);
+                            animateMoves(view.board[a]);
+                            //check for winner
+                            if (model.board.getWinner() != 0) {
+                                setWinner(model.board.getWinner());
+                                setWinnerStroke();
+                                return;
+                            }
                         }
+
+
                     }
 
 
-                }
-
-
-                }else{
+                } else {
                     HBox pane = new HBox();
-                    pane.setMinSize(600,600);
-                    pane.setMaxSize(600,600);
+                    pane.setMinSize(600, 600);
+                    pane.setMaxSize(600, 600);
                     pane.setAlignment(Pos.CENTER);
 
                     ImageView IV = new ImageView();
@@ -228,7 +252,7 @@ public class TicTacToeController {
 
 
                     SequentialTransition st = new SequentialTransition();
-                    st.getChildren().addAll(ft1,ft2);
+                    st.getChildren().addAll(ft1, ft2);
 
                     ScaleTransition str = new ScaleTransition(Duration.millis(800), pane);
                     str.setByX(1.1f);
@@ -237,7 +261,7 @@ public class TicTacToeController {
 
 
                     ParallelTransition pt = new ParallelTransition();
-                    pt.getChildren().addAll(st,str);
+                    pt.getChildren().addAll(st, str);
                     pt.play();
 
                     pt.setOnFinished(event1 -> {
@@ -250,15 +274,13 @@ public class TicTacToeController {
         }
 
 
-
-
     }
 
     private void setWinner(int winner) {
-        if(winner==AIPlayerNr){
+        if (winner == AIPlayerNr) {
             HBox pane = new HBox();
-            pane.setMinSize(600,600);
-            pane.setMaxSize(600,600);
+            pane.setMinSize(600, 600);
+            pane.setMaxSize(600, 600);
 
             ImageView IV = new ImageView();
             IV.setFitHeight(600);
@@ -271,12 +293,12 @@ public class TicTacToeController {
             Thread one = new Thread() {
                 public void run() {
                     int i = 0;
-                        try {
-                            Thread.sleep(800);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        i++;
+                    try {
+                        Thread.sleep(800);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    i++;
 
                     Platform.runLater(() -> {
                         view.mainPane.getChildren().add(pane);
@@ -300,7 +322,7 @@ public class TicTacToeController {
             Thread two = new Thread() {
                 public void run() {
                     int i = 0;
-                    while(i <5){
+                    while (i < 5) {
                         try {
                             Thread.sleep(500);
                         } catch (InterruptedException e) {
@@ -311,16 +333,13 @@ public class TicTacToeController {
                     Platform.runLater(() -> {
 
 
-                            MainMenuModel model;
-                            //TicTacToeView view;
-                            MainMenuView view;
-                            MainMenuController controller;
-                            model = new MainMenuModel();
-                            view = new MainMenuView((Stage)pane.getScene().getWindow());
-                            controller = new MainMenuController(model, view,null);
-
-
-
+                        MainMenuModel model;
+                        //TicTacToeView view;
+                        MainMenuView view;
+                        MainMenuController controller;
+                        model = new MainMenuModel();
+                        view = new MainMenuView((Stage) pane.getScene().getWindow());
+                        controller = new MainMenuController(model, view, null);
 
 
                     });
@@ -330,7 +349,7 @@ public class TicTacToeController {
             two.start();
 
 
-        }else{
+        } else {
             Thread one = new Thread() {
                 public void run() {
                     int i = 0;
@@ -349,8 +368,8 @@ public class TicTacToeController {
                         MainMenuView view2;
                         MainMenuController controller;
                         model = new MainMenuModel();
-                        view2 = new MainMenuView((Stage)view.mainPane.getScene().getWindow());
-                        controller = new MainMenuController(model, view2,null);
+                        view2 = new MainMenuView((Stage) view.mainPane.getScene().getWindow());
+                        controller = new MainMenuController(model, view2, null);
 
                     });
                 }
@@ -361,16 +380,15 @@ public class TicTacToeController {
         }
 
 
-
     }
 
     private void setWinnerStroke() {
-        if(model.board.getWinnerStroke()[0]==5)
+        if (model.board.getWinnerStroke()[0] == 5)
             return;
 
         HBox pane = new HBox();
-        pane.setMinSize(600,600);
-        pane.setMaxSize(600,600);
+        pane.setMinSize(600, 600);
+        pane.setMaxSize(600, 600);
 
         ImageView IV = new ImageView();
         IV.setFitHeight(200);
@@ -381,7 +399,7 @@ public class TicTacToeController {
 
         TranslateTransition TT = new TranslateTransition(Duration.millis(400), pane);
 
-        switch(model.board.getWinnerStroke()[0]){
+        switch (model.board.getWinnerStroke()[0]) {
             case 1:
                 TT.setFromX(600);
                 TT.setFromY(00);
@@ -405,8 +423,9 @@ public class TicTacToeController {
                 break;
         }
 
-        switch(model.board.getWinnerStroke()[1]){
-            case 0: break;
+        switch (model.board.getWinnerStroke()[1]) {
+            case 0:
+                break;
             case 1:
                 pane.setAlignment(Pos.CENTER);
                 break;
@@ -416,7 +435,7 @@ public class TicTacToeController {
         }
 
 
-            view.mainPane.getChildren().add(pane);
+        view.mainPane.getChildren().add(pane);
 
         TT.setToX(0f);
         TT.setToY(0);
@@ -425,7 +444,7 @@ public class TicTacToeController {
     }
 
 
-    public ParallelTransition animateMoves(Pane pane){
+    public ParallelTransition animateMoves(Pane pane) {
 
         FadeTransition ft2 = new FadeTransition(Duration.millis(400), pane);
         ft2.setFromValue(0.0);
@@ -440,8 +459,59 @@ public class TicTacToeController {
         str.setAutoReverse(false);
 
         ParallelTransition pt = new ParallelTransition();
-        pt.getChildren().addAll(ft2,str);
+        pt.getChildren().addAll(ft2, str);
         pt.play();
         return pt;
+    }
+
+    //https://stackoverflow.com/questions/4129666/how-to-convert-hex-to-rgb-using-java
+
+    /**
+     * @param colorStr e.g. "#FFFFFF"
+     * @return
+     */
+    public static Color hex2Rgb(String colorStr) {
+
+        Double d = (double)(Integer.valueOf(colorStr.substring(1, 3), 16)/255d);
+        return new Color((double)(Integer.valueOf(colorStr.substring(1, 3), 16))/255d,
+                (double)(Integer.valueOf(colorStr.substring(3, 5), 16))/255d,
+                (double)(Integer.valueOf(colorStr.substring(5, 7), 16))/255d,1);
+    }
+
+    public void setImage(ImageView IV, Image img){
+
+        img = AI_image==img?AI_image:Player_Image;
+
+        IV.setImage(img);
+
+        ImageView IVclip = new ImageView(img);
+        IVclip.setFitHeight(180);
+        IVclip.setFitWidth(180);
+
+        IV.setClip(IVclip);
+
+
+        ColorAdjust monochrome = new ColorAdjust();
+        monochrome.setSaturation(-1.0);
+
+        Blend blush = new Blend(
+                BlendMode.MULTIPLY,
+                monochrome,
+                new ColorInput(
+                        0,
+                        0,
+                        180,
+                        180,
+                        AI_image==img?AI_color:Player_color
+                )
+        );
+
+
+        IV.setEffect(blush);
+
+
+        IV.setCache(true);
+        IV.setCacheHint(CacheHint.SPEED);
+
     }
 }
