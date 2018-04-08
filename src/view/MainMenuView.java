@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import model.player.figures;
 
 public class MainMenuView {
 
@@ -26,6 +27,7 @@ public class MainMenuView {
     public MainMenuView(Stage primaryStage) {
 
         VBox rows_container = new VBox();
+        rows_container.setAlignment(Pos.CENTER);
         HBox row1 = new HBox();
         row1.setMinSize(600, 200);
         row1.setMaxSize(600, 200);
@@ -51,13 +53,13 @@ public class MainMenuView {
         ImageView offline_btn = new ImageView("/res/img/play/play.png");
         row2.getChildren().addAll(offline_btn);
 
-        HBox row3 = new HBox();
+        VBox row3 = new VBox();
         row3.setMinSize(600, 200);
         row3.setMaxSize(600, 200);
         row3.setAlignment(Pos.CENTER);
 
         exit_btn = new ImageView("/res//img/play/play.png");
-        row3.getChildren().addAll(exit_btn);
+        row3.getChildren().addAll(figures.getAllFigures(50),exit_btn);
 
         rows_container.getChildren().addAll(row1, row2, row3);
         rows_container.setStyle("-fx-background-color: rgba(0,0,0,0.42);");
@@ -95,8 +97,9 @@ public class MainMenuView {
 
         mainPane.setStyle("-fx-background-color: rgb(0,0,0);");
         mainPane.getChildren().addAll(IV4,background,rows_container);
+        mainPane.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(mainPane, 600,
+        Scene scene = new Scene(mainPane, 1200,
                 600);
         primaryStage.setTitle("TicTacToe - Offline");
         primaryStage.setScene(scene);

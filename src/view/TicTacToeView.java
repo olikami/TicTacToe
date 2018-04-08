@@ -1,5 +1,6 @@
 package view;
 
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -12,20 +13,20 @@ import javafx.stage.Stage;
 public class TicTacToeView {
 
     public StackPane mainPane = new StackPane();
-    private VBox rows = new VBox();
-    public Pane[] board = new Pane[9];
+    public HBox[] board = new HBox[9];
 
     public TicTacToeView(Stage primaryStage){
 
         for(int i = 0;i<board.length;i++) {
 
             ImageView IV = new ImageView();
-            IV.setFitHeight(200);
-            IV.setFitWidth(200);
+            IV.setFitHeight(180);
+            IV.setFitWidth(180);
             IV.setPreserveRatio(true);
-            board[i]= new Pane();
+            board[i]= new HBox();
             board[i].setMinSize(200,200);
             board[i].setMaxSize(200,200);
+            board[i].setAlignment(Pos.CENTER);
             board[i].getChildren().add(IV);
 
         }
@@ -45,6 +46,7 @@ public class TicTacToeView {
         row3.setMaxSize(600,200);
         row3.getChildren().addAll(board[6],board[7],board[8]);
 
+        VBox rows = new VBox();
         rows.getChildren().addAll(row1,row2,row3);
         rows.setStyle("-fx-background-image: url('/res/img/grid.png'); " +
                 "-fx-background-position: center center; "+

@@ -174,8 +174,11 @@ public class MainMenuController {
                             if (glitch_counter[0] >105){
                                 glitch_counter[0]=0;
                                 pane.setLayoutX(pane.getLayoutX()-(r.nextInt(50)+50) + dx);
-                                if(pane.getLayoutX()<600 || pane.getLayoutX()>1200 || pane.getLayoutY()<700 || pane.getLayoutY()>1100)
-                                    pane.setLayoutX(r.nextInt(350)+100);
+                                if(pane.getLayoutX()<-300 || pane.getLayoutX()>900 || pane.getLayoutY()<00 || pane.getLayoutY()>500) {
+                                    pane.setLayoutX(r.nextInt(350) + 100);
+                                    pane.setLayoutY(r.nextInt(350) + 100);
+
+                                }
                                 blackout.setBrightness(1.0);
                                 pane.setEffect(null);
 
@@ -192,8 +195,8 @@ public class MainMenuController {
 
 
                         //If the ball reaches the left or right border make the step negative
-                        if(pane.getLayoutX() >= (600- pane.getHeight()) ||
-                                pane.getLayoutX() < (0 ) ){
+                        if(pane.getLayoutX() >= (900- pane.getHeight()) ||
+                                pane.getLayoutX() < (-300 ) ){
                             dx = -dx;
                         }
 

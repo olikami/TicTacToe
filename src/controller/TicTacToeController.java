@@ -18,11 +18,14 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.MainMenuModel;
 import model.offline_game;
+import model.player.figures_name;
+import model.player.userdata;
 import view.MainMenuView;
 import view.TicTacToeView;
 
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.Random;
 
 public class TicTacToeController {
     offline_game model;
@@ -34,6 +37,20 @@ public class TicTacToeController {
 
         Boolean againstComputer = false;
         final Boolean[] turn = {true};
+
+
+        Random r = new Random();
+        figures_name fn = figures_name.values()[r.nextInt(figures_name.values().length)];
+        while(userdata.get_selected_figure()==fn)
+            fn = figures_name.values()[r.nextInt(figures_name.values().length)];
+
+
+        //todo color adjust
+        Image AI_image = new Image("/res/img/"+fn+"/"+fn+".png");
+
+
+        Image Player_Image = new Image("/res/img/"+userdata.get_selected_figure()+"/"+userdata.get_selected_figure()+".png");
+
 
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -84,7 +101,7 @@ public class TicTacToeController {
             result = alert.showAndWait();
             if (result.get() == ButtonType.OK){
                 // ... user chose OK
-                ((ImageView)view.board[model.AiTurn(AIPlayerNr)].getChildren().get(0)).setImage(new Image("/res/img/cross.png"));
+                ((ImageView)view.board[model.AiTurn(AIPlayerNr)].getChildren().get(0)).setImage(AI_image);
             } else {
                 // ... user chose CANCEL or closed the dialog
                 AIPlayerNr =2;
@@ -119,7 +136,7 @@ public class TicTacToeController {
                         model.board.populateBoard(a, finalAIPlayerNr == 2 ? 1 : 2);
 
                         //set the image
-                        ((ImageView) view.board[a].getChildren().get(0)).setImage(new Image("/res/img/circle.png"));
+                        ((ImageView) view.board[a].getChildren().get(0)).setImage(Player_Image);
 
                     animateMoves(view.board[a]).setOnFinished(event1 -> {
 
@@ -134,7 +151,7 @@ public class TicTacToeController {
                         }
 
                         int p = model.AiTurn(finalAIPlayerNr);
-                        ((ImageView) view.board[p].getChildren().get(0)).setImage(new Image("/res/img/cross.png"));
+                        ((ImageView) view.board[p].getChildren().get(0)).setImage(AI_image);
 
                         animateMoves(view.board[p]);
 
@@ -156,7 +173,7 @@ public class TicTacToeController {
                         model.board.populateBoard(a, 1);
 
                         //set the image
-                        ((ImageView) view.board[a].getChildren().get(0)).setImage(new Image("/res/img/circle.png"));
+                        ((ImageView) view.board[a].getChildren().get(0)).setImage(Player_Image);
                         animateMoves(view.board[a]);
 
                         //check for winner
@@ -171,7 +188,7 @@ public class TicTacToeController {
                         model.board.populateBoard(a, 2);
 
                         //set the image
-                        ((ImageView) view.board[a].getChildren().get(0)).setImage(new Image("/res/img/cross.png"));
+                        ((ImageView) view.board[a].getChildren().get(0)).setImage(AI_image);
                         animateMoves(view.board[a]);
                         //check for winner
                         if (model.board.getWinner() != 0) {
