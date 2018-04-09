@@ -2,12 +2,9 @@ package controller;
 
 import javafx.animation.*;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.effect.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -18,6 +15,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.MainMenuModel;
@@ -28,7 +27,6 @@ import view.MainMenuView;
 import view.TicTacToeView;
 
 import java.nio.file.Paths;
-import java.util.Optional;
 import java.util.Random;
 
 public class TicTacToeController {
@@ -42,6 +40,9 @@ public class TicTacToeController {
     Image Player_Image;
 
     public TicTacToeController(offline_game model, TicTacToeView view, int hardness, int AI_Human, int Whostarts) {
+
+        this.model = model;
+        this.view = view;
 
         switch (hardness){
             case 0:             model.AI.depthLimiter = 1;
@@ -85,9 +86,11 @@ public class TicTacToeController {
 
             if (Whostarts == 0) {
 
-                int i = model.AiTurn(AIPlayerNr);
-                setImage((ImageView) view.board[i].getChildren().get(0), AI_image);
-                animateMoves(view.board[i]);
+                int p = model.AiTurn(AIPlayerNr);
+                setImage((ImageView) view.board[p].getChildren().get(0), AI_image);
+                animateMoves(view.board[p]);
+                setChatMessage("The Computer has played in field ( "+ ((p+1)%3f==0?3:((p+1)%3f==2?2:1))+", "+(int)Math.ceil((p+1)/3f)+")");
+
 
 
             } else {
@@ -99,8 +102,7 @@ public class TicTacToeController {
         }
 
 
-        this.model = model;
-        this.view = view;
+
 
         final Boolean[] turn = {true};
 
@@ -126,6 +128,7 @@ public class TicTacToeController {
 
 
                         animateMoves(view.board[a]).setOnFinished(event1 -> {
+                            setChatMessage("You have played in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
 
 
                             //check for winner
@@ -141,6 +144,7 @@ public class TicTacToeController {
                             animateMoves(view.board[p]);
 
                             System.out.println(model.board.toString());
+                            setChatMessage("The Computer has played in field ( "+ ((p+1)%3f==0?3:((p+1)%3f==2?2:1))+", "+(int)Math.ceil((p+1)/3f)+")");
 
                             //check for winner
                             if (model.board.getWinner() != 0) {
@@ -161,6 +165,7 @@ public class TicTacToeController {
                             setImage((ImageView) view.board[a].getChildren().get(0),Player_Image);
 
                             animateMoves(view.board[a]);
+                            setChatMessage("Player 1 has played in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
 
                             //check for winner
                             if (model.board.getWinner() != 0) {
@@ -176,6 +181,7 @@ public class TicTacToeController {
                             //set the image
                             setImage((ImageView) view.board[a].getChildren().get(0),AI_image);
                             animateMoves(view.board[a]);
+                            setChatMessage("Player 2 has played in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
                             //check for winner
                             if (model.board.getWinner() != 0) {
                                 setWinner(model.board.getWinner());
@@ -188,9 +194,7 @@ public class TicTacToeController {
                     }
 
 
-                }
-
-                if(AI_Human ==1){
+                }else{
                     HBox pane = new HBox();
                     pane.setMinSize(600, 600);
                     pane.setMaxSize(600, 600);
@@ -203,7 +207,7 @@ public class TicTacToeController {
                     IV.setImage(new Image("/res/img/invalid.png"));
                     pane.getChildren().add(IV);
 
-                    view.mainPane.getChildren().add(pane);
+                    view.gamePane.getChildren().add(pane);
 
 
                     FadeTransition ft1 = new FadeTransition(Duration.millis(400), pane);
@@ -229,7 +233,7 @@ public class TicTacToeController {
                     pt.play();
 
                     pt.setOnFinished(event1 -> {
-                        view.mainPane.getChildren().remove(1);
+                        view.gamePane.getChildren().remove(1);
                     });
 
                 }
@@ -265,7 +269,7 @@ public class TicTacToeController {
                     i++;
 
                     Platform.runLater(() -> {
-                        view.mainPane.getChildren().add(pane);
+                        view.gamePane.getChildren().add(pane);
                         FadeTransition ft1 = new FadeTransition(Duration.millis(700), pane);
                         ft1.setFromValue(0.0);
                         ft1.setToValue(1.0);
@@ -332,7 +336,7 @@ public class TicTacToeController {
                         MainMenuView view2;
                         MainMenuController controller;
                         model = new MainMenuModel();
-                        view2 = new MainMenuView((Stage) view.mainPane.getScene().getWindow());
+                        view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
                         controller = new MainMenuController(model, view2, null);
 
                     });
@@ -399,7 +403,7 @@ public class TicTacToeController {
         }
 
 
-        view.mainPane.getChildren().add(pane);
+        view.gamePane.getChildren().add(pane);
 
         TT.setToX(0f);
         TT.setToY(0);
@@ -477,5 +481,13 @@ public class TicTacToeController {
         IV.setCache(true);
         IV.setCacheHint(CacheHint.SPEED);
 
+    }
+
+    public void setChatMessage(String message){
+
+        Label lbl = new Label(message);
+        lbl.setTextFill(Color.WHITE);
+        lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
+        view.chatRow.getChildren().add(lbl);
     }
 }

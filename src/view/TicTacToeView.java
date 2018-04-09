@@ -2,18 +2,19 @@ package view;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class TicTacToeView {
 
-    public StackPane mainPane = new StackPane();
+    public StackPane gamePane = new StackPane();
     public HBox[] board = new HBox[9];
+    public HBox mainPane = new HBox();
+    public StackPane chatPane = new StackPane();
+    public VBox chatRow = new VBox();
 
     public TicTacToeView(Stage primaryStage){
 
@@ -48,12 +49,27 @@ public class TicTacToeView {
 
         VBox rows = new VBox();
         rows.getChildren().addAll(row1,row2,row3);
+        rows.setMinSize(600,600);
+        rows.setMaxSize(600,600);
         rows.setStyle("-fx-background-image: url('/res/img/grid.png'); " +
                 "-fx-background-position: center center; "+
                 "-fx-background-size: cover, auto;");
 
-        mainPane.getChildren().addAll(rows);
-        Scene scene = new Scene(mainPane, 600,
+
+
+
+        chatPane.getChildren().add(chatRow);
+        chatPane.setMinSize(600,600);
+        chatPane.setMaxSize(600,600);
+        chatPane.setStyle("-fx-background-color: #000000; ");
+
+        gamePane.getChildren().addAll(rows);
+        gamePane.setMinSize(600,600);
+        gamePane.setMaxSize(600,600);
+
+        mainPane.getChildren().addAll(gamePane,chatPane);
+
+        Scene scene = new Scene(mainPane, 1200,
                 600);
         primaryStage.setTitle("TicTacToe - Offline");
         primaryStage.setScene(scene);
