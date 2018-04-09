@@ -21,6 +21,7 @@ public class MainMenuView {
     public StackPane mainPane = new StackPane();
     public VBox row2;
     public VBox row3;
+    public VBox row1;
     public Pane background = new Pane();
 
 
@@ -28,7 +29,7 @@ public class MainMenuView {
 
         VBox rows_container = new VBox();
         rows_container.setAlignment(Pos.CENTER);
-        HBox row1 = new HBox();
+        row1 = new VBox();
         row1.setMinSize(600, 200);
         row1.setMaxSize(600, 200);
         row1.setAlignment(Pos.CENTER);

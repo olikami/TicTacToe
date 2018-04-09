@@ -41,23 +41,25 @@ public class TicTacToeController {
     Image AI_image;
     Image Player_Image;
 
-    public TicTacToeController(offline_game model, TicTacToeView view) {
-        this.model = model;
-        this.view = view;
+    public TicTacToeController(offline_game model, TicTacToeView view, int hardness, int AI_Human, int Whostarts) {
 
+        switch (hardness){
+            case 0:             model.AI.depthLimiter = 1;
+                break;
+            case 1:             model.AI.depthLimiter = 2;
+                break;
+            case 2:             model.AI.depthLimiter = 10;
+                break;
+        }
         Boolean againstComputer = false;
-        final Boolean[] turn = {true};
 
 
+
+        //Set the AI Image
         Random r = new Random();
         figures_name fn = figures_name.values()[r.nextInt(figures_name.values().length)];
         while (userdata.get_selected_figure() == fn)
             fn = figures_name.values()[r.nextInt(figures_name.values().length)];
-
-
-        //todo color adjust
-
-
         AI_image       = new Image("/res/img/" + fn + "/" + fn + ".png");
         Player_Image   = new Image("/res/img/" + userdata.get_selected_figure() + "/" + userdata.get_selected_figure() + ".png");
 
@@ -76,57 +78,15 @@ public class TicTacToeController {
 
 
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Play TicTacToe");
-        alert.setHeaderText("Play ticTacToe against:");
-        alert.setContentText("Choose your option.");
-
-        ButtonType buttonTypeOne = new ButtonType("Computer");
-        ButtonType buttonTypeTwo = new ButtonType("Other Player");
-        ButtonType buttonTypeCancel = new ButtonType("Exit", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == buttonTypeOne) {
-            // ... user chose "One"
+        if (AI_Human == 0) {
+            // ... user chose OK
             againstComputer = true;
 
-            alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Play TicTacToe");
-            alert.setHeaderText("Set strenghth of Computer");
-            alert.setContentText("Choose your option.");
 
-            buttonTypeOne = new ButtonType("Easy");
-            buttonTypeTwo = new ButtonType("Medium");
-            buttonTypeCancel = new ButtonType("Hard");
-
-            alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
-
-
-            result = alert.showAndWait();
-            if (result.get() == buttonTypeOne) {
-                // ... user chose "One"
-                model.AI.depthLimiter = 0;
-            } else if (result.get() == buttonTypeTwo) {
-                // ... user chose "Two"
-                model.AI.depthLimiter = 1;
-            } else {
-                // ... user chose CANCEL or closed the dialog
-                model.AI.depthLimiter = 10;
-            }
-
-            alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation Dialog");
-            alert.setHeaderText("Who should start?");
-            alert.setContentText("OK = AI starts  CANCEL = You start");
-
-            result = alert.showAndWait();
-            if (result.get() == ButtonType.OK) {
-                // ... user chose OK
+            if (Whostarts == 0) {
 
                 int i = model.AiTurn(AIPlayerNr);
-                setImage((ImageView) view.board[i].getChildren().get(0),AI_image);
+                setImage((ImageView) view.board[i].getChildren().get(0), AI_image);
                 animateMoves(view.board[i]);
 
 
@@ -136,11 +96,13 @@ public class TicTacToeController {
 
             }
 
-
-        } else if (result.get() == buttonTypeCancel) {
-            // ... user chose CANCEL or closed the dialog
-            System.exit(0);
         }
+
+
+        this.model = model;
+        this.view = view;
+
+        final Boolean[] turn = {true};
 
 
         for (int i = 0; i < view.board.length; i++) {
@@ -226,7 +188,9 @@ public class TicTacToeController {
                     }
 
 
-                } else {
+                }
+
+                if(AI_Human ==1){
                     HBox pane = new HBox();
                     pane.setMinSize(600, 600);
                     pane.setMaxSize(600, 600);

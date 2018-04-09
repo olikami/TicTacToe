@@ -11,6 +11,17 @@ import java.net.URISyntaxException;
 //userdata contains: unlockd stuff, statistics, and progress
 public class userdata {
     static public figures_name selected_figure = figures_name.CIRCLE;
+
+    public static String getUsername() {
+        return username;
+    }
+
+    public static void setUsername(String username) {
+        userdata.username = username;
+        save();
+
+    }
+
     static String username = "";
 
     static public void change_selected_figure(figures_name newFigure) {

@@ -39,6 +39,7 @@ public class Main extends Application {
 
         model = new Intro(primaryStage);
         view = new IntroView(primaryStage,model);
+
         //garbage collector takes care of the objects. no need to destroy them
 
     }
