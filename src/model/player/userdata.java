@@ -6,11 +6,22 @@ import java.io.*;
 import org.json.*;
 
 import java.net.URISyntaxException;
+import java.util.Iterator;
 
 //This data Loads, saves and define the userdata
 //userdata contains: unlockd stuff, statistics, and progress
 public class userdata {
-    static public figures_name selected_figure = figures_name.CIRCLE;
+
+
+    private static figures_name selected_figure = figures_name.CIRCLE;
+    static private int  playedGames ;
+    static private int  winGames    ;
+    static private int  loseGames   ;
+    static String username = "";
+    static boolean[] unlockedFigures ={true,true,false,false,false,false,false};
+
+
+
 
     public static String getUsername() {
         return username;
@@ -22,7 +33,6 @@ public class userdata {
 
     }
 
-    static String username = "";
 
     static public void change_selected_figure(figures_name newFigure) {
         selected_figure = newFigure;
@@ -31,6 +41,36 @@ public class userdata {
 
     static public figures_name get_selected_figure() {
         return selected_figure;
+    }
+
+
+    public static int getPlayedGames() {
+        return playedGames;
+    }
+
+    public static void setPlayedGames() {
+        userdata.playedGames++;
+        save();
+    }
+
+    public static int getWinGames() {
+        return winGames;
+    }
+
+    public static void setWinGames() {
+        userdata.winGames++;
+        save();
+
+    }
+
+    public static int getLoseGames() {
+        return loseGames;
+    }
+
+    public static void setLoseGames() {
+        userdata.loseGames++;
+        save();
+
     }
 
     static public void loadUser() {
@@ -58,8 +98,18 @@ public class userdata {
             JSONObject obj = null;
                 obj = new JSONObject(stringResult);
 
+
+            playedGames = obj.getInt("playedGames");
+            winGames    = obj.getInt("winGames");
+            loseGames   = obj.getInt("loseGames");
             username = obj.getString("username");
-                selected_figure = figures_name.valueOf(obj.getString("selected_figure"));
+            JSONArray jarray = obj.getJSONArray("unlockedFigures");
+
+            for(int i =0; i<jarray.length();i++)
+                unlockedFigures[i] = jarray.getBoolean(i);
+
+
+            selected_figure = figures_name.valueOf(obj.getString("selected_figure"));
 
 
 
@@ -76,6 +126,10 @@ public class userdata {
 
 
     }
+    public void unlockFigure(figures_name figure){
+        unlockedFigures[figure.ordinal()] = true;
+        save();
+    }
 
     //https://crunchify.com/how-to-write-json-object-to-file-in-java/
     static void save() {
@@ -86,6 +140,15 @@ public class userdata {
 
             obj.put("username", username);
             obj.put("selected_figure",selected_figure);
+            obj.put("playedGames", playedGames);
+            obj.put("winGames", winGames   );
+            obj.put("loseGames", loseGames  );
+
+            JSONArray unlockedFigures_array = new JSONArray();
+            for(int i =0; i<unlockedFigures.length;i++)
+                unlockedFigures_array.put(unlockedFigures[i]);
+
+            obj.put("unlockedFigures", unlockedFigures_array);
 
 
         } catch (JSONException e) {

@@ -2,8 +2,11 @@ package controller;
 
 import javafx.animation.*;
 import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.effect.*;
 import javafx.scene.image.Image;
@@ -19,6 +22,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import model.DialogCreator;
 import model.MainMenuModel;
 import model.offline_game;
 import model.player.figures_name;
@@ -39,10 +43,21 @@ public class TicTacToeController {
     Image AI_image;
     Image Player_Image;
 
+    int hardness    ;
+    int AI_HUMAN    ;
+    int Whostarts   ;
+
     public TicTacToeController(offline_game model, TicTacToeView view, int hardness, int AI_Human, int Whostarts) {
+
+        this.hardness =hardness ;
+        this.AI_HUMAN =AI_Human ;
+        this.Whostarts=Whostarts;
 
         this.model = model;
         this.view = view;
+
+        userdata.setPlayedGames();
+
 
         switch (hardness){
             case 0:             model.AI.depthLimiter = 1;
@@ -128,14 +143,22 @@ public class TicTacToeController {
 
 
                         animateMoves(view.board[a]).setOnFinished(event1 -> {
-                            setChatMessage("You have played in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
 
 
                             //check for winner
                             if (model.board.getWinner() != 0) {
+                                if (model.board.getWinner() != 3) {
+                                    setChatMessage("You win with your move in field: ( " + ((a + 1) % 3f == 0 ? 3 : ((a + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((a + 1) / 3f) + ") congrats!");
+                                    userdata.setWinGames();
+                                }else{
+                                    setChatMessage("It's a tie!");
+                                }
                                 setWinner(model.board.getWinner());
                                 setWinnerStroke();
                                 return;
+                            }else{
+                                setChatMessage("You have played in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
+
                             }
 
                             int p = model.AiTurn(finalAIPlayerNr);
@@ -144,13 +167,23 @@ public class TicTacToeController {
                             animateMoves(view.board[p]);
 
                             System.out.println(model.board.toString());
-                            setChatMessage("The Computer has played in field ( "+ ((p+1)%3f==0?3:((p+1)%3f==2?2:1))+", "+(int)Math.ceil((p+1)/3f)+")");
 
                             //check for winner
                             if (model.board.getWinner() != 0) {
                                 setWinner(model.board.getWinner());
+                                userdata.setLoseGames();
+
                                 setWinnerStroke();
+                                if (model.board.getWinner() != 3) {
+
+                                    setChatMessage("The Computer wins with his move in field: ( " + ((p + 1) % 3f == 0 ? 3 : ((p + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((p + 1) / 3f) + ")");
+                                }else{
+                                    setChatMessage("It's a tie!");
+                                }
                                 return;
+                            }else{
+                                setChatMessage("The Computer has played in field ( "+ ((p+1)%3f==0?3:((p+1)%3f==2?2:1))+", "+(int)Math.ceil((p+1)/3f)+")");
+
                             }
                         });
 
@@ -169,6 +202,13 @@ public class TicTacToeController {
 
                             //check for winner
                             if (model.board.getWinner() != 0) {
+                                if (model.board.getWinner() != 3) {
+
+                                    setChatMessage("Player 1 wins with his move in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
+
+                                }else{
+                                    setChatMessage("It's a tie!");
+                                }
                                 setWinner(model.board.getWinner());
                                 setWinnerStroke();
                                 return;
@@ -184,6 +224,13 @@ public class TicTacToeController {
                             setChatMessage("Player 2 has played in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
                             //check for winner
                             if (model.board.getWinner() != 0) {
+                                if (model.board.getWinner() != 3) {
+
+                                    setChatMessage("Player 1 wins with his move in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
+
+                                }else{
+                                    setChatMessage("It's a tie!");
+                                }
                                 setWinner(model.board.getWinner());
                                 setWinnerStroke();
                                 return;
@@ -301,13 +348,8 @@ public class TicTacToeController {
                     Platform.runLater(() -> {
 
 
-                        MainMenuModel model;
-                        //TicTacToeView view;
-                        MainMenuView view;
-                        MainMenuController controller;
-                        model = new MainMenuModel();
-                        view = new MainMenuView((Stage) pane.getScene().getWindow());
-                        controller = new MainMenuController(model, view, null);
+                        createDialog();
+
 
 
                     });
@@ -331,13 +373,8 @@ public class TicTacToeController {
                     Platform.runLater(() -> {
 
 
-                        MainMenuModel model;
-                        //TicTacToeView view;
-                        MainMenuView view2;
-                        MainMenuController controller;
-                        model = new MainMenuModel();
-                        view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
-                        controller = new MainMenuController(model, view2, null);
+                        createDialog();
+
 
                     });
                 }
@@ -348,6 +385,34 @@ public class TicTacToeController {
         }
 
 
+    }
+
+    private void createDialog() {
+
+        view.mainPane.getChildren().add(DialogCreator.alertDialog("Do you want to play again?",
+                "YES", new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                Stage stageTheEventSourceNodeBelongs = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+
+                offline_game gamemodel = new offline_game();
+                TicTacToeView gameView = new TicTacToeView(stageTheEventSourceNodeBelongs);
+                TicTacToeController game_1_controller = new TicTacToeController(gamemodel, gameView,hardness,AI_HUMAN,Whostarts);
+
+            }
+        }, "NO", new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                MainMenuModel model;
+                //TicTacToeView view;
+                MainMenuView view2;
+                MainMenuController controller;
+                model = new MainMenuModel();
+                view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
+                controller = new MainMenuController(model, view2, null);
+            }
+        }));
     }
 
     private void setWinnerStroke() {

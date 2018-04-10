@@ -204,16 +204,22 @@ public class MainMenuController {
             name_input.setAlignment(Pos.CENTER);
             name_input.setFont(Font.font("ARIAL", FontWeight.BOLD, 70));
             name_input.setText(userdata.getUsername());
-            name_input.setMinSize(600,200);
-            name_input.setMaxSize(600,200);
+            name_input.setMinSize(600,100);
+            name_input.setMaxSize(600,100);
             name_input.setStyle("-fx-background-color: rgba(0,0,0,0.0);" +
                     "    -fx-text-fill: #FFFFFF;");
 
-            ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().add(0,name_input);
+            view.row1.getChildren().add(name_input);
 
 
+            Label lbl = new Label("Games played: " + userdata.getPlayedGames()+"   "+"K/D: "+((float)userdata.getWinGames()/(userdata.getLoseGames()==0?1:userdata.getLoseGames())));
+            lbl.setTextFill(Color.WHITE);
+            lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 50));
+            view.row1.getChildren().add(lbl);
+            view.row1.setMaxSize(1000,200);
 
-            view.row3.getChildren().add(0,figures.getAllFigures(50));
+            view.row3.getChildren().add(0,figures.getAllFigures(50,view.mainPane));
+
 
 
 
@@ -508,7 +514,7 @@ public class MainMenuController {
             Label lbl = new Label("What's your name stranger?");
             lbl.setTextFill(Color.WHITE);
             lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 40));
-            ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().add(0,lbl);
+            view.row1.getChildren().add(0,lbl);
 
             ImageView exit_btn = new ImageView("/res//img/play/play.png");
             HBox imageHolder3 =  new HBox();

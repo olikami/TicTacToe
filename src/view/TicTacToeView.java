@@ -7,16 +7,23 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import model.DialogCreator;
+
+import java.awt.*;
+import java.awt.event.MouseEvent;
 
 public class TicTacToeView {
 
     public StackPane gamePane = new StackPane();
     public HBox[] board = new HBox[9];
-    public HBox mainPane = new HBox();
+    public StackPane mainPane = new StackPane();
     public StackPane chatPane = new StackPane();
     public VBox chatRow = new VBox();
 
     public TicTacToeView(Stage primaryStage){
+
+        HBox game_chatContainer = new HBox();
+
 
         for(int i = 0;i<board.length;i++) {
 
@@ -57,7 +64,6 @@ public class TicTacToeView {
 
 
 
-
         chatPane.getChildren().add(chatRow);
         chatPane.setMinSize(600,600);
         chatPane.setMaxSize(600,600);
@@ -67,7 +73,10 @@ public class TicTacToeView {
         gamePane.setMinSize(600,600);
         gamePane.setMaxSize(600,600);
 
-        mainPane.getChildren().addAll(gamePane,chatPane);
+        game_chatContainer.getChildren().addAll(gamePane,chatPane);
+        mainPane.setMinSize(1200,600);
+        mainPane.setMaxSize(1200,600);
+        mainPane.getChildren().add(game_chatContainer);
 
         Scene scene = new Scene(mainPane, 1200,
                 600);
