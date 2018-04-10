@@ -129,7 +129,7 @@ public class userdata {
 
 
     }
-    public void unlockFigure(figures_name figure){
+    public static void unlockFigure(figures_name figure){
         unlockedFigures[figure.ordinal()] = true;
         save();
     }

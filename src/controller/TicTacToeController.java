@@ -430,6 +430,7 @@ public class TicTacToeController {
     private void createUnlockedDialog(figures_name fig) {
         view.mainPane.getChildren().add(DialogCreator.unlockedDialog(fig,"YES!",event -> {
 
+            userdata.unlockFigure(fig);
             userdata.change_selected_figure(fig);
                     Stage stageTheEventSourceNodeBelongs = (Stage) ((Node) event.getSource()).getScene().getWindow();
                     offline_game gamemodel = new offline_game();
@@ -440,6 +441,7 @@ public class TicTacToeController {
 
 
                 },"no",event -> {
+            userdata.unlockFigure(fig);
 
             MainMenuModel model = new MainMenuModel();
             MainMenuView view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
