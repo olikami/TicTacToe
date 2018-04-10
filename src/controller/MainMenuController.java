@@ -3,12 +3,7 @@ package controller;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
-import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
-import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
@@ -36,7 +31,6 @@ import view.MainMenuView;
 import view.TicTacToeView;
 
 import java.nio.file.Paths;
-import java.util.Calendar;
 import java.util.Random;
 
 public class MainMenuController {
@@ -212,7 +206,7 @@ public class MainMenuController {
             view.row1.getChildren().add(name_input);
 
 
-            Label lbl = new Label("Games played: " + userdata.getPlayedGames()+"   "+"K/D: "+((float)userdata.getWinGames()/(userdata.getLoseGames()==0?1:userdata.getLoseGames())));
+            Label lbl = new Label("Games played: " + userdata.getPlayedGames()+"   "+"K/D: "+((float)userdata.getWins()/(userdata.getLoses()==0?1:userdata.getLoses())));
             lbl.setTextFill(Color.WHITE);
             lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 50));
             view.row1.getChildren().add(lbl);

@@ -6,7 +6,6 @@ import java.io.*;
 import org.json.*;
 
 import java.net.URISyntaxException;
-import java.util.Iterator;
 
 //This data Loads, saves and define the userdata
 //userdata contains: unlockd stuff, statistics, and progress
@@ -15,8 +14,8 @@ public class userdata {
 
     private static figures_name selected_figure = figures_name.CIRCLE;
     static private int  playedGames ;
-    static private int  winGames    ;
-    static private int  loseGames   ;
+    static private int wins;
+    static private int loses;
     static String username = "";
     static boolean[] unlockedFigures ={true,true,false,false,false,false,false};
 
@@ -53,22 +52,26 @@ public class userdata {
         save();
     }
 
-    public static int getWinGames() {
-        return winGames;
+    public static boolean[] getUnlockedFigures() {
+        return unlockedFigures;
+    }
+
+    public static int getWins() {
+        return wins;
     }
 
     public static void setWinGames() {
-        userdata.winGames++;
+        userdata.wins++;
         save();
 
     }
 
-    public static int getLoseGames() {
-        return loseGames;
+    public static int getLoses() {
+        return loses;
     }
 
     public static void setLoseGames() {
-        userdata.loseGames++;
+        userdata.loses++;
         save();
 
     }
@@ -100,8 +103,8 @@ public class userdata {
 
 
             playedGames = obj.getInt("playedGames");
-            winGames    = obj.getInt("winGames");
-            loseGames   = obj.getInt("loseGames");
+            wins = obj.getInt("wins");
+            loses = obj.getInt("loses");
             username = obj.getString("username");
             JSONArray jarray = obj.getJSONArray("unlockedFigures");
 
@@ -141,8 +144,8 @@ public class userdata {
             obj.put("username", username);
             obj.put("selected_figure",selected_figure);
             obj.put("playedGames", playedGames);
-            obj.put("winGames", winGames   );
-            obj.put("loseGames", loseGames  );
+            obj.put("wins", wins);
+            obj.put("loses", loses);
 
             JSONArray unlockedFigures_array = new JSONArray();
             for(int i =0; i<unlockedFigures.length;i++)

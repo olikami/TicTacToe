@@ -347,11 +347,7 @@ public class TicTacToeController {
                     }
                     Platform.runLater(() -> {
 
-
                         createDialog();
-
-
-
                     });
                 }
             };
@@ -389,30 +385,70 @@ public class TicTacToeController {
 
     private void createDialog() {
 
+
+
+
+
+        if (userdata.getWins()>=3 && !userdata.getUnlockedFigures()[(figures_name.SUN.ordinal())]){
+            createUnlockedDialog(figures_name.SUN);
+            return;
+        }
+        if (userdata.getWins()>=10 && !userdata.getUnlockedFigures()[(figures_name.DIAMOND.ordinal())]){
+            createUnlockedDialog(figures_name.DIAMOND);
+            return;
+        }
+
+        if (userdata.getLoses()>=10 && !userdata.getUnlockedFigures()[(figures_name.SKULL.ordinal())]){
+            createUnlockedDialog(figures_name.SKULL);
+            return;
+        }
+
+        if (userdata.getLoses()>=3 && !userdata.getUnlockedFigures()[(figures_name.MOON.ordinal())]){
+            createUnlockedDialog(figures_name.MOON);
+            return;
+        }
+
         view.mainPane.getChildren().add(DialogCreator.alertDialog("Do you want to play again?",
-                "YES", new EventHandler() {
+                "YES", event -> {
+                    Stage stageTheEventSourceNodeBelongs = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    offline_game gamemodel = new offline_game();
+                    TicTacToeView gameView = new TicTacToeView(stageTheEventSourceNodeBelongs);
+                    TicTacToeController game_1_controller = new TicTacToeController(gamemodel, gameView,hardness,AI_HUMAN,Whostarts);
+
+
+                }, "NO", new EventHandler() {
             @Override
             public void handle(Event event) {
-                Stage stageTheEventSourceNodeBelongs = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-
-                offline_game gamemodel = new offline_game();
-                TicTacToeView gameView = new TicTacToeView(stageTheEventSourceNodeBelongs);
-                TicTacToeController game_1_controller = new TicTacToeController(gamemodel, gameView,hardness,AI_HUMAN,Whostarts);
-
-            }
-        }, "NO", new EventHandler() {
-            @Override
-            public void handle(Event event) {
-                MainMenuModel model;
-                //TicTacToeView view;
-                MainMenuView view2;
-                MainMenuController controller;
-                model = new MainMenuModel();
-                view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
-                controller = new MainMenuController(model, view2, null);
+                MainMenuModel model = new MainMenuModel();
+                MainMenuView view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
+                MainMenuController controller = new MainMenuController(model, view2, null);
             }
         }));
+    }
+
+    private void createUnlockedDialog(figures_name fig) {
+        view.mainPane.getChildren().add(DialogCreator.unlockedDialog(fig,"YES!",event -> {
+
+            userdata.change_selected_figure(fig);
+                    Stage stageTheEventSourceNodeBelongs = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    offline_game gamemodel = new offline_game();
+                    TicTacToeView gameView = new TicTacToeView(stageTheEventSourceNodeBelongs);
+                    TicTacToeController game_1_controller = new TicTacToeController(gamemodel, gameView,hardness,AI_HUMAN,Whostarts);
+
+
+
+
+                },"no",event -> {
+
+            MainMenuModel model = new MainMenuModel();
+            MainMenuView view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
+            MainMenuController controller = new MainMenuController(model, view2, null);
+
+                }
+        ));
+
+
     }
 
     private void setWinnerStroke() {

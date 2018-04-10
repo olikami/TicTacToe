@@ -1,4 +1,4 @@
 package model.player;
 
-public enum figures_name {CROSS, CIRCLE, SKULL, DIAMOND, MOON, HEART,SUN
+public enum figures_name {CROSS, CIRCLE,SUN,MOON, SKULL, DIAMOND, HEART
 }
