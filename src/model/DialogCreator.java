@@ -30,7 +30,7 @@ public class DialogCreator {
         balken.setAlignment(Pos.CENTER);
         balken.setMaxSize(1200,200);
         balken.setMinSize(1200,200);
-        balken.setStyle("-fx-background-color: rgba(35,35,35,0.65); ");
+        balken.setStyle("-fx-background-color: rgba(35,35,35,0.9); ");
 
         Label lbl = new Label(Message);
         lbl.setTextFill(Color.WHITE);
@@ -85,6 +85,7 @@ public class DialogCreator {
 
         TT.setToX(0f);
         TT.setToY(0);
+        TT.play();
 
 
 
@@ -106,7 +107,7 @@ public class DialogCreator {
         balken.setAlignment(Pos.CENTER);
         balken.setMaxSize(1200,200);
         balken.setMinSize(1200,200);
-        balken.setStyle("-fx-background-color: rgba(35,35,35,0.65); ");
+        balken.setStyle("-fx-background-color: rgba(35,35,35,0.9); ");
 
         Label lbl = new Label(Message);
         lbl.setTextFill(Color.WHITE);
@@ -207,7 +208,7 @@ public class DialogCreator {
         balken.setAlignment(Pos.CENTER);
         balken.setMaxSize(1200,200);
         balken.setMinSize(1200,200);
-        balken.setStyle("-fx-background-color: rgba(35,35,35,0.65); ");
+        balken.setStyle("-fx-background-color: rgba(35,35,35,0.9); ");
 
         Label lbl = new Label("You unlocked the "+figure +" !");
         lbl.setTextFill(Color.WHITE);

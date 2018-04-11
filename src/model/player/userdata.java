@@ -150,7 +150,6 @@ public class userdata {
             JSONArray unlockedFigures_array = new JSONArray();
             for(int i =0; i<unlockedFigures.length;i++)
                 unlockedFigures_array.put(unlockedFigures[i]);
-
             obj.put("unlockedFigures", unlockedFigures_array);
 
 

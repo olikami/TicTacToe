@@ -2,6 +2,9 @@ package controller;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -24,14 +27,20 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.MainMenuModel;
+import model.net.Client;
+import model.net.Server;
 import model.offline_game;
 import model.player.figures;
 import model.player.userdata;
 import view.MainMenuView;
 import view.TicTacToeView;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Paths;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MainMenuController {
 
@@ -40,6 +49,8 @@ public class MainMenuController {
     int menumode =0;
 
     MediaPlayer mediaPlayer;
+    String IP_address ="";
+    int PORT =14909;
 
     public MainMenuController(MainMenuModel model, MainMenuView view, MediaPlayer Player) {
 
@@ -62,9 +73,11 @@ public class MainMenuController {
         startAnimation((Pane)view.background.getChildren().get(1));
 
 
+
     }
 
     public void changeMenuMode(int MenuMode, MainMenuView view){
+
 
         menumode=MenuMode;
 
@@ -150,6 +163,7 @@ public class MainMenuController {
             imageHolder.addEventHandler(MouseEvent.MOUSE_CLICKED,event ->  {
 
                 changeMenuMode(3,view);
+
             });
 
             imageHolder.setOnMouseEntered(t -> offline_btn.setImage(new Image("/res//img/offline/offline_hover.png")));
@@ -169,13 +183,9 @@ public class MainMenuController {
 
             imageHolder2.addEventHandler(MouseEvent.MOUSE_CLICKED,event ->  {
                 Stage stageTheEventSourceNodeBelongs = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                // these two of them return the same stage
-                // Swap screen::
+                changeMenuMode(4,view);
 
-              /*  offline_game gamemodel = new offline_game();
-                TicTacToeView gameView = new TicTacToeView(stageTheEventSourceNodeBelongs);
-                TicTacToeController game_1_controller = new TicTacToeController(gamemodel, gameView);
-*/
+
             });
 
             imageHolder2.setOnMouseEntered(t -> online_btn.setImage(new Image("/res//img/online/online_hover.png")));
@@ -186,61 +196,8 @@ public class MainMenuController {
 
         }
 
-        if(MenuMode ==-1) {
-            //Settings/stats
-            ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().clear();
 
-            if (!view.row2.getChildren().isEmpty())
-                view.row2.getChildren().clear();
-
-
-            TextField name_input = new TextField();
-            name_input.setAlignment(Pos.CENTER);
-            name_input.setFont(Font.font("ARIAL", FontWeight.BOLD, 70));
-            name_input.setText(userdata.getUsername());
-            name_input.setMinSize(600,100);
-            name_input.setMaxSize(600,100);
-            name_input.setStyle("-fx-background-color: rgba(0,0,0,0.0);" +
-                    "    -fx-text-fill: #FFFFFF;");
-
-            view.row1.getChildren().add(name_input);
-
-
-            Label lbl = new Label("Games played: " + userdata.getPlayedGames()+"   "+"K/D: "+((float)userdata.getWins()/(userdata.getLoses()==0?1:userdata.getLoses())));
-            lbl.setTextFill(Color.WHITE);
-            lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 50));
-            view.row1.getChildren().add(lbl);
-            view.row1.setMaxSize(1000,200);
-
-            view.row3.getChildren().add(0,figures.getAllFigures(50,view.mainPane));
-
-
-
-
-
-
-            imageHolder6.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> {
-            ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().clear();
-
-                userdata.setUsername(name_input.getText());
-
-                ImageView IV3 = new ImageView("/res/img/title.gif");
-                IV3.setFitHeight(200);
-                IV3.setFitWidth(600);
-                IV3.setPreserveRatio(true);
-                Pane imageHolder3= new Pane();
-                imageHolder3.setMinSize(600,200);
-                imageHolder3.setMaxSize(600,200);
-                imageHolder3.getChildren().add(IV3);
-                ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().add(imageHolder3);
-
-                changeMenuMode(0,view);
-
-            });
-
-        }
-
-
+        /// Offline
         if(MenuMode ==3){
             view.row2.getChildren().clear();
             ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().clear();
@@ -473,15 +430,462 @@ public class MainMenuController {
             view.row3.getChildren().add(bottomline);
 
 
-            imageHolder6.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> {
+            backToMainMenu(view, imageHolder6,null);
 
+
+        }
+
+
+
+        ///////////////
+        // online
+        //////////////
+        if(MenuMode ==4) {
+
+            view.row1.getChildren().clear();
+            view.row2.getChildren().clear();
+            view.row3.getChildren().clear();
+
+
+            AtomicReference<Boolean> host = new AtomicReference<>(true);
+
+            TextField ip_input = new TextField();
+            ip_input.setFont(Font.font("ARIAL", FontWeight.BOLD, 60));
+            try {
+                ip_input.setText(String.valueOf(InetAddress.getLocalHost().getHostAddress()));
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            ip_input.selectAll();
+            ip_input.setAlignment(Pos.CENTER_RIGHT);
+            ip_input.setEditable(false);
+            ip_input.setMinSize(600,100);
+            ip_input.setMaxSize(600,100);
+            ip_input.setStyle("-fx-background-color: rgba(0,0,0,0.0);" +
+                    "    -fx-text-fill: #FFFFFF;");
+
+
+
+            TextField port_input = new TextField();
+            port_input.setAlignment(Pos.CENTER_LEFT);
+            port_input.setFont(Font.font("ARIAL", FontWeight.BOLD, 60));
+            port_input.setPromptText("(Port)");
+            port_input.setMinSize(300,100);
+            port_input.setMaxSize(300,100);
+            port_input.setStyle("-fx-background-color: rgba(0,0,0,0.0);" +
+                    "    -fx-text-fill: #FFFFFF;");
+
+
+            HBox ip_box = new HBox(ip_input,port_input);
+            ip_box.setSpacing(-35);
+            ip_box.setAlignment(Pos.CENTER);
+
+            Label lbl = new Label(":");
+            lbl.setTextFill(Color.WHITE);
+            lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 60));
+
+            port_input.textProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue,
+                                    String newValue) {
+                    if (!port_input.getText().equals("")) {
+                        if(ip_box.getChildren().size()==2)
+                        ip_box.getChildren().add(1,lbl);
+
+                    }else{
+                        ip_box.getChildren().remove(lbl);
+                    }
+                }
+            });
+
+
+            view.row2.setAlignment(Pos.CENTER);
+            view.row2.getChildren().add(ip_box);
+            view.row2.setMaxSize(1000,200);
+            view.row2.setMinSize(1000,200);
+            view.row2.requestFocus();
+
+
+            ColorAdjust blackout = new ColorAdjust();
+            blackout.setBrightness(-0.5);
+
+            HBox host_holder = new HBox();
+            host_holder.setMinSize(300,100);
+            host_holder.setMaxSize(300,100);
+
+            ImageView host_image = new ImageView("/res//img/host/host.png");
+            host_holder.getChildren().add(host_image);
+
+            host_holder.setOnMouseEntered(t -> host_image.setImage(new Image("/res//img/host/host_hover.png")));
+            host_holder.setOnMouseExited(t -> host_image.setImage(new Image("/res//img/host/host.png")));
+
+
+
+            HBox client_holder = new HBox();
+            client_holder.setMinSize(300,100);
+            client_holder.setMaxSize(300,100);
+
+            ImageView client_image = new ImageView("/res//img/client/client.png");
+            client_holder.getChildren().add(client_image);
+
+            client_holder.setOnMouseEntered(t -> client_image.setImage(new Image("/res//img/client/client_hover.png")));
+            client_holder.setOnMouseExited(t -> client_image.setImage(new Image("/res//img/client/client.png")));
+
+            client_holder.setEffect(blackout);
+
+
+
+            Label lbl2 = new Label("Host IP address:");
+            lbl2.setTextFill(Color.WHITE);
+            lbl2.setFont(Font.font("ARIAL", FontWeight.BOLD, 50));
+            view.row1.setMaxSize(1000,100);
+
+
+            client_holder.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> {
+
+                host.set(false);
+
+                ip_input.setText("");
+                ip_input.setPromptText("Host IP-Address");
+                ip_input.getParent().requestFocus();
+                lbl2.setText("Type in the host IP address:");
+                ip_input.setEditable(true);
+
+                client_holder.setEffect(null);
+                host_holder.setEffect(blackout);
+
+            });
+            host_holder.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> {
+
+                host.set(true);
+
+                try {
+                    ip_input.setText(InetAddress.getLocalHost().getHostAddress());
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
+                lbl2.setText("Host IP address:");
+
+                ip_input.setEditable(false);
+
+                client_holder.setEffect(blackout);
+                host_holder.setEffect(null);
+
+                //todo not working if nothing typed in in client
+                ip_input.selectAll();
+
+
+            });
+            HBox ClHO_container = new HBox(client_holder,host_holder);
+            ClHO_container.setAlignment(Pos.CENTER);
+            view.row1.getChildren().addAll(ClHO_container,lbl2);
+
+
+
+
+
+
+            ImageView play = new ImageView("/res//img/play/play.png");
+            HBox imageHolder_Play=  new HBox();
+            imageHolder_Play.setAlignment(Pos.CENTER);
+            imageHolder_Play.setMinSize(600,100);
+            imageHolder_Play.setMaxSize(600,100);
+            imageHolder_Play.getChildren().add(play);
+            imageHolder_Play.setOnMouseEntered(t -> play.setImage(new Image("/res//img/play/play_hover.png")));
+            imageHolder_Play.setOnMouseExited(t -> play.setImage(new Image("/res//img/play/play.png")));
+
+            IP_address = ip_input.getText();
+            PORT = (port_input.getText().equals("")?PORT:Integer.valueOf(port_input.getText()));
+            imageHolder_Play.setOnMouseClicked(t -> changeMenuMode(host.get()?5:6,view));
+
+            HBox bottomline = new HBox();
+            bottomline.setMinSize(600,100);
+            bottomline.setMaxSize(600,100);
+            bottomline.setSpacing(-200);
+            bottomline.setAlignment(Pos.CENTER);
+            imageHolder6.setAlignment(Pos.CENTER);
+            imageHolder_Play.setAlignment(Pos.CENTER);
+
+            ((ImageView)imageHolder6.getChildren().get(0)).setFitWidth(300);
+            ((ImageView)imageHolder_Play.getChildren().get(0)).setFitWidth(300);
+
+            bottomline.getChildren().addAll(imageHolder6,imageHolder_Play);
+            backToMainMenu(view, imageHolder6,null);
+            view.row3.getChildren().add(bottomline);
+        }
+
+        /////////////////
+        //HOST
+        ///////////////
+        if(MenuMode ==5) {
+
+            view.row1.getChildren().clear();
+            view.row2.getChildren().clear();
+
+
+            Label lbl = new Label("Waiting for other Players...");
+            lbl.setTextFill(Color.WHITE);
+            lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 50));
+            view.row1.setMaxSize(1000,200);
+            view.row1.getChildren().add(lbl);
+
+
+            final Boolean[] ready = {false};
+
+
+            try {
+                Server server = new Server(PORT,2,IP_address);
+
+                Thread server_thread = new Thread() {
+                    public void run() {
+                        server.verbinde();
+
+
+
+                    }
+                };
+                server_thread.start();
+
+                Thread lobby_thread = new Thread() {
+                    public void run() {
+                        try {
+
+                            while(!ready[0]){
+                                if(server.PlayerNames.contains(",")){
+                                    ready[0] = true;
+                                }
+                                sleep(1000);
+
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        Platform.runLater(() -> {
+                            lbl.setText("Ready!");
+
+
+
+                            HBox gameRow = new HBox();
+                            gameRow.setMaxSize(1000,100);
+                            gameRow.setMinSize(1000,100);
+                            gameRow.setAlignment(Pos.CENTER);
+
+                            Label roomName = new Label(server.PlayerNames);
+                            roomName.setMinWidth(400);
+                            roomName.setMaxWidth(400);
+                            roomName.setTextFill(Color.WHITE);
+                            roomName.setFont(Font.font("ARIAL", FontWeight.BOLD, 50));
+
+
+                            ImageView play_btn = new ImageView("/res//img/play/play.png");
+                            HBox imageHolder3 =  new HBox();
+                            imageHolder3.setAlignment(Pos.CENTER);
+
+                            imageHolder3.setMinSize(600,100);
+                            imageHolder3.setMaxSize(600,100);
+                            imageHolder3.getChildren().add(play_btn);
+
+                            imageHolder3.setOnMouseEntered(t -> play_btn.setImage(new Image("/res//img/play/play_hover.png")));
+                            imageHolder3.setOnMouseExited(t -> play_btn.setImage(new Image("/res//img/play/play.png")));
+                            imageHolder3.setOnMouseClicked(e->{
+
+
+                                this.interrupt();
+
+                            });
+                            gameRow.getChildren().addAll(roomName);
+                            view.row2.getChildren().add(gameRow);
+                            view.row3.getChildren().add(imageHolder3);
+
+                        });
+                    }
+
+                };
+
+                lobby_thread.start();
+
+                    backToMainMenu(view, imageHolder6, server_thread);
+
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+
+
+        /////////////////
+        //CLIENT
+        ///////////////
+        if(MenuMode ==6) {
+
+            view.row1.getChildren().clear();
+            view.row2.getChildren().clear();
+
+
+
+            Label lbl = new Label("Searching for hosts...");
+            lbl.setTextFill(Color.WHITE);
+            lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 50));
+            view.row1.setMaxSize(1000,200);
+            view.row1.getChildren().add(lbl);
+
+
+
+
+
+
+            final Client[] client = {new Client(IP_address, PORT)};
+
+            Thread client_thread = new Thread() {
+                public void run() {
+                    try {
+
+                    while(client[0].socket==null) {
+                           Thread.sleep(1000);
+
+                       client[0] = new Client(IP_address,PORT);
+
+                   }
+                   String[] s=null;
+                         s = client[0].communication("status","");
+                         System.out.println(s);
+
+
+                    String[] finalS = s;
+                    Platform.runLater(() -> {
+                        lbl.setText("Select a game:");
+
+
+
+                        HBox gameRow = new HBox();
+                        gameRow.setMaxSize(1000,100);
+                        gameRow.setMinSize(1000,100);
+                        gameRow.setAlignment(Pos.CENTER);
+
+                        Label roomFillment = new Label(finalS[0]);
+                        roomFillment.setTextFill(Color.WHITE);
+                        roomFillment.setFont(Font.font("ARIAL", FontWeight.BOLD, 50));
+                        roomFillment.setMinWidth(100);
+                        roomFillment.setMaxWidth(100);
+
+                        Label roomName = new Label("Game of "+finalS[1]);
+                        roomName.setMinWidth(400);
+                        roomName.setMaxWidth(400);
+                        roomName.setTextFill(Color.WHITE);
+                        roomName.setFont(Font.font("ARIAL", FontWeight.BOLD, 50));
+
+
+                        ImageView join_btn = new ImageView("/res//img/join/join.png");
+                        HBox imageHolder3 =  new HBox();
+                        imageHolder3.setAlignment(Pos.CENTER);
+
+                        imageHolder3.setMinSize(600,100);
+                        imageHolder3.setMaxSize(600,100);
+                        imageHolder3.getChildren().add(join_btn);
+
+                        imageHolder3.setOnMouseEntered(t -> join_btn.setImage(new Image("/res//img/join/join_hover.png")));
+                        imageHolder3.setOnMouseExited(t -> join_btn.setImage(new Image("/res//img/join/join.png")));
+                        imageHolder3.setOnMouseClicked(e->{
+
+                            String[] k =null;
+
+                            try {
+                                k = client[0].communication("join",userdata.getUsername() + "," + userdata.get_selected_figure());
+                            } catch (IOException | ClassNotFoundException e1) {
+                                e1.printStackTrace();
+                            }
+                            System.out.println(k);
+
+
+                            view.row2.getChildren().clear();
+                            lbl.setText("Waiting for game to start...");
+
+
+                        });
+                        gameRow.getChildren().addAll(roomFillment,roomName,imageHolder3);
+                        view.row2.getChildren().add(gameRow);
+
+
+
+
+                });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        System.err.println("Sorry for that^^");
+                    }
+
+
+                }
+            };
+            client_thread.start();
+
+
+
+
+
+
+
+            backToMainMenu(view, imageHolder6, client_thread);
+
+
+        }
+
+
+
+
+
+
+        if(MenuMode ==-1) {
+            //Settings/stats
+            ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().clear();
+
+            if (!view.row2.getChildren().isEmpty())
+                view.row2.getChildren().clear();
+
+
+            TextField name_input = new TextField();
+            name_input.setAlignment(Pos.CENTER);
+            name_input.setFont(Font.font("ARIAL", FontWeight.BOLD, 70));
+            name_input.setText(userdata.getUsername());
+            name_input.setMinSize(600,100);
+            name_input.setMaxSize(600,100);
+            name_input.setStyle("-fx-background-color: rgba(0,0,0,0.0);" +
+                    "    -fx-text-fill: #FFFFFF;");
+
+            view.row1.getChildren().add(name_input);
+            name_input.requestFocus();
+
+
+            Label lbl = new Label("Games played: " + userdata.getPlayedGames()+"   "+"K/D: "+((float)userdata.getWins()/(userdata.getLoses()==0?1:userdata.getLoses())));
+            lbl.setTextFill(Color.WHITE);
+            lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 50));
+            view.row1.getChildren().add(lbl);
+            view.row1.setMaxSize(1000,200);
+
+            view.row3.getChildren().add(0,figures.getAllFigures(50,view.mainPane));
+
+
+
+
+
+
+            imageHolder6.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> {
                 ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().clear();
+
+                userdata.setUsername(name_input.getText());
 
                 ImageView IV3 = new ImageView("/res/img/title.gif");
                 IV3.setFitHeight(200);
                 IV3.setFitWidth(600);
                 IV3.setPreserveRatio(true);
-                Pane imageHolder3 = new Pane();
+                Pane imageHolder3= new Pane();
                 imageHolder3.setMinSize(600,200);
                 imageHolder3.setMaxSize(600,200);
                 imageHolder3.getChildren().add(IV3);
@@ -491,9 +895,7 @@ public class MainMenuController {
 
             });
 
-
         }
-
 
         if(MenuMode ==-2) {
             //What's your name?
@@ -512,6 +914,8 @@ public class MainMenuController {
 
             ImageView exit_btn = new ImageView("/res//img/play/play.png");
             HBox imageHolder3 =  new HBox();
+            imageHolder3.setAlignment(Pos.CENTER);
+
             imageHolder3.setMinSize(600,100);
             imageHolder3.setMaxSize(600,100);
             imageHolder3.getChildren().add(exit_btn);
@@ -561,7 +965,71 @@ public class MainMenuController {
 
         }
 
+    private void backToMainMenu(MainMenuView view, HBox imageHolder5, Object o) {
+
+        if(o !=null) {
+
+            view.row3.getChildren().remove(imageHolder5);
+
+            ImageView exit_btn2 = new ImageView("/res//img/back/back.png");
+            HBox imageHolder6 = new HBox();
+            imageHolder6.setMinSize(600, 100);
+            imageHolder6.setMaxSize(600, 100);
+            imageHolder6.setAlignment(Pos.CENTER);
+            imageHolder6.getChildren().add(exit_btn2);
+
+            imageHolder6.setOnMouseEntered(t -> exit_btn2.setImage(new Image("/res/img/back/back_hover.png")));
+            imageHolder6.setOnMouseExited(t -> exit_btn2.setImage(new Image("/res/img/back/back.png")));
+
+            imageHolder6.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+
+
+
+                        ((Thread) o).interrupt();
+
+
+                ((Pane) ((Pane) view.row2.getParent()).getChildren().get(0)).getChildren().clear();
+                ImageView IV3 = new ImageView("/res/img/title.gif");
+                IV3.setFitHeight(200);
+                IV3.setFitWidth(600);
+                IV3.setPreserveRatio(true);
+                Pane imageHolder3 = new Pane();
+                imageHolder3.setMinSize(600, 200);
+                imageHolder3.setMaxSize(600, 200);
+                imageHolder3.getChildren().add(IV3);
+                ((Pane) ((Pane) view.row2.getParent()).getChildren().get(0)).getChildren().add(imageHolder3);
+
+                changeMenuMode(0, view);
+
+            });
+            view.row3.getChildren().add(imageHolder6);
+        }
+        else{
+
+            imageHolder5.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+
+                ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().clear();
+                ImageView IV3 = new ImageView("/res/img/title.gif");
+                IV3.setFitHeight(200);
+                IV3.setFitWidth(600);
+                IV3.setPreserveRatio(true);
+                Pane imageHolder3= new Pane();
+                imageHolder3.setMinSize(600,200);
+                imageHolder3.setMaxSize(600,200);
+                imageHolder3.getChildren().add(IV3);
+                ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().add(imageHolder3);
+
+                changeMenuMode(0,view);
+
+            });
+        }
+    }
+
     private void startAnimation(Pane pane) {
+
+        pane.setCache(true);
+        pane.setCacheShape(true);
+        pane.setCacheHint(CacheHint.SPEED);
         //https://www.mkyong.com/javafx/javafx-animated-ball-example/
 
         try {
@@ -580,7 +1048,7 @@ public class MainMenuController {
                 new EventHandler<ActionEvent>() {
 
                     double dx = r.nextInt(5)+1; //Step on x or velocity
-                    double dy = r.nextInt(4)+1; //Step on y
+                    double dy = r.nextInt(5)+1; //Step on y
 
 
                     @Override
@@ -605,7 +1073,7 @@ public class MainMenuController {
                                 nextGlitch[0] = r.nextInt(350) + 30;
                                 glitch_counter[0]=0;
                                 pane.setLayoutX(pane.getLayoutX()-(r.nextInt(50)+50) + dx);
-                                if(pane.getLayoutX()<-300 || pane.getLayoutX()>900 || pane.getLayoutY()<00 || pane.getLayoutY()>500) {
+                                if(pane.getLayoutX()<-330 || pane.getLayoutX()>900 || pane.getLayoutY()<-20 || pane.getLayoutY()>400) {
                                     pane.setLayoutX(r.nextInt(350) + 100);
                                     pane.setLayoutY(r.nextInt(350) + 100);
 
@@ -626,14 +1094,14 @@ public class MainMenuController {
 
 
                         //If the ball reaches the left or right border make the step negative
-                        if(pane.getLayoutX() >= (900- pane.getHeight()) ||
-                                pane.getLayoutX() < (-300 ) ){
+                        if(pane.getLayoutX() >= (920- pane.getHeight()) ||
+                                pane.getLayoutX() < (-320 ) ){
                             dx = -dx;
                         }
 
                         //If the ball reaches the bottom or top border make the step negative
-                        if((pane.getLayoutY() >= (600- pane.getHeight()))||
-                                (pane.getLayoutY() < (0) )){
+                        if((pane.getLayoutY() >= (620- pane.getHeight()))||
+                                (pane.getLayoutY() < (-20) )){
 
                             dy = -dy;
 

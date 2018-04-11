@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Client {
 
@@ -12,89 +13,76 @@ public class Client {
 
     //Inspiration from tutorial:  https://javabeginners.de/Netzwerk/Socketverbindung.php
 
-    public PrintStream ps;
+    private PrintStream ps;
+    boolean stop = false;
+    public Socket socket = null;
 
     int i = 0;
 
-    public Client(String host, ArrayList<String> savedNamed) {
-        Socket socket = null;
+    public Client(String host,int port) {
         try {
-            socket = new Socket(host, 12700);
+            socket = new Socket(host, port);
 
-            OutputStream raus = socket.getOutputStream();
-
-            socket.setSoTimeout(30000);
-            socket.setKeepAlive(true);
-
-
-            //
-
-
-            ps = new PrintStream(raus, true);
-            ps.println(savedNamed.get(0));
-            ps.flush();
-
-            InputStream rein = socket.getInputStream();
-
-            ObjectInputStream ois = new ObjectInputStream(rein);
-
-
-            //hands = new ArrayList<>();
-
-            while (true) {
-
-                //hands = (ArrayList) ois.readObject();
-
-                /*if (hands != null) {
-                    ois.close();
-                    socket.close();
-                    break;
-                }*/
-            }
 
         } catch (UnknownHostException e) {
             System.out.println("Unknown Host...");
-            e.printStackTrace();
+            //e.printStackTrace();
         } catch (IOException e) {
             System.out.println("IOProbleme...");
-            e.printStackTrace();
-        } finally {
-            if (socket != null)
-                try {
-                    socket.close();
-                    System.out.println("Socket geschlossen...");
-                } catch (IOException e) {
-                    System.out.println("Socket nicht zu schliessen...");
-                    e.printStackTrace();
-                }
+            //e.printStackTrace();
+
+
         }
     }
 
-    /*
-        public static void send(PrintStream ps) {
+    public void stop(){
+        stop = true;
+
+        if (socket != null)
+            try {
+                socket.close();
+                System.out.println("Socket geschlossen...");
+            } catch (IOException e) {
+                System.out.println("Socket nicht zu schliessen...");
+                e.printStackTrace();
+            }
+    }
+
+        public String[] communication(String command, String payload) throws IOException, ClassNotFoundException {
 
 
-            Scanner reader = new Scanner(System.in);  // Reading from System.in
-            System.out.println("Enter a text: ");
+            OutputStream raus = socket.getOutputStream();
+            InputStream rein = socket.getInputStream();
 
-    //once finished
 
-            while (reader.hasNextLine()) {
+            socket.setKeepAlive(true);
 
-                if (ps != null)
-                    ps.println(reader.next());
+            ps = new PrintStream(raus, true);
+
+
+            ps.println(command);
+            ps.println(payload);
+            ps.flush();
+
+
+            ObjectInputStream ois = new ObjectInputStream(rein);
+            String[] s = null;
+            Object o;
+            while ((o = ois.readObject()) != null && !stop) {
+
+                s = ((String) o).split(",");
+
+                for (int i =0; i<s.length;i++)
+                    if(s[i].equals("end")){
+                    s[i]=null;
+                    return s;
+                    }
 
 
             }
-            reader.close();
 
+            return s;
         }
-
-    */
-    /*public ArrayList<ArrayList<Card>> getOnlineCards() {
-
-        return hands;
-    }*/
 
 
 }
