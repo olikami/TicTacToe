@@ -2,23 +2,27 @@ package view;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import model.DialogCreator;
 
-import java.awt.*;
-import java.awt.event.MouseEvent;
+
 
 public class TicTacToeView {
 
     public StackPane gamePane = new StackPane();
     public HBox[] board = new HBox[9];
     public StackPane mainPane = new StackPane();
-    public StackPane chatPane = new StackPane();
+    public BorderPane chatPane = new BorderPane();
     public VBox chatRow = new VBox();
+    public TextField chatInput = new TextField();
 
     public TicTacToeView(Stage primaryStage){
 
@@ -64,10 +68,17 @@ public class TicTacToeView {
 
 
 
-        chatPane.getChildren().add(chatRow);
+        chatPane.setCenter(chatRow);
         chatPane.setMinSize(600,600);
         chatPane.setMaxSize(600,600);
         chatPane.setStyle("-fx-background-color: #000000; ");
+
+        chatInput.setFont(Font.font("ARIAL", FontWeight.BOLD, 70));
+        chatInput.setPromptText("Type in message");
+        chatInput.setMinSize(600,100);
+        chatInput.setMaxSize(600,100);
+        chatPane.setBottom(chatInput);
+
 
         gamePane.getChildren().addAll(rows);
         gamePane.setMinSize(600,600);

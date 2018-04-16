@@ -23,9 +23,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import model.DialogCreator;
-import model.MainMenuModel;
-import model.offline_game;
+import model.*;
 import model.player.figures_name;
 import model.player.userdata;
 import view.MainMenuView;
@@ -89,10 +87,10 @@ public class TicTacToeController {
                 "#e1e832",
                 "#41e831",
                 "#30e8d2"};
-        Player_color = hex2Rgb(neon_colors[r.nextInt(4)]);
-        AI_color = hex2Rgb(neon_colors[r.nextInt(4)]);
+        Player_color = gameMethods.hex2Rgb(neon_colors[r.nextInt(4)]);
+        AI_color = gameMethods.hex2Rgb(neon_colors[r.nextInt(4)]);
         while(AI_color.equals(Player_color))
-            AI_color = hex2Rgb(neon_colors[r.nextInt(4)]);
+            AI_color = gameMethods.hex2Rgb(neon_colors[r.nextInt(4)]);
 
 
 
@@ -104,8 +102,8 @@ public class TicTacToeController {
             if (Whostarts == 0) {
 
                 int p = model.AiTurn(AIPlayerNr);
-                setImage((ImageView) view.board[p].getChildren().get(0), AI_image);
-                animateMoves(view.board[p]);
+                gameMethods.setImage((ImageView) view.board[p].getChildren().get(0), AI_image, AI_color);
+                gameMethods.animateMoves(view.board[p]);
                 setChatMessage("The Computer has played in field ( "+ ((p+1)%3f==0?3:((p+1)%3f==2?2:1))+", "+(int)Math.ceil((p+1)/3f)+")");
 
 
@@ -141,10 +139,10 @@ public class TicTacToeController {
                         model.board.populateBoard(a, finalAIPlayerNr == 2 ? 1 : 2);
 
                         //set the image
-                        setImage((ImageView) view.board[a].getChildren().get(0),Player_Image);
+                        gameMethods.setImage((ImageView) view.board[a].getChildren().get(0),Player_Image, Player_color);
 
 
-                        animateMoves(view.board[a]).setOnFinished(event1 -> {
+                        gameMethods.animateMoves(view.board[a]).setOnFinished(event1 -> {
 
 
                             //check for winner
@@ -156,7 +154,7 @@ public class TicTacToeController {
                                     setChatMessage("It's a tie!");
                                 }
                                 setWinner(model.board.getWinner());
-                                setWinnerStroke();
+                                gameMethods.setWinnerStroke(model.board,view);
                                 return;
                             }else{
                                 setChatMessage("You have played in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
@@ -164,9 +162,11 @@ public class TicTacToeController {
                             }
 
                             int p = model.AiTurn(finalAIPlayerNr);
-                            setImage((ImageView) view.board[p].getChildren().get(0),AI_image);
+                            model.board.populateBoard(p,finalAIPlayerNr);
 
-                            animateMoves(view.board[p]);
+                            gameMethods.setImage((ImageView) view.board[p].getChildren().get(0),AI_image, AI_color);
+
+                            gameMethods.animateMoves(view.board[p]);
 
                             System.out.println(model.board.toString());
 
@@ -175,7 +175,7 @@ public class TicTacToeController {
                                 setWinner(model.board.getWinner());
                                 userdata.setLoseGames();
 
-                                setWinnerStroke();
+                                gameMethods.setWinnerStroke(model.board,view);
                                 if (model.board.getWinner() != 3) {
 
                                     setChatMessage("The Computer wins with his move in field: ( " + ((p + 1) % 3f == 0 ? 3 : ((p + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((p + 1) / 3f) + ")");
@@ -197,9 +197,9 @@ public class TicTacToeController {
                             model.board.populateBoard(a, 1);
 
                             //set the image
-                            setImage((ImageView) view.board[a].getChildren().get(0),Player_Image);
+                            gameMethods.setImage((ImageView) view.board[a].getChildren().get(0),Player_Image, Player_color);
 
-                            animateMoves(view.board[a]);
+                            gameMethods.animateMoves(view.board[a]);
                             setChatMessage("Player 1 has played in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
 
                             //check for winner
@@ -212,7 +212,7 @@ public class TicTacToeController {
                                     setChatMessage("It's a tie!");
                                 }
                                 setWinner(model.board.getWinner());
-                                setWinnerStroke();
+                                gameMethods.setWinnerStroke(model.board,view);
                                 return;
                             }
                         } else {
@@ -221,8 +221,8 @@ public class TicTacToeController {
                             model.board.populateBoard(a, 2);
 
                             //set the image
-                            setImage((ImageView) view.board[a].getChildren().get(0),AI_image);
-                            animateMoves(view.board[a]);
+                            gameMethods.setImage((ImageView) view.board[a].getChildren().get(0),AI_image, AI_color);
+                            gameMethods.animateMoves(view.board[a]);
                             setChatMessage("Player 2 has played in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
                             //check for winner
                             if (model.board.getWinner() != 0) {
@@ -234,7 +234,7 @@ public class TicTacToeController {
                                     setChatMessage("It's a tie!");
                                 }
                                 setWinner(model.board.getWinner());
-                                setWinnerStroke();
+                                gameMethods.setWinnerStroke(model.board,view);
                                 return;
                             }
                         }
@@ -398,10 +398,6 @@ public class TicTacToeController {
 
     private void createDialog() {
 
-
-
-
-
         if (userdata.getWins()>=3 && !userdata.getUnlockedFigures()[(figures_name.SUN.ordinal())]){
             createUnlockedDialog(figures_name.SUN);
             return;
@@ -466,138 +462,6 @@ public class TicTacToeController {
 
     }
 
-    private void setWinnerStroke() {
-        if (model.board.getWinnerStroke()[0] == 5)
-            return;
-
-        HBox pane = new HBox();
-        pane.setMinSize(600, 600);
-        pane.setMaxSize(600, 600);
-
-        ImageView IV = new ImageView();
-        IV.setFitHeight(200);
-        IV.setFitWidth(600);
-        IV.setPreserveRatio(true);
-        IV.setImage(new Image("/img/stroke.png"));
-        pane.getChildren().add(IV);
-
-        TranslateTransition TT = new TranslateTransition(Duration.millis(400), pane);
-
-        switch (model.board.getWinnerStroke()[0]) {
-            case 1:
-                TT.setFromX(600);
-                TT.setFromY(00);
-                break;
-            case 2:
-                pane.setRotate(-90);
-                TT.setFromX(00);
-                TT.setFromY(600);
-                break;
-            case 3:
-                pane.setRotate(45);
-                TT.setFromX(600);
-                TT.setFromY(600);
-                pane.setAlignment(Pos.CENTER);
-                break;
-            case 4:
-                pane.setRotate(-45);
-                TT.setFromX(-600);
-                TT.setFromY(600);
-                pane.setAlignment(Pos.CENTER);
-                break;
-        }
-
-        switch (model.board.getWinnerStroke()[1]) {
-            case 0:
-                break;
-            case 1:
-                pane.setAlignment(Pos.CENTER);
-                break;
-            case 2:
-                pane.setAlignment(Pos.BOTTOM_CENTER);
-                break;
-        }
-
-
-        view.gamePane.getChildren().add(pane);
-
-        TT.setToX(0f);
-        TT.setToY(0);
-
-        TT.play();
-    }
-
-
-    public ParallelTransition animateMoves(Pane pane) {
-
-        FadeTransition ft2 = new FadeTransition(Duration.millis(400), pane);
-        ft2.setFromValue(0.0);
-        ft2.setToValue(1.0);
-
-
-        ScaleTransition str = new ScaleTransition(Duration.millis(500), pane);
-        str.setFromX(1.1f);
-        str.setFromY(1.1f);
-        str.setToX(1f);
-        str.setToY(1f);
-        str.setAutoReverse(false);
-
-        ParallelTransition pt = new ParallelTransition();
-        pt.getChildren().addAll(ft2, str);
-        pt.play();
-        return pt;
-    }
-
-    //https://stackoverflow.com/questions/4129666/how-to-convert-hex-to-rgb-using-java
-
-    /**
-     * @param colorStr e.g. "#FFFFFF"
-     * @return
-     */
-    public static Color hex2Rgb(String colorStr) {
-
-        Double d = (double)(Integer.valueOf(colorStr.substring(1, 3), 16)/255d);
-        return new Color((double)(Integer.valueOf(colorStr.substring(1, 3), 16))/255d,
-                (double)(Integer.valueOf(colorStr.substring(3, 5), 16))/255d,
-                (double)(Integer.valueOf(colorStr.substring(5, 7), 16))/255d,1);
-    }
-
-    public void setImage(ImageView IV, Image img){
-
-        img = AI_image==img?AI_image:Player_Image;
-
-        IV.setImage(img);
-
-        ImageView IVclip = new ImageView(img);
-        IVclip.setFitHeight(180);
-        IVclip.setFitWidth(180);
-
-        IV.setClip(IVclip);
-
-
-        ColorAdjust monochrome = new ColorAdjust();
-        monochrome.setSaturation(-1.0);
-
-        Blend blush = new Blend(
-                BlendMode.MULTIPLY,
-                monochrome,
-                new ColorInput(
-                        0,
-                        0,
-                        180,
-                        180,
-                        AI_image==img?AI_color:Player_color
-                )
-        );
-
-
-        IV.setEffect(blush);
-
-
-        IV.setCache(true);
-        IV.setCacheHint(CacheHint.SPEED);
-
-    }
 
     public void setChatMessage(String message){
 

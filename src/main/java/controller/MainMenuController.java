@@ -15,6 +15,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -38,7 +40,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.nio.file.Paths;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -610,9 +611,15 @@ public class MainMenuController {
             imageHolder_Play.setOnMouseEntered(t -> play.setImage(new Image("/img/play/play_hover.png")));
             imageHolder_Play.setOnMouseExited(t -> play.setImage(new Image("/img/play/play.png")));
 
-            IP_address = ip_input.getText();
-            PORT = (port_input.getText().equals("")?PORT:Integer.valueOf(port_input.getText()));
-            imageHolder_Play.setOnMouseClicked(t -> changeMenuMode(host.get()?5:6,view));
+
+            imageHolder_Play.setOnMouseClicked(t ->{
+                if(!host.get())
+                IP_address = ip_input.getText();
+                String s = port_input.getText();
+                PORT = (s.equals("")?PORT:Integer.valueOf(s));
+                changeMenuMode(host.get()?5:6,view);
+
+            } );
 
             HBox bottomline = new HBox();
             bottomline.setMinSize(600,100);
@@ -650,11 +657,11 @@ public class MainMenuController {
 
 
             try {
-                Server server = new Server(PORT,2,IP_address);
+                Server server = new Server(PORT,2,String.valueOf(InetAddress.getLocalHost().getHostAddress()));
 
                 Thread server_thread = new Thread() {
                     public void run() {
-                        server.verbinde();
+                        server.connect();
 
 
 
@@ -706,11 +713,9 @@ public class MainMenuController {
                             imageHolder3.setOnMouseExited(t -> play_btn.setImage(new Image("/img/play/play.png")));
                             imageHolder3.setOnMouseClicked(e->{
 
-
-
-                                online_game gamemodel = new online_game();
                                 TicTacToeView gameView = new TicTacToeView((Stage)view.row1.getScene().getWindow());
-                                OnlineController game_1_controller = new OnlineController(server,null);
+                                online_game gamemodel = new online_game(gameView,server,null);
+                                OnlineController game_1_controller = new OnlineController(gamemodel,gameView);
 
 
                                 this.interrupt();
@@ -756,13 +761,12 @@ public class MainMenuController {
             view.row1.setMaxSize(1000,200);
             view.row1.getChildren().add(lbl);
 
-            final Client[] client = {new Client(IP_address, PORT)};
+            final Client[] client = {null};
 
 
             Thread lobby_thread = new Thread() {
                 public void run() {
                     try {
-
                         String available = "1";
                         String[] s = null;
                         while (available.equals("1")) {
@@ -772,12 +776,13 @@ public class MainMenuController {
                             s = client[0].communication("check", "");
 
                             available = s==null?"0":s[0];
-                            if(s!=null &&s[1]!=null &&s[1].equals("start")){
+                            if(s!=null &&s[1]!=null &&s[1].equals("ready")){
 
 
 
-                                this.interrupt();
+                               // this.interrupt();
 
+                                break;
                             }
 
                         }
@@ -799,14 +804,16 @@ public class MainMenuController {
 
                                 changeMenuMode(0, view);
 
-                                HBox dialog = DialogCreator.vanillaDialog("Host closed connection", "");
+                                HBox dialog = DialogCreator.vanillaDialog("Host closed connection", "",true);
                                 view.mainPane.getChildren().add(dialog);
 
                                 this.interrupt();
                             }else{
-                                online_game gamemodel = new online_game();
                                 TicTacToeView gameView = new TicTacToeView((Stage)view.row1.getScene().getWindow());
-                                OnlineController game_1_controller = new OnlineController(client,Boolean.valueOf(finalS[2]));
+                                online_game gamemodel = new online_game(gameView,client[0],Boolean.valueOf(finalS[2]));
+                                OnlineController game_1_controller = new OnlineController(gamemodel, gameView);
+                                this.interrupt();
+
 
                             }
                         });
@@ -827,6 +834,8 @@ public class MainMenuController {
 
             Thread client_thread = new Thread() {
                 public void run() {
+                    client[0] = new Client(IP_address,PORT);
+
                     try {
 
                     while(client[0].socket==null) {
@@ -1023,24 +1032,15 @@ public class MainMenuController {
                     "    -fx-text-fill: #FFFFFF;");
 
             view.row2.getChildren().add(0,name_input);
+            name_input.setOnKeyPressed(event -> {
+                if(event.getCode().equals(KeyCode.ENTER)) {
+                    setUserName(name_input, view);
+                }
+            });
 
             imageHolder3.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> {
 
-                userdata.setUsername(name_input.getText());
-
-                ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().clear();
-
-                ImageView IV3 = new ImageView("/img/title.gif");
-                IV3.setFitHeight(200);
-                IV3.setFitWidth(600);
-                IV3.setPreserveRatio(true);
-                Pane imageHolder = new Pane();
-                imageHolder.setMinSize(600,200);
-                imageHolder.setMaxSize(600,200);
-                imageHolder.getChildren().add(IV3);
-                ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().add(imageHolder);
-
-                changeMenuMode(0,view);
+                setUserName(name_input, view);
 
             });
 
@@ -1048,6 +1048,24 @@ public class MainMenuController {
 
 
         }
+
+    private void setUserName(TextField name_input, MainMenuView view) {
+        userdata.setUsername(name_input.getText());
+
+        ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().clear();
+
+        ImageView IV3 = new ImageView("/img/title.gif");
+        IV3.setFitHeight(200);
+        IV3.setFitWidth(600);
+        IV3.setPreserveRatio(true);
+        Pane imageHolder = new Pane();
+        imageHolder.setMinSize(600,200);
+        imageHolder.setMaxSize(600,200);
+        imageHolder.getChildren().add(IV3);
+        ((Pane)((Pane)view.row2.getParent()).getChildren().get(0)).getChildren().add(imageHolder);
+
+        changeMenuMode(0,view);
+    }
 
     private void backToMainMenu(MainMenuView view, HBox imageHolder5, Object o, Server server) {
 

@@ -1,17 +1,16 @@
 package model.net.port;
 
-import com.offbynull.portmapper.PortMapperFactory;
-import com.offbynull.portmapper.gateway.Bus;
-import com.offbynull.portmapper.gateway.Gateway;
-import com.offbynull.portmapper.gateways.network.NetworkGateway;
-import com.offbynull.portmapper.gateways.network.internalmessages.KillNetworkRequest;
-import com.offbynull.portmapper.gateways.process.ProcessGateway;
-import com.offbynull.portmapper.gateways.process.internalmessages.KillProcessRequest;
-import com.offbynull.portmapper.mapper.MappedPort;
-import com.offbynull.portmapper.mapper.PortMapper;
-import com.offbynull.portmapper.mapper.PortType;
+import org.bitlet.weupnp.GatewayDevice;
+import org.bitlet.weupnp.GatewayDiscover;
+import org.bitlet.weupnp.PortMappingEntry;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class PortForward {
 
@@ -21,48 +20,75 @@ public class PortForward {
         System.exit(1);
 
     }
+    int SAMPLE_PORT = 12345;
+    int WAIT_TIME = 10;
 
     PortForward() {
-        // Start gateways
-        Gateway network = NetworkGateway.create();
-        Gateway process = ProcessGateway.create();
-        Bus networkBus = network.getBus();
-        Bus processBus = process.getBus();
-        Boolean shutdown = false;
 
-        // Discover port forwarding devices and take the first one found
-        List<PortMapper> mappers = null;
+        Logger logger = Logger.getLogger("InfoLogging");
+
+        logger.info("Logging an INFO-level message");
+
         try {
-            mappers = PortMapperFactory.discover(networkBus, processBus);
 
-        PortMapper mapper = mappers.get(0);
 
-        // Map internal port 12345 to some external port (55555 preferred)
-//
-// IMPORTANT NOTE: Many devices prevent you from mapping ports that are <= 1024
-// (both internal and external ports). Be mindful of this when choosing which
-// ports you want to map.
-        MappedPort mappedPort = mapper.mapPort(PortType.TCP, 12345, 55555, 60);
-        System.out.println("Port mapping added: " + mappedPort);
+            GatewayDiscover discover = new GatewayDiscover();
+            logger.info("Looking for Gateway Devices");
+            discover.discover();
 
-// Refresh mapping half-way through the lifetime of the mapping (for example,
-// if the mapping is available for 40 seconds, refresh it every 20 seconds)
-        while (!shutdown) {
-            mappedPort = mapper.refreshPort(mappedPort, mappedPort.getLifetime() / 2L);
-            System.out.println("Port mapping refreshed: " + mappedPort);
-            Thread.sleep(mappedPort.getLifetime() * 1000L);
-        }
+            GatewayDevice d = discover.getValidGateway();
+            if (null != d) {
+                logger.info("Found gateway device.\n{0} ({1})" +
+                        Arrays.toString(new Object[]{d.getModelName(), d.getModelDescription()}));
+            } else {
+                logger.info("No valid gateway device found.");
+                return;
+            }
 
-// Unmap port 12345
-        mapper.unmapPort(mappedPort);
+            InetAddress localAddress = d.getLocalAddress();
+            logger.info("Using local address: {0}  "+ localAddress);
+            String externalIPAddress = d.getExternalIPAddress();
+            logger.info("External address: {0}  "+ externalIPAddress);
 
-// Stop gateways
-        networkBus.send(new KillNetworkRequest());
-        processBus.send(new KillProcessRequest()); // can kill this after discovery
+            logger.info("Attempting to map port {0} "+ SAMPLE_PORT);
+            PortMappingEntry portMapping = new PortMappingEntry();
 
+            logger.info("Querying device to see if mapping for port {0} already exists"+
+                    SAMPLE_PORT);
+            if (!d.getSpecificPortMappingEntry(SAMPLE_PORT,"TCP",portMapping)) {
+                logger.info("Port was already mapped. Aborting test.");
+            } else {
+                logger.info("Sending port mapping request");
+                if (!d.addPortMapping(SAMPLE_PORT, SAMPLE_PORT,
+                        localAddress.getHostAddress(),"TCP","test")) {
+                    logger.info("Port mapping attempt failed");
+                    logger.info("Test FAILED");
+                } else {        logger.info("Mapping successful: waiting {0} seconds before removing."+
+                        WAIT_TIME);
+                    Thread.sleep(1000*WAIT_TIME);
+                    d.deletePortMapping(SAMPLE_PORT,"TCP");
+
+                    logger.info("Port mapping removed");
+                    logger.info("Test SUCCESSFUL");
+                }
+            }
+
+            logger.info("Stopping weupnp");
+
+
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
     }
+
 }

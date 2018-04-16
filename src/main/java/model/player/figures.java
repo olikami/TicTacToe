@@ -70,7 +70,7 @@ public class figures {
 
                 if(!userdata.unlockedFigures[finalI]) {
 
-                    box[0] = DialogCreator.vanillaDialog((figures_name.values()[finalI]).toString(),getManual(figures_name.values()[finalI]));
+                    box[0] = DialogCreator.vanillaDialog((figures_name.values()[finalI]).toString(),getManual(figures_name.values()[finalI]),true);
 
                     mainPane.getChildren().add(box[0]);
                 }

@@ -130,7 +130,6 @@ public class offline_game {
 
     public int AiTurn(int player){
         int i = AI.getNextMove(board,player);
-        board.populateBoard(i,player);
         return i;
     }
 

@@ -2,13 +2,15 @@ package model.player;
 
 import sun.security.x509.IPAddressName;
 
-public class OnlinePlayer {
+import java.io.Serializable;
+
+public class OnlinePlayer implements Serializable {
 
     private String IPAddress;
     private figures_name figure;
     private String Name;
 
-    public OnlinePlayer(String IP, String N){
+    public OnlinePlayer(String IP, String N) {
 
         this.IPAddress=IP;
         this.Name=N;

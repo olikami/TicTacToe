@@ -23,7 +23,8 @@ import java.io.IOException;
 
 public class DialogCreator {
 
-    public static HBox vanillaDialog(String Message, String SmallMessage){
+    public static HBox vanillaDialog(String Message, String SmallMessage,Boolean remove){
+
 
         HBox mainContainer = new HBox();
         mainContainer.setAlignment(Pos.CENTER);
@@ -99,7 +100,7 @@ public class DialogCreator {
 
 
 
-        Thread lobby_thread = new Thread() {
+        Thread dialog_thread = new Thread() {
             public void run() {
                 try {
 
@@ -118,13 +119,14 @@ public class DialogCreator {
         };
 
         TT.setOnFinished(e ->{
-            lobby_thread.start();
+            dialog_thread.start();
 
         });
 
         ft2.setOnFinished(e->{
 
             try {
+                if(remove)
                 ((Pane) mainContainer.getParent()).getChildren().remove(mainContainer);
             }catch (NullPointerException npe){
 

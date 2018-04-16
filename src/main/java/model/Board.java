@@ -7,13 +7,13 @@ public class Board {
     //the board class.
     //will create a new board on create and
     //can do various stuff like prettyprint the current board
-    int[] i= new int[9];
-    Boolean locked = false;
-    int winner =0;
+    private int[] i= new int[9];
+    private Boolean locked = false;
+    private int winner =0;
 
     // 0 = 1-4 row, column, diag, antidiag 5= tie. 1 =  0-3 row/column line.
     int[] winnerStroke= {0,0};
-    Board(){
+    public Board(){
        Arrays.fill(i,0);
     }
     Board(int[] list){
@@ -22,7 +22,7 @@ public class Board {
             this.i[i]=list[i];
     }
     public int[] getBoardAsArray(){
-        return i;
+        return this.i;
     }
     public void populateBoard(int position,int player) throws NumberFormatException,NoSuchFieldError{
         if(player!=1&&player!=2) throw new NumberFormatException("There is no player '"+player+"'. Possible Players are: 1,2");

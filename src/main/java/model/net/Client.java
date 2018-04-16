@@ -1,6 +1,8 @@
 package model.net;
 
 
+import model.player.OnlinePlayer;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
@@ -17,10 +19,14 @@ public class Client {
     private PrintStream ps;
     boolean stop = false;
     public Socket socket = null;
-
+    public Boolean AI_Mode = false;
     int i = 0;
 
     public Client(String host,int port) {
+        if(port == -1) {
+            AI_Mode = true;
+            port=14909;
+        }
         try {
             socket = new Socket(host, port);
 
@@ -30,7 +36,7 @@ public class Client {
             //e.printStackTrace();
         } catch (IOException e) {
             System.out.println("IOProbleme...");
-            //e.printStackTrace();
+            e.printStackTrace();
 
 
         }
@@ -90,6 +96,79 @@ public class Client {
             }
             return null;
         }
+
+    public ArrayList<OnlinePlayer> getOnlinePlayers() throws IOException, ClassNotFoundException {
+
+
+        OutputStream raus = socket.getOutputStream();
+        InputStream rein = socket.getInputStream();
+
+
+        socket.setKeepAlive(true);
+
+        ps = new PrintStream(raus, true);
+
+
+        ps.println("getPlayers");
+        ps.flush();
+
+
+        try {
+            ObjectInputStream ois = new ObjectInputStream(rein);
+
+            ArrayList<OnlinePlayer> s = null;
+            Object o;
+            while ((o = ois.readObject()) != null && !stop) {
+
+                s = (ArrayList<OnlinePlayer>) o;
+
+                return s;
+
+            }
+        }catch (EOFException e){
+            e.printStackTrace();
+        }catch (SocketException e){
+
+        }
+        return null;
+    }
+
+    public ArrayList<String> chat(String message) throws IOException, ClassNotFoundException {
+
+
+        OutputStream raus = socket.getOutputStream();
+        InputStream rein = socket.getInputStream();
+
+
+        socket.setKeepAlive(true);
+
+        ps = new PrintStream(raus, true);
+
+
+        ps.println("chat");
+        ps.println(message);
+        ps.flush();
+
+
+        try {
+            ObjectInputStream ois = new ObjectInputStream(rein);
+
+            ArrayList<String> s = null;
+            Object o;
+            while ((o = ois.readObject()) != null && !stop) {
+
+                s = (ArrayList<String>) o;
+
+                return s;
+
+            }
+        }catch (EOFException e){
+            e.printStackTrace();
+        }catch (SocketException e){
+
+        }
+        return null;
+    }
 
 
 }

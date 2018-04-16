@@ -1,7 +1,8 @@
 package model.net;
 
 
-import model.OnlineController;
+import controller.OnlineController;
+import model.online_game;
 import model.player.OnlinePlayer;
 import model.player.figures_name;
 import model.player.userdata;
@@ -12,6 +13,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Server {
 
@@ -20,9 +22,14 @@ public class Server {
     private Boolean stop = false;
     String s = "null";
     Socket socket = null;
-    public String payload1 ="";
+    public String payload1 = new String();
     public String payload2 ="";
     String end = ",end";
+    public int[] board_in_serverClass = {0,0,0,0,0,0,0,0,0};
+    public Boolean AI_Mode = false;
+    public ArrayList<String> CHAT = new ArrayList<>();
+
+
 
     public ArrayList<OnlinePlayer> players= new ArrayList<>();
 
@@ -30,11 +37,16 @@ public class Server {
 
 
     public Server(int port, int backlog, String bindAddr) throws IOException {
-        //server = new ServerSocket(port, backlog, InetAddress.getByName(bindAddr));
+        if(port == -1) {
+            AI_Mode = true;
+            port=14909;
+        }
 
-        server = new ServerSocket(0);
+        server = new ServerSocket(port, backlog, InetAddress.getByName(bindAddr));
+
         System.out.println("listening on port: " + server.getLocalPort());
 
+        //create the host player.
         OnlinePlayer p = new OnlinePlayer(bindAddr,userdata.getUsername());
         p.setFigure(userdata.get_selected_figure());
         players.add(p);
@@ -43,7 +55,7 @@ public class Server {
     }
 
 
-    public void verbinde() {
+    public void connect() {
 
         while (!stop) {
             System.out.println("ok");
@@ -70,11 +82,6 @@ public class Server {
 
     private void reinRaus(Socket socket) throws IOException {
 
-        ObjectOutput out = null;
-
-
-        //byte[] yourBytes = bos.toByteArray();
-
 
             BufferedReader rein = new BufferedReader(new InputStreamReader(socket
                     .getInputStream()));
@@ -88,12 +95,38 @@ public class Server {
 
                 //client checks available games
                 if(s.equals("status")){
-                    new ObjectOutputStream(socket.getOutputStream()).writeObject(OnlineController.CURRENT_PLAYERS_IN_ROOM+"/"+OnlineController.MAX_PLAYERS+","+ userdata.getUsername()+end);
+                    new ObjectOutputStream(socket.getOutputStream()).writeObject(online_game.CURRENT_PLAYERS_IN_ROOM+"/"+online_game.MAX_PLAYERS+","+ userdata.getUsername()+end);
                 }
                 //client checks for server availability
             if(s.equals("check")){
                 new ObjectOutputStream(socket.getOutputStream()).writeObject("1,"+payload1+","+payload2+end);
+                System.out.println("We sent: "+"1,"+payload1+","+payload2+end);
             }
+            if(s.equals("getPlayers")){
+                new ObjectOutputStream(socket.getOutputStream()).writeObject(players);
+            }
+            //client has played. we need to change the board
+            if(s.equals("board")){
+                int i =0;
+                for (String str : ((rein.readLine().replace("[","")).replace("]","")).split(" ")) {
+                    if (str.equals("")) continue;
+
+                    board_in_serverClass[i++] = Integer.parseInt(str);
+                }
+                new ObjectOutputStream(socket.getOutputStream()).writeObject("1,"+ Arrays.toString(board_in_serverClass) +",BoardReceiveOk"+end);
+
+            }
+
+            if(s.equals("chat")){
+                String newMessage = rein.readLine();
+
+                if(!newMessage.equals(""))
+                    CHAT.add(newMessage);
+
+                new ObjectOutputStream(socket.getOutputStream()).writeObject(CHAT);
+            }
+
+
                 //client sends his move
                 if(s.equals("join")){
                     new ObjectOutputStream(socket.getOutputStream()).writeObject("accept"+userdata.getUsername() + "," + userdata.get_selected_figure()+","+ userdata.getUsername()+end);
