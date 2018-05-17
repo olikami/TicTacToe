@@ -321,8 +321,8 @@ public class online_game {
         if ((server != null)) {
             if (server.AI_Mode) {
                 MyTurn = false;
-                board.populateBoard(p, IAmNumber);
-                server.payload1 = Arrays.toString(board.getBoardAsArray()).replace(",", "");
+                int[] i = board.populateBoard(p, IAmNumber);
+                server.payload1 = Arrays.toString(i).replace(",", "");
                 //set the image
                 gameMethods.setImage((ImageView) View.board[p].getChildren().get(0), Player_Image, Player_color);
                 gameMethods.animateMoves(View.board[p]);
@@ -333,9 +333,9 @@ public class online_game {
         } else {
             if (client.AI_Mode) {
                 MyTurn = false;
-                board.populateBoard(p, IAmNumber);
+                int[] i =board.populateBoard(p, IAmNumber);
                 try {
-                    String[] s = client.communication("board", Arrays.toString(board.getBoardAsArray()).replace(",", ""));
+                    String[] s = client.communication("board", Arrays.toString(i).replace(",", ""));
                     System.out.println("Client receives: " + Arrays.toString(s));
 
                     //set the image

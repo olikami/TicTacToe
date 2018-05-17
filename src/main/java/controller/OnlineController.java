@@ -58,15 +58,15 @@ public class OnlineController {
 
 
                     //populate the gameboard
-                        model.board.populateBoard(a, IAmNumber);
+                        int[] mi =model.board.populateBoard(a, IAmNumber);
 
                         if(model.server !=null){
                             //todo model.server.board_in_server=model.board.getBoardAsArray();
-                            model.server.payload1 = Arrays.toString(model.board.getBoardAsArray()).replace(",","");
+                            model.server.payload1 = Arrays.toString(mi).replace(",","");
                         }else{
                             try {
-                                System.out.println("Client sends: "+Arrays.toString(model.board.getBoardAsArray()).replace(",",""));
-                                String[] s = model.client.communication("board",Arrays.toString(model.board.getBoardAsArray()).replace(",",""));
+                                System.out.println("Client sends: "+Arrays.toString(mi).replace(",",""));
+                                String[] s = model.client.communication("board",Arrays.toString(mi).replace(",",""));
 
                                 System.out.println("Client receives: "+Arrays.toString(s));
 

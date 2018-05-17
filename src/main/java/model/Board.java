@@ -24,7 +24,7 @@ public class Board {
     public int[] getBoardAsArray(){
         return this.i;
     }
-    public void populateBoard(int position,int player) throws NumberFormatException,NoSuchFieldError{
+    public int[] populateBoard(int position,int player) throws NumberFormatException,NoSuchFieldError{
         if(player!=1&&player!=2) throw new NumberFormatException("There is no player '"+player+"'. Possible Players are: 1,2");
         if(this.i[position]!=0) throw new NoSuchFieldError("Field "+position+1+" is already occupied.");
         else if(!Arrays.toString(this.i).contains("0")) throw new NoSuchFieldError("The Board is full!");
@@ -33,6 +33,8 @@ public class Board {
 
         if(!Arrays.toString(this.i).contains("0"))
             this.locked = true;
+
+        return getBoardAsArray();
     }
 
     public boolean PlaceIsEmpty(int i){
