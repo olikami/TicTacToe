@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="../img/logo1.png">
+
+    <script type="text/javascript">
+
+        var file = "../css/styles.css";
+        var mobile = 0;
+
+
+        if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+
+
+            file = "../css/mobile_styles.css";
+            mobile=1;
+
+
+
+        }else{
+            file = "../css/styles.css";
+
+            var imported = document.createElement('script');
+            imported.src = '../js/scrollspeed.js';
+            document.head.appendChild(imported);
+        }
+
+
+        var link = document.createElement( "link" );
+        link.href = file;
+        link.type = "text/css";
+        link.rel = "stylesheet";
+        link.media = "screen,print";
+
+        document.getElementsByTagName( "head" )[0].appendChild( link );
+
+    </script>
+
+    <meta charset="UTF-8">
+
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-110245103-1"></script>
+
+    <!-- Event snippet for Email Input conversion page
+    In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. -->
+    <script>
+        function gtag_report_conversion(url) {
+            var callback = function () {
+                if (typeof(url) != 'undefined') {
+                    window.location = url;
+                }
+            };
+            gtag('event', 'conversion', {
+                'send_to': 'AW-954689114/LTDXCImJ-nkQ2sydxwM',
+                'event_callback': callback
+            });
+            return false;
+        }
+    </script>
+
+</head>
+
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<div data-scroll-speed="4">
+
+
+
+    <div id="mobileLogoDiv" class="mobileLogoDiv" style="display:none;"></div>
+
+    <img class="logo" src="../img/logo1.png" alt="Best Logo Ever">
+
+
+    <h2 id="mobiletitle" ></h2>
+    <h2 id="title" >STOP FOOD WASTE</h2>
+
+    <h3 style="margin-top:-90px;">Deine App fürs Essen.</h3>
+
+
+
+    <div class="subscribe-form" id="subscribe">
+        <center>
+            <form method=post name="subscribeform" action="https://foodflood.ch/lists/?p=subscribe&id=2">
+                <tbody>
+                <td class="attributeinput"><input type="text" placeholder="Deine Email Addresse" name="email" value="" size="40" id="email">
+                    <script language="Javascript" type="text/javascript">addFieldToCheck("email","Email address");</script></td></tr><input type="hidden" name="htmlemail" value="1">
+                </tbody></table><input type="hidden" name="list[4]" value="signup"><input type="hidden" name="listname[4]" value="FoodFlood - App Newsletter"><div style="display:none"><input type="text" name="VerificationCodeX" value="" size="20"></div><p><input type="submit" name="subscribe" id="subscribebtn" value="Erhalte Infos über die App" onclick="return checkform(); gtag_report_conversion();">
+            </form>
+        </center>
+    </div>
+    <script>
+
+        if(mobile==1){
+            document.getElementById("subscribebtn").value = "Erhalte Infos über die App";
+            document.getElementById("mobiletitle").innerHTML  = "STOP";
+            document.getElementById("title").innerHTML  = "FOOD WASTE";
+            document.getElementById("mobiletitle").style.fontSize = "125px";
+            document.getElementById("title").style.fontSize = "50px";
+
+
+            var mobileLogoDiv = document.getElementById("mobileLogoDiv");
+            mobileLogoDiv.style.display='block'
+
+        }
+
+    </script>
+
+
+    <div id="thankyou">
+
+        <h2 id="thanksText">Thanks!</h2>
+        <center>
+            <h7 >You will receive a message with a request to confirm your membership. Please make sure to click the link in that message to confirm your subscription.</h7>
+        </center>
+
+    </div>
+
+
+
+    <script type="text/javascript">
+
+        var subscribe = document.getElementById("subscribe");
+        var thankyou = document.getElementById("thankyou");
+        var thanksText = document.getElementById("thanksText");
+        thankyou.style.display='none'
+
+        if(window.location.search.substr(1)=="emailok"){
+
+
+            thankyou.style.display='block'
+            thanksText.style.marginBottom= '30px';
+
+            subscribe.style.display='none'
+
+        }
+    </script>
+
+    <!-- <input type="button" value="BUY IT." onclick="window.open('https://www.amazon.com');"> -->
+
+
+
+
+    <div class="middle" >
+
+
+        <p> <h1 id="erfahreMehr">&darr;ERFAHRE MEHR&darr;</h1>
+        <p>
+
+
+            <script>
+
+
+
+                var elem = document.getElementById("erfahreMehr");
+                var pos = 101;
+                var turn = 0;
+                var id = setInterval(frame, 70);
+                function frame() {
+                    if(document.documentElement.scrollTop<100){
+                        if (pos == 100) {
+                            turn = false;
+                            pos++;
+                        } else {
+                            elem.style.marginTop = pos + 'px';
+                            elem.style.marginBottom = -pos + 20+'px';
+
+
+                            if (pos > 110){
+                                turn = 1;
+                            }
+                            if(turn==1){
+                                pos--;
+                            }
+                            else{
+                                pos++;
+                            }
+                        }
+                    }
+                }
+
+            </script>
+
+
+
+
+            <img class="spacerImage" src="../img/spacer.png" alt="Wheat">
+        <h3 style="color: #000; margin-top:-90px;">Foodsharing auf deinem Phone</h3><p>
+        <h5><u style="font-size:100px;">90 KG </u> <p style="margin-top:-1%;"> geniessbares Essen pro Person landet im Abfall. <u> Jedes Jahr.</u> <p style="margin-top:-1%;">- das muss nicht sein. </h5>
+        <p>
+        <h6>Wir entwickeln eine App, mit der du <strong class="strong">nicht mehr benötigtes Essen</strong> ganz einfach anderen Leuten <strong class="strong">weitergeben</strong> kannst.</h6>
+
+        <p>
+
+
+
+        <h3 style="color: #000;">Wie funktioniert die App?</h3><p>
+
+
+    </div>
+
+    <div class="bottom">
+
+
+        <img class="images" src="../img/sharing1.png" alt="share1">
+        <h6 style="color: #000; margin-bottom: 100px; ">1/3 Schiess ein Bild von deinem Essen in der App</h6>
+
+
+
+        <img class="images" src="../img/sharing2.png" alt="share2" style="float: right;">
+        <h6 style="color: #000; margin-bottom: 100px; text-align: right;">2/3 Wähle aus wo du es hinstellst</h6>
+
+
+        <img class="images" src="../img/sharing3.png" alt="share3">
+        <h6 style="color: #000; margin-bottom: 300px; ">3/3 Jemand freut sich über dein Essen</h6>
+
+
+        <h4 style="text-align:center; margin-bottom: -700px; "> Switzerland &copy; 2017</h4>
+
+    </div>
+
+
+</body>
+
+</html>

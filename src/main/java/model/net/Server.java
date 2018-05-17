@@ -86,6 +86,8 @@ public class Server {
             BufferedReader rein = new BufferedReader(new InputStreamReader(socket
                     .getInputStream()));
 
+        PrintStream ps = new PrintStream(socket.getOutputStream(),true);
+
 
         System.out.println("we are waiting for messages...");
 
@@ -95,11 +97,15 @@ public class Server {
 
                 //client checks available games
                 if(s.equals("status")){
-                    new ObjectOutputStream(socket.getOutputStream()).writeObject(online_game.CURRENT_PLAYERS_IN_ROOM+"/"+online_game.MAX_PLAYERS+","+ userdata.getUsername()+end);
+
+
+                    ps.println((online_game.CURRENT_PLAYERS_IN_ROOM+"/"+online_game.MAX_PLAYERS+","+ userdata.getUsername()+end));
+                    System.out.println((online_game.CURRENT_PLAYERS_IN_ROOM+"/"+online_game.MAX_PLAYERS+","+ userdata.getUsername()+end));
+
                 }
                 //client checks for server availability
             if(s.equals("check")){
-                new ObjectOutputStream(socket.getOutputStream()).writeObject("1,"+payload1+","+payload2+end);
+                ps.println("1,"+payload1+","+payload2+end);
                 System.out.println("We sent: "+"1,"+payload1+","+payload2+end);
             }
             if(s.equals("getPlayers")){
@@ -113,7 +119,7 @@ public class Server {
 
                     board_in_serverClass[i++] = Integer.parseInt(str);
                 }
-                new ObjectOutputStream(socket.getOutputStream()).writeObject("1,"+ Arrays.toString(board_in_serverClass) +",BoardReceiveOk"+end);
+                ps.println("1,"+ Arrays.toString(board_in_serverClass) +",BoardReceiveOk"+end);
 
             }
 
@@ -129,7 +135,7 @@ public class Server {
 
                 //client sends his move
                 if(s.equals("join")){
-                    new ObjectOutputStream(socket.getOutputStream()).writeObject("accept"+userdata.getUsername() + "," + userdata.get_selected_figure()+","+ userdata.getUsername()+end);
+                    ps.println("accept"+userdata.getUsername() + "," + userdata.get_selected_figure()+","+ userdata.getUsername()+end);
                      String[] sarr = rein.readLine().split(",");
 
                     OnlinePlayer p = new OnlinePlayer(socket.getRemoteSocketAddress().toString(),sarr[0]);
@@ -144,6 +150,7 @@ public class Server {
 
                 }
 
+                ps.flush();
 
             }
 

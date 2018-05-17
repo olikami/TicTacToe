@@ -102,6 +102,7 @@ public class TicTacToeController {
             if (Whostarts == 0) {
 
                 int p = model.AiTurn(AIPlayerNr);
+                model.board.populateBoard(p,AIPlayerNr);
                 gameMethods.setImage((ImageView) view.board[p].getChildren().get(0), AI_image, AI_color);
                 gameMethods.animateMoves(view.board[p]);
                 setChatMessage("The Computer has played in field ( "+ ((p+1)%3f==0?3:((p+1)%3f==2?2:1))+", "+(int)Math.ceil((p+1)/3f)+")");

@@ -260,7 +260,7 @@ public class DialogCreator {
         ImageView img = new ImageView();
         img.setFitWidth(50);
         img.setFitHeight(50);
-        img.setImage(new Image("/res/img/"+figure+"/"+figure+".png"));
+        img.setImage(new Image("/img/"+figure+"/"+figure+".png"));
 
         Label lbl2 = new Label("Do you want to try it out?");
         lbl2.setTextFill(Color.WHITE);
@@ -343,7 +343,6 @@ public class DialogCreator {
         TT.setToY(0);
 
         TT.play();
-
 
 
 

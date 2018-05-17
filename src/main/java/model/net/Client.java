@@ -59,7 +59,6 @@ public class Client {
 
 
             OutputStream raus = socket.getOutputStream();
-            InputStream rein = socket.getInputStream();
 
 
             socket.setKeepAlive(true);
@@ -73,11 +72,14 @@ public class Client {
 
 
             try {
-                ObjectInputStream ois = new ObjectInputStream(rein);
+
+                BufferedReader rein = new BufferedReader(new InputStreamReader(socket
+                        .getInputStream()));
+
 
             String[] s = null;
-            Object o;
-            while ((o = ois.readObject()) != null && !stop) {
+            String o;
+            while ((o = rein.readLine()) != null && !stop) {
 
                 s = ((String) o).split(",");
 

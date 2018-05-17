@@ -683,6 +683,7 @@ public class MainMenuController {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+
                         Platform.runLater(() -> {
                             lbl.setText("Ready!");
 

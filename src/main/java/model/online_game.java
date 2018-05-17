@@ -83,7 +83,7 @@ public class online_game {
                                 timeout++;
                                 boardCheck();
                                 server.payload1=(Arrays.toString(board.getBoardAsArray()).replace(",",""));
-                                if(timeout>20){
+                                if(timeout>60){
 
                                     Platform.runLater(() -> {
 
@@ -126,6 +126,7 @@ public class online_game {
                 }
             };
             boardcheck_thread.start();
+
 
 
         } else {
@@ -221,7 +222,7 @@ public class online_game {
         if (WhoStarts) {
             IAmNumber = 1;
             MyTurn = true;
-            setChatMessage("It's your turn!");
+            setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
             AImove();
         }
         //else, I'll wait for my move
@@ -294,7 +295,7 @@ public class online_game {
                     return;
                 } else {
                     setChatMessage(Players.get(IAmNumber==1?1:0).getName() + " has played in field ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
-                    setChatMessage("It's your turn!");
+                    setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
 
 
                     MyTurn = true;
@@ -406,7 +407,7 @@ public class online_game {
             View = new TicTacToeView(stageTheEventSourceNodeBelongs);
             new OnlineController(online_game.this, View);
             if(MyTurn)
-                setChatMessage("It's your turn!");
+                setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
         }
         else{
             Thread wait_for_server = new Thread(() -> {
@@ -431,7 +432,7 @@ public class online_game {
                     View = new TicTacToeView(stageTheEventSourceNodeBelongs);
                     OnlineController game_1_controller = new OnlineController(online_game.this,View);
                     if(MyTurn)
-                        setChatMessage("It's your turn!");
+                        setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
 
 
                 });
