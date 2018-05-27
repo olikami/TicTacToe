@@ -341,11 +341,12 @@ public class TicTacToeController {
                         }
                         mediaPlayer = new MediaPlayer(sound);
                         mediaPlayer.setCycleCount(0);
+
+                        if(userdata.getSoundOn())
                         mediaPlayer.play();
                     });
                 }
             };
-
             one.start();
 
             Thread two = new Thread() {

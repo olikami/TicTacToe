@@ -6,6 +6,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import model.player.userdata;
 import view.MainMenuView;
 
 import java.io.File;
@@ -91,6 +92,7 @@ public class Intro {
             }
         };
 
+        if(userdata.getSoundOn())
         music.start();
         one.start();
 

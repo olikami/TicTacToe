@@ -18,7 +18,34 @@ public class userdata {
     static private int loses;
     static String username = "";
     static boolean[] unlockedFigures ={true,true,false,false,false,false,false};
+    static boolean soundOn = true;
+    static boolean performanceOn = false;
 
+
+    public static boolean isPerformanceOn() {
+        return performanceOn;
+    }
+    public static String isPerformanceOnString() {
+        return performanceOn?"on":"off";
+    }
+
+    public static void setPerformanceOn(boolean performanceOn) {
+        userdata.performanceOn = performanceOn;
+        save();
+    }
+
+    public static String isSoundOn() {
+        return soundOn?"on":"off";
+    }
+    public static boolean getSoundOn() {
+        return soundOn;
+    }
+
+    public static void setSoundOn(boolean sound) {
+        userdata.soundOn = sound;
+        save();
+
+    }
 
 
 
@@ -119,6 +146,9 @@ public class userdata {
             wins = obj.getInt("wins");
             loses = obj.getInt("loses");
             username = obj.getString("username");
+            soundOn = obj.getBoolean("sound");
+            performanceOn = obj.getBoolean("performance");
+
             JSONArray jarray = obj.getJSONArray("unlockedFigures");
 
             for(int i =0; i<jarray.length();i++)
@@ -159,6 +189,8 @@ public class userdata {
             obj.put("playedGames", playedGames);
             obj.put("wins", wins);
             obj.put("loses", loses);
+            obj.put("sound", soundOn);
+            obj.put("performance", performanceOn);
 
             JSONArray unlockedFigures_array = new JSONArray();
             for(int i =0; i<unlockedFigures.length;i++)

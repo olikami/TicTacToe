@@ -52,29 +52,32 @@ public class MainMenuController {
     MediaPlayer mediaPlayer;
     String IP_address ="";
     int PORT =14909;
+    MainMenuView mView;
+    Boolean stopAnimation = !userdata.isPerformanceOn();
 
     public MainMenuController(MainMenuModel model, MainMenuView view, MediaPlayer Player) {
 
 
+        mView=view;
 
         changeMenuMode(userdata.getUsername().equals("")?-2:0,view);
 
 
-
-        this.mediaPlayer = Player;
-        if ((Player==null) || (!Player.getStatus().equals(MediaPlayer.Status.PLAYING) || Player.getCurrentTime().equals(Duration.ZERO))){
-            Media sound = null;
-            try {
-                sound = new Media(getClass().getResource("/music/ost.mp3").toURI().toString());
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
+        if(userdata.getSoundOn()) {
+            this.mediaPlayer = Player;
+            if ((Player == null) || (!Player.getStatus().equals(MediaPlayer.Status.PLAYING) || Player.getCurrentTime().equals(Duration.ZERO))) {
+                Media sound = null;
+                try {
+                    sound = new Media(getClass().getResource("/music/ost.mp3").toURI().toString());
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+                mediaPlayer = new MediaPlayer(sound);
+                mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+                mediaPlayer.play();
             }
-            mediaPlayer = new MediaPlayer(sound);
-            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-            mediaPlayer.play();
+
         }
-
-
         startAnimation((Pane)view.background.getChildren().get(0));
         startAnimation((Pane)view.background.getChildren().get(1));
 
@@ -423,6 +426,7 @@ public class MainMenuController {
                 Stage stageTheEventSourceNodeBelongs = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 // these two of them return the same stage
                 // Swap screen::
+                if(userdata.getSoundOn())
                 mediaPlayer.stop();
 
                 offline_game gamemodel = new offline_game();
@@ -963,6 +967,51 @@ public class MainMenuController {
             view.row1.getChildren().add(lbl);
             view.row1.setMaxSize(1000,200);
 
+
+
+            ImageView performance_btn = new ImageView("/img/performance_mode/performance_mode_"+userdata.isPerformanceOnString()+".png");
+            HBox imageHolder5 =  new HBox();
+            imageHolder5.setAlignment(Pos.CENTER);
+
+            imageHolder5.setMinSize(600,100);
+            imageHolder5.setMaxSize(600,100);
+            imageHolder5.getChildren().add(performance_btn);
+
+            imageHolder5.setOnMouseEntered(t -> performance_btn.setImage(new Image("/img/performance_mode/performance_mode_"+userdata.isPerformanceOnString()+"_hover.png")));
+            imageHolder5.setOnMouseExited(t -> performance_btn.setImage(new Image("/img/performance_mode/performance_mode_"+userdata.isPerformanceOnString()+".png")));
+
+            imageHolder5.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> {
+
+                setPerformance(userdata.isPerformanceOn());
+                userdata.setPerformanceOn(!userdata.isPerformanceOn());
+                performance_btn.setImage(new Image("/img/performance_mode/performance_mode_"+userdata.isPerformanceOnString()+".png"));
+
+
+            });
+            view.row2.getChildren().add(imageHolder5);
+
+
+            ImageView sound_btn = new ImageView("/img/sound/sound_"+userdata.isSoundOn()+".png");
+            HBox imageHolder4 =  new HBox();
+            imageHolder4.setAlignment(Pos.CENTER);
+
+            imageHolder4.setMinSize(600,100);
+            imageHolder4.setMaxSize(600,100);
+            imageHolder4.getChildren().add(sound_btn);
+
+            imageHolder4.setOnMouseEntered(t -> sound_btn.setImage(new Image("/img/sound/sound_"+userdata.isSoundOn()+"_hover.png")));
+            imageHolder4.setOnMouseExited(t -> sound_btn.setImage(new Image("/img/sound/sound_"+userdata.isSoundOn()+".png")));
+
+            imageHolder4.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> {
+
+                setSound(userdata.getSoundOn());
+                userdata.setSoundOn(!userdata.getSoundOn());
+                sound_btn.setImage(new Image("/img/sound/sound_"+userdata.isSoundOn()+".png"));
+
+
+            });
+            view.row2.getChildren().add(0,imageHolder4);
+
             view.row3.getChildren().add(0,figures.getAllFigures(50,view.mainPane));
 
 
@@ -1049,6 +1098,35 @@ public class MainMenuController {
 
 
         }
+
+    private void setPerformance(boolean performanceOn) {
+        if(performanceOn){
+            stopAnimation=true;
+        }else{
+            stopAnimation=false;
+        }
+    }
+
+    private void setSound(boolean soundOn) {
+        if(soundOn) {
+            if(mediaPlayer!=null) {
+                mediaPlayer.setMute(true);
+                mediaPlayer.stop();
+                mediaPlayer = null;
+            }
+        }
+        else {
+            Media sound = null;
+            try {
+                sound = new Media(getClass().getResource("/music/ost.mp3").toURI().toString());
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+            mediaPlayer = new MediaPlayer(sound);
+            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+            mediaPlayer.play();
+        }
+    }
 
     private void setUserName(TextField name_input, MainMenuView view) {
         userdata.setUsername(name_input.getText());
@@ -1160,6 +1238,7 @@ public class MainMenuController {
 
                     @Override
                     public void handle(ActionEvent t) {
+                        if(stopAnimation) {
 
                         glitch_counter[0]++;
 
@@ -1214,6 +1293,7 @@ public class MainMenuController {
 
 
 
+                        }
                         }
                     }
                 }));
