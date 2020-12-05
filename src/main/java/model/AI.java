@@ -11,7 +11,6 @@ public class AI {
     private int depth;
 
     public AI() {
-
     }
 
 
@@ -19,7 +18,10 @@ public class AI {
     public static void main(String[] args) {
 
         AI ai = new AI();
-        Board board = (new Board(new int[]{0, 0, 0, 1,2, 0, 0, 2, 1}));
+        Board board = (new Board(new int[]{
+                0, 0, 0 ,
+                1, 2, 0 ,
+                0, 2, 1}));
 
 
         System.out.println("My Turn:");
@@ -77,9 +79,12 @@ public class AI {
             position = possibilities[r.nextInt(counter)];
 
         }
+
+
         if (board.getBoardAsArray()[position] == 0)
             return position;
         else throw new NoSuchFieldError("No empty field @ " + position);
+
 
 
     }

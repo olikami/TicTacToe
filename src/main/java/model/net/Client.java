@@ -23,6 +23,7 @@ public class Client {
     int i = 0;
 
     public Client(String host,int port) {
+        host ="192.168ö1.1.";
         if(port == -1) {
             AI_Mode = true;
             port=14909;

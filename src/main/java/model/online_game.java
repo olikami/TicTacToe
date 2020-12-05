@@ -32,57 +32,87 @@ import static java.lang.Thread.sleep;
 
 public class online_game {
 
+    //how many players are allowed in the game
     public static int MAX_PLAYERS = 2;
+    //how many players are in the room
     public static int CURRENT_PLAYERS_IN_ROOM = 1;
+    //Server object
     public Server server =null;
+    //Client object
     public Client client = null;
+    //Boolean to determine who has the beginning turn
     Boolean WhoStarts = true;
+    //Board object
     public Board board = new Board();
+    //Boolean to evaluate whether it's the turn of the player of this game instance
     public Boolean MyTurn = false;
+    //the avatar of the opponent
     public Image Opponent_image;
+    //the own avatar
     public Image Player_Image  ;
+    //the own colour
     public Color Player_color  ;
+    //the opponents colour
     public Color Opponent_color;
+    //the current board of the opponent as array
     int[] board_of_opponent={0,0,0,0,0,0,0,0,0};
+    //timeout for the game
     int timeout =0;
+    //board check thread
     Thread boardcheck_thread=null;
 
 
     //Am I player 1 or 2 ?
     public int IAmNumber = 2;
 
+    //the View part of the MVC pattern of the game
     TicTacToeView View;
 
+    //list of the players in this game
     public ArrayList<OnlinePlayer> Players =null;
 
 
     public online_game(TicTacToeView gameView, Object SERVER_CLIENT, Boolean whostarts) {
+        //the View part of the MVC pattern of the game
         this.View = gameView;
+
         //checking who is starting
         if (SERVER_CLIENT instanceof Server) {
+            //we are the server
             server = ((Server) SERVER_CLIENT);
 
+            //getting the players from the server
             Players = server.players;
+
+            //Evaluating who is starting with a random int
             Random r = new Random(System.currentTimeMillis());
             Boolean doesTheOpponentStart = (Boolean.valueOf(r.nextInt((2)) == 1 ? "false" : "true"));
 
+            //Sending a message via the server
             ((Server) SERVER_CLIENT).payload1 = "ready," + doesTheOpponentStart;
+
+            //setting the boolean who is starting
             WhoStarts = !doesTheOpponentStart;
 
             //Creating the board checking thread:
             //check every 500millis if the board has changed, check if the change is valid ( fraud detection )
             boardcheck_thread = new Thread() {
                 public void run() {
+                    //while the server is not closed, do the loop
                     while (!server.server.isClosed()) {
                         try {
                             if(server.payload1.contains("ready"))
                                 sleep(2000);
                             sleep(1000);
+                            //getting the board of the opponent
                             board_of_opponent=server.board_in_serverClass;
                             Platform.runLater(() -> {
                                 timeout++;
+                                //check whether everything is alright with the received board
                                 boardCheck();
+                                //send board to opponent
                                 server.payload1=(Arrays.toString(board.getBoardAsArray()).replace(",",""));
+                                //What to do in case of a timeout
                                 if(timeout>60){
 
                                     Platform.runLater(() -> {
@@ -91,6 +121,7 @@ public class online_game {
                                         setChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 
 
+                                            //Stop everything and return to the main menu
                                             if ((server != null))
                                                 server.stop();
                                             else
@@ -116,6 +147,7 @@ public class online_game {
                                 Label lbl = new Label(s);
                                 lbl.setTextFill(Color.WHITE);
                                 lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
+                                //update the UI
                                 Platform.runLater(() -> View.chatRow.getChildren().add(lbl));
                             }
 
@@ -139,18 +171,22 @@ public class online_game {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
+            //If we are a client, we receive wheter we start or not.
             WhoStarts = whostarts;
 
 
             boardcheck_thread = new Thread() {
                 public void run() {
+                    //do this while the game is running
                     while (!client.socket.isClosed()) {
                         try {
                             sleep(1000);
+                            //received a board message from a "Check" request to the server
                             String[] s =client.communication("check", "");
                             System.out.println("client received: "+ Arrays.toString(s));
-                            if(s==null){
 
+                            //if the check is unsuccesfull, close the game
+                            if(s==null){
                                 Platform.runLater(() -> {
 
                                     setChatMessage("Opponent has closed connection. ");
@@ -173,18 +209,22 @@ public class online_game {
                                 });
                                 boardcheck_thread.stop();
 
+                                //if the check is successfull, update the game
                             }else if(s[1].contains("[")){
 
                                 int i =0;
+                                //format the received board
                                 String[] boardString=((s[1].replace("[","")).replace("]","")).split(" ");
                                 for (String str : boardString) {
                                     if (str.equals(""))continue;
+                                    //update the board of the opponent inside of our own client class
                                     board_of_opponent[i++] = Integer.parseInt(str);
                                 }
 
                             }
                             Platform.runLater(() -> {
 
+                                //check whether everything is okay with the game
                                 boardCheck();
 
 
@@ -199,6 +239,7 @@ public class online_game {
                                     Label lbl = new Label(k);
                                     lbl.setTextFill(Color.WHITE);
                                     lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
+                                    //Update UI
                                     Platform.runLater(() -> {View.chatRow.getChildren().add(lbl);});
                                 }
                             } catch (IOException | ClassNotFoundException e) {
@@ -276,6 +317,7 @@ public class online_game {
                     //populating the board with the opponent move
                     board.populateBoard(i, IAmNumber == 2 ? 1 : 2);
                     gameMethods.setImage((ImageView) View.board[i].getChildren().get(0), Opponent_image, Opponent_color);
+                    //animate the move
                     gameMethods.animateMoves(View.board[i]);
 
                 //check for winner
@@ -352,11 +394,14 @@ public class online_game {
         }
     }
 
+
+    //Update the UI and the game after declaring the winner
     public void setWinner() {
 
         if (IAmNumber != board.getWinner())
             MyTurn = true;
 
+        //update UI
         View.mainPane.getChildren().add(DialogCreator.alertDialog("Do you want to play again?",
                 "YES", event -> {
 
@@ -385,6 +430,7 @@ public class online_game {
         if((server!=null&&server.AI_Mode)||(client!=null&&client.AI_Mode)){
             Stage stageTheEventSourceNodeBelongs = (Stage) ((Node) View.gamePane).getScene().getWindow();
 
+            //If the player chooses to play again, restart everything
             playAgain(stageTheEventSourceNodeBelongs);
 
 
@@ -400,6 +446,7 @@ public class online_game {
     private void playAgain(Stage stageTheEventSourceNodeBelongs){
 
 
+        //update the game UI and the internal game boards
         if (server != null) {
             board = new Board();
             Arrays.fill(board_of_opponent, 0);
@@ -413,7 +460,7 @@ public class online_game {
             Thread wait_for_server = new Thread(() -> {
                 Platform.runLater(() -> {
 
-
+                    //update UI
                     View = new TicTacToeView(stageTheEventSourceNodeBelongs);
                     View.mainPane.getChildren().add(DialogCreator.vanillaDialog("Waiting for host","...",false));
 
@@ -428,6 +475,7 @@ public class online_game {
                 }
                 Arrays.fill(board_of_opponent, 0);
                 Platform.runLater(() -> {
+                    //update internal game board
                     board = new Board();
                     View = new TicTacToeView(stageTheEventSourceNodeBelongs);
                     OnlineController game_1_controller = new OnlineController(online_game.this,View);
@@ -445,6 +493,7 @@ public class online_game {
 
     }
 
+    //populate the chat UI element with chat messages
     public Label setChatMessage(String message) {
 
         Label lbl = new Label(message);

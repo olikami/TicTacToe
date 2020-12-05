@@ -123,15 +123,6 @@ public class DialogCreator {
 
         });
 
-        ft2.setOnFinished(e->{
-
-            try {
-                if(remove)
-                ((Pane) mainContainer.getParent()).getChildren().remove(mainContainer);
-            }catch (NullPointerException npe){
-
-            }
-        });
 
 
         return mainContainer;

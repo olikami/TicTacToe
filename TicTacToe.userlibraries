@@ -1,3 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<eclipse-userlibraries />
+<eclipse-userlibraries>
+  <library name="Maven: org.bitlet:weupnp:0.1.4">
+    <archive path="C:/Users/Emanuel Graf/.m2/repository/org/bitlet/weupnp/0.1.4/weupnp-0.1.4.jar" />
+  </library>
+  <library name="java-json">
+    <archive path="C:/Users/Emanuel Graf/TicTacToe/libraries/java-json.jar" />
+  </library>
+</eclipse-userlibraries>
 

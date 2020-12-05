@@ -31,7 +31,9 @@ public class Server {
 
 
 
-    public ArrayList<OnlinePlayer> players= new ArrayList<>();
+
+        public ArrayList<OnlinePlayer> players= new ArrayList<>();
+
 
 
 
