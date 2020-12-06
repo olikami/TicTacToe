@@ -66,7 +66,7 @@ public class online_game {
     /**board check thread */
     Thread boardcheckThread =null;
     /**Logger */
-    Logger logger = Logger.getLogger(online_game.class.getName());
+    final static  Logger logger = Logger.getLogger(online_game.class.getName());
 
 
     /**Am I player 1 or 2 ? */
