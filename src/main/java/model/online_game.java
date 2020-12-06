@@ -85,8 +85,8 @@ public class online_game {
             Players = server.players;
 
             //Evaluating who is starting with a random int
-            Random r = new Random(System.currentTimeMillis());
-            Boolean opponentStarts = (Boolean.valueOf(r.nextInt((2)) == 1 ? "false" : "true"));
+            final Random r = new Random(System.currentTimeMillis());
+            final Boolean opponentStarts = (Boolean.valueOf(r.nextInt((2)) == 1 ? "false" : "true"));
 
             //Sending a message via the server
             ((Server) SERVER_CLIENT).payload1 = "ready," + opponentStarts;
@@ -127,9 +127,9 @@ public class online_game {
                                             else
                                                 client.stop();
 
-                                            MainMenuModel model = new MainMenuModel();
-                                            MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
-                                            MainMenuController controller = new MainMenuController(model, view2, null);
+                                            final MainMenuModel model = new MainMenuModel();
+                                            final MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
+                                            final MainMenuController controller = new MainMenuController(model, view2, null);
 
 
                                         });
@@ -143,8 +143,8 @@ public class online_game {
 
                             //ACTUALIZE CHAT
                             Platform.runLater(() -> View.chatRow.getChildren().clear());
-                            for(String s : server.CHAT){
-                                Label lbl = new Label(s);
+                            for(final String s : server.CHAT){
+                                final Label lbl = new Label(s);
                                 lbl.setTextFill(Color.WHITE);
                                 lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
                                 //update the UI
@@ -182,7 +182,7 @@ public class online_game {
                         try {
                             sleep(1000);
                             //received a board message from a "Check" request to the server
-                            String[] s =client.communication("check", "");
+                            final String[] s =client.communication("check", "");
                             System.out.println("client received: "+ Arrays.toString(s));
 
                             //if the check is unsuccesfull, close the game
@@ -198,9 +198,9 @@ public class online_game {
                                         else
                                             client.stop();
 
-                                        MainMenuModel model = new MainMenuModel();
-                                        MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
-                                        MainMenuController controller = new MainMenuController(model, view2, null);
+                                        final MainMenuModel model = new MainMenuModel();
+                                        final MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
+                                        final MainMenuController controller = new MainMenuController(model, view2, null);
 
 
                                     });
@@ -214,8 +214,8 @@ public class online_game {
 
                                 int i =0;
                                 //format the received board
-                                String[] boardString=((s[1].replace("[","")).replace("]","")).split(" ");
-                                for (String str : boardString) {
+                                final String[] boardString=((s[1].replace("[","")).replace("]","")).split(" ");
+                                for (final String str : boardString) {
                                     if (str.equals(""))continue;
                                     //update the board of the opponent inside of our own client class
                                     board_of_opponent[i++] = Integer.parseInt(str);
@@ -234,9 +234,9 @@ public class online_game {
                             //ACTUALIZE CHAT
                             Platform.runLater(() -> {View.chatRow.getChildren().clear();});
                             try {
-                                ArrayList<String> j = client.chat("");
-                                for(String k : j){
-                                    Label lbl = new Label(k);
+                                final ArrayList<String> j = client.chat("");
+                                for(final String k : j){
+                                    final Label lbl = new Label(k);
                                     lbl.setTextFill(Color.WHITE);
                                     lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
                                     //Update UI
@@ -268,7 +268,7 @@ public class online_game {
         }
         //else, I'll wait for my move
 
-        Random r = new Random();
+        final Random r = new Random();
         //Set the Opponent Image
         figures_name fn;
         if(Players.get((server)==null?0:1).getFigure()==null) {
@@ -283,7 +283,7 @@ public class online_game {
 
 
         //setting the color for the icons
-        String[] neon_colors = {
+        final String[] neon_colors = {
                 "#000cff",
                 "#2fa7e8",
                 "#e1e832",
@@ -357,13 +357,13 @@ public class online_game {
 
     private void AImove() {
         // here we implement the ai move as a response
-        AI AI = new AI();
-        int p = AI.getNextMove(board, IAmNumber);
+        final AI AI = new AI();
+        final int p = AI.getNextMove(board, IAmNumber);
 
         if ((server != null)) {
             if (server.AI_Mode) {
                 MyTurn = false;
-                int[] i = board.populateBoard(p, IAmNumber);
+                final int[] i = board.populateBoard(p, IAmNumber);
                 server.payload1 = Arrays.toString(i).replace(",", "");
                 //set the image
                 gameMethods.setImage((ImageView) View.board[p].getChildren().get(0), Player_Image, Player_color);
@@ -375,9 +375,9 @@ public class online_game {
         } else {
             if (client.AI_Mode) {
                 MyTurn = false;
-                int[] i =board.populateBoard(p, IAmNumber);
+                final int[] i =board.populateBoard(p, IAmNumber);
                 try {
-                    String[] s = client.communication("board", Arrays.toString(i).replace(",", ""));
+                    final String[] s = client.communication("board", Arrays.toString(i).replace(",", ""));
                     System.out.println("Client receives: " + Arrays.toString(s));
 
                     //set the image
@@ -406,7 +406,7 @@ public class online_game {
                 "YES", event -> {
 
                     // The Stage where the Event Source Node belongs to
-                    Stage sourceNode = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    final Stage sourceNode = (Stage) ((Node) event.getSource()).getScene().getWindow();
                     playAgain(sourceNode);
 
 
@@ -421,16 +421,16 @@ public class online_game {
                         else
                             client.stop();
 
-                        MainMenuModel model = new MainMenuModel();
-                        MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
-                        MainMenuController controller = new MainMenuController(model, view2, null);
+                        final MainMenuModel model = new MainMenuModel();
+                        final MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
+                        final MainMenuController controller = new MainMenuController(model, view2, null);
                     }
                 }));
 
 
         if((server!=null&&server.AI_Mode)||(client!=null&&client.AI_Mode)){
             // The Stage where the Event Source Node belongs to
-            Stage sourceNode = (Stage) ((Node) View.gamePane).getScene().getWindow();
+            final Stage sourceNode = (Stage) ((Node) View.gamePane).getScene().getWindow();
 
             //If the player chooses to play again, restart everything
             playAgain(sourceNode);
@@ -460,7 +460,7 @@ public class online_game {
                 setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
         }
         else{
-            Thread wait_for_server = new Thread(() -> {
+            final Thread wait_for_server = new Thread(() -> {
                 Platform.runLater(() -> {
 
                     //update UI
@@ -499,7 +499,7 @@ public class online_game {
     //populate the chat UI element with chat messages
     public Label setChatMessage(String message) {
 
-        Label lbl = new Label(message);
+        final Label lbl = new Label(message);
         lbl.setTextFill(Color.WHITE);
         lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
         View.chatRow.getChildren().add(lbl);
