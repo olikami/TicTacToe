@@ -273,8 +273,9 @@ public class online_game {
         figures_name fn;
         if(Players.get((server)==null?0:1).getFigure()==null) {
             fn = figures_name.values()[r.nextInt(figures_name.values().length)];
-            while (userdata.get_selected_figure() == fn)
+            while (userdata.get_selected_figure() == fn) {
                 fn = figures_name.values()[r.nextInt(figures_name.values().length)];
+            }
         }else{
             fn=Players.get((server)==null?0:1).getFigure();
         }
@@ -291,8 +292,9 @@ public class online_game {
                 "#30e8d2"};
         Player_color      = gameMethods.hex2Rgb(neon_colors[r.nextInt(4)]);
         Opponent_color    = gameMethods.hex2Rgb(neon_colors[r.nextInt(4)]);
-        while(Opponent_color.equals(Player_color))
+        while(Opponent_color.equals(Player_color)) {
             Opponent_color = gameMethods.hex2Rgb(neon_colors[r.nextInt(4)]);
+        }
 
 
 
