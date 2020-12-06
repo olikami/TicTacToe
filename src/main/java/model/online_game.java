@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.lang.Thread.sleep;
 
@@ -60,6 +62,8 @@ public class online_game {
     int timeout =0;
     //board check thread
     Thread boardcheck_thread=null;
+    //Logger
+    Logger logger = Logger.getLogger(online_game.class.getName());
 
 
     //Am I player 1 or 2 ?
@@ -152,7 +156,8 @@ public class online_game {
                             }
 
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            logger.log(Level.SEVERE, e.toString());
+
                         }
                     }
                 }
@@ -167,9 +172,9 @@ public class online_game {
             try {
                 Players = client.getOnlinePlayers();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, e.toString());
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, e.toString());
             }
             //If we are a client, we receive wheter we start or not.
             WhoStarts = whostarts;
@@ -243,11 +248,11 @@ public class online_game {
                                     Platform.runLater(() -> {View.chatRow.getChildren().add(lbl);});
                                 }
                             } catch (IOException | ClassNotFoundException e) {
-                                e.printStackTrace();
+                                logger.log(Level.SEVERE, e.toString());
                             }
 
                         } catch (InterruptedException | IOException | ClassNotFoundException e) {
-                            e.printStackTrace();
+                            logger.log(Level.SEVERE, e.toString());
                         }
                     }
                 }
@@ -389,7 +394,7 @@ public class online_game {
                         setWinner();
 
                 } catch (IOException | ClassNotFoundException e) {
-                    e.printStackTrace();
+                    logger.log(Level.SEVERE, e.toString());
                 }
             }
 
@@ -475,7 +480,7 @@ public class online_game {
                     try {
                         sleep(3000);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        logger.log(Level.WARNING, e.toString());
                     }
                 }
                 Arrays.fill(board_of_opponent, 0);
