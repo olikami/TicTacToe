@@ -76,18 +76,18 @@ public class online_game {
     public ArrayList<OnlinePlayer> players =null;
 
 
-    public online_game(TicTacToeView gameView, Object SERVER_CLIENT, Boolean whostarts) {
+    public online_game(TicTacToeView gameView, Object serverClient, Boolean whostarts) {
         //the view part of the MVC pattern of the game
         this.view = gameView;
 
         //checking who is starting
-        if (SERVER_CLIENT instanceof Server) {
+        if (serverClient instanceof Server) {
             //we are the server
-            startServerHandler(SERVER_CLIENT);
+            startServerHandler(serverClient);
 
         } else {
             //we are a client
-            startClientHandler(SERVER_CLIENT,whostarts);
+            startClientHandler(serverClient,whostarts);
         }
         //finished checking who is starting
 
@@ -134,9 +134,9 @@ public class online_game {
 
     }
 
-    private void startClientHandler(Object SERVER_CLIENT, Boolean whostarts) {
+    private void startClientHandler(Object serverClient, Boolean whostarts) {
 
-        this.client = (Client)SERVER_CLIENT;
+        this.client = (Client)serverClient;
         try {
             players = client.getOnlinePlayers();
         } catch (IOException e) {
@@ -144,7 +144,7 @@ public class online_game {
         } catch (ClassNotFoundException e) {
             logger.log(Level.SEVERE, e.toString());
         }
-        //If we are a client, we receive wheter we start or not.
+        //If we are a client, we receive whether we start or not.
         whoStarts = whostarts;
 
 
@@ -232,8 +232,8 @@ public class online_game {
 
     }
 
-    private void startServerHandler(Object SERVER_CLIENT) {
-        server = (Server) SERVER_CLIENT;
+    private void startServerHandler(Object serverClient) {
+        server = (Server) serverClient;
 
         //getting the players from the server
         players = server.players;
@@ -243,7 +243,7 @@ public class online_game {
         final Boolean opponentStarts = Boolean.valueOf(rand.nextInt(2) == 1 ? "false" : "true");
 
         //Sending a message via the server
-        ((Server) SERVER_CLIENT).payload1 = "ready," + opponentStarts;
+        ((Server) serverClient).payload1 = "ready," + opponentStarts;
 
         //setting the boolean who is starting
         whoStarts = !opponentStarts;
