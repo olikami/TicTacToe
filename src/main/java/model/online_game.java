@@ -101,18 +101,18 @@ public class online_game {
         }
         //else, I'll wait for my move
 
-        final Random r = new Random();
+        final Random rand = new Random();
         //Set the Opponent Image
-        figures_name fn;
+        figures_name figures;
         if(Players.get((server)==null?0:1).getFigure()==null) {
-            fn = figures_name.values()[r.nextInt(figures_name.values().length)];
-            while (userdata.get_selected_figure() == fn) {
-                fn = figures_name.values()[r.nextInt(figures_name.values().length)];
+            figures = figures_name.values()[rand.nextInt(figures_name.values().length)];
+            while (userdata.get_selected_figure() == figures) {
+                figures = figures_name.values()[rand.nextInt(figures_name.values().length)];
             }
         }else{
-            fn=Players.get((server)==null?0:1).getFigure();
+            figures=Players.get((server)==null?0:1).getFigure();
         }
-        Opponent_image       = new Image("/img/" + fn + "/" + fn + ".png");
+        Opponent_image       = new Image("/img/" + figures + "/" + figures + ".png");
         Player_Image           = new Image("/img/" + userdata.get_selected_figure() + "/" + userdata.get_selected_figure() + ".png");
 
 
@@ -123,10 +123,10 @@ public class online_game {
                 "#e1e832",
                 "#41e831",
                 "#30e8d2"};
-        Player_color      = gameMethods.hex2Rgb(neon_colors[r.nextInt(4)]);
-        Opponent_color    = gameMethods.hex2Rgb(neon_colors[r.nextInt(4)]);
+        Player_color      = gameMethods.hex2Rgb(neon_colors[rand.nextInt(4)]);
+        Opponent_color    = gameMethods.hex2Rgb(neon_colors[rand.nextInt(4)]);
         while(Opponent_color.equals(Player_color)) {
-            Opponent_color = gameMethods.hex2Rgb(neon_colors[r.nextInt(4)]);
+            Opponent_color = gameMethods.hex2Rgb(neon_colors[rand.nextInt(4)]);
         }
 
 
@@ -155,11 +155,11 @@ public class online_game {
                     try {
                         sleep(1000);
                         //received a board message from a "Check" request to the server
-                        final String[] s =client.communication("check", "");
-                        logger.log(Level.INFO, "client received: "+ Arrays.toString(s));
+                        final String[] msg =client.communication("check", "");
+                        logger.log(Level.INFO, "client received: "+ Arrays.toString(msg));
 
                         //if the check is unsuccesfull, close the game
-                        if(s==null){
+                        if(msg==null){
                             Platform.runLater(() -> {
 
                                 setChatMessage("Opponent has closed connection. ");
@@ -183,15 +183,15 @@ public class online_game {
                             boardcheck_thread.stop();
 
                             //if the check is successfull, update the game
-                        }else if(s[1].contains("[")){
+                        }else if(msg[1].contains("[")){
 
-                            int i =0;
+                            int index =0;
                             //format the received board
-                            final String[] boardString=s[1].replace("[","").replace("]","").split(" ");
+                            final String[] boardString=msg[1].replace("[","").replace("]","").split(" ");
                             for (final String str : boardString) {
                                 if ("".equals(str))continue;
                                 //update the board of the opponent inside of our own client class
-                                board_of_opponent[i++] = Integer.parseInt(str);
+                                board_of_opponent[index++] = Integer.parseInt(str);
                             }
 
                         }
@@ -207,8 +207,8 @@ public class online_game {
                         //ACTUALIZE CHAT
                         Platform.runLater(() -> {View.chatRow.getChildren().clear();});
                         try {
-                            final ArrayList<String> j = client.chat("");
-                            for(final String k : j){
+                            final ArrayList<String> strings = client.chat("");
+                            for(final String k : strings){
                                 final Label lbl = new Label(k);
                                 lbl.setTextFill(Color.WHITE);
                                 lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
@@ -237,8 +237,8 @@ public class online_game {
         Players = server.players;
 
         //Evaluating who is starting with a random int
-        final Random r = new Random(System.currentTimeMillis());
-        final Boolean opponentStarts = Boolean.valueOf(r.nextInt(2) == 1 ? "false" : "true");
+        final Random rand = new Random(System.currentTimeMillis());
+        final Boolean opponentStarts = Boolean.valueOf(rand.nextInt(2) == 1 ? "false" : "true");
 
         //Sending a message via the server
         ((Server) SERVER_CLIENT).payload1 = "ready," + opponentStarts;
@@ -317,19 +317,19 @@ public class online_game {
     public void boardCheck() {
 
         //declare gameMethods object for best practices
-        gameMethods game_Methods = new gameMethods();
+        final gameMethods game_Methods = new gameMethods();
 
         //if (board_of_opponent != board.getBoardAsArray()) {
         //what to do if the boards are not equal: check if the other player has one move played in a valid field (loop through the board
         int move_counter = 0;
-        int[] boardArray =  board.getBoardAsArray();
+        final int[] boardArray =  board.getBoardAsArray();
         for (int i = 0; i < boardArray.length; i++) {
             if (boardArray[i] != board_of_opponent[i] && board_of_opponent[i] != 0) {
                 //thats a move!
                 move_counter++;
                 timeout = 0;
-                HBox boardPosition = View.board[i];
-                ImageView fieldOnBoard = (ImageView) boardPosition.getChildren().get(0);
+                final HBox boardPosition = View.board[i];
+                final ImageView fieldOnBoard = (ImageView) boardPosition.getChildren().get(0);
                 if (boardArray[i] != 0) {
                     //it's not a valid move! CHEATER!!!!
                     setChatMessage("Other player is a cheater!");
@@ -383,7 +383,7 @@ public class online_game {
 
 
         //declare gameMethods object for best practices
-        gameMethods game_Methods = new gameMethods();
+        final gameMethods game_Methods = new gameMethods();
 
         if (server != null) {
             if (server.AI_Mode) {
@@ -425,7 +425,7 @@ public class online_game {
 
 
         //declare gameMethods object for best practices
-        gameMethods game_Methods = new gameMethods();
+        final gameMethods game_Methods = new gameMethods();
 
 
         if (IAmNumber != board.getWinner())
