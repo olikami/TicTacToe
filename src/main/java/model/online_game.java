@@ -269,7 +269,7 @@ public class online_game {
             IAmNumber = 1;
             MyTurn = true;
             setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
-            AImove();
+            aiMove();
         }
         //else, I'll wait for my move
 
@@ -349,7 +349,7 @@ public class online_game {
 
                     MyTurn = true;
 
-                    AImove();
+                    aiMove();
 
                 }
             }
@@ -362,7 +362,7 @@ public class online_game {
                 }
             }
 
-    private void AImove() {
+    private void aiMove() {
         // here we implement the ai move as a response
         final AI AI = new AI();
         final int p = AI.getNextMove(board, IAmNumber);
