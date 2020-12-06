@@ -121,7 +121,7 @@ public class gameMethods {
                 (double)(Integer.valueOf(colorStr.substring(5, 7), 16))/255d,1);
     }
 
-    public static void setImage(ImageView IV, Image img,Color color){
+    public void setImage(ImageView IV, Image img,Color color){
 
         IV.setImage(img);
 

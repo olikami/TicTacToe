@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -315,24 +316,30 @@ public class online_game {
 
     public void boardCheck() {
 
+        //declare gameMethods object for best practices
+        gameMethods game_Methods = new gameMethods();
+
         //if (board_of_opponent != board.getBoardAsArray()) {
         //what to do if the boards are not equal: check if the other player has one move played in a valid field (loop through the board
         int move_counter = 0;
-        for (int i = 0; i < board.getBoardAsArray().length; i++) {
-            if (board.getBoardAsArray()[i] != board_of_opponent[i] && board_of_opponent[i] != 0) {
+        int[] boardArray =  board.getBoardAsArray();
+        for (int i = 0; i < boardArray.length; i++) {
+            if (boardArray[i] != board_of_opponent[i] && board_of_opponent[i] != 0) {
                 //thats a move!
                 move_counter++;
                 timeout = 0;
-                if (board.getBoardAsArray()[i] != 0) {
+                HBox boardPosition = View.board[i];
+                ImageView fieldOnBoard = (ImageView) boardPosition.getChildren().get(0);
+                if (boardArray[i] != 0) {
                     //it's not a valid move! CHEATER!!!!
                     setChatMessage("Other player is a cheater!");
                 }
-                if (board.getBoardAsArray()[i] == 0) {
+                if (boardArray[i] == 0) {
                     //populating the board with the opponent move
                     board.populateBoard(i, IAmNumber == 2 ? 1 : 2);
-                    gameMethods.setImage((ImageView) View.board[i].getChildren().get(0), Opponent_image, Opponent_color);
+                    game_Methods.setImage(fieldOnBoard, Opponent_image, Opponent_color);
                     //animate the move
-                    gameMethods.animateMoves(View.board[i]);
+                    game_Methods.animateMoves(boardPosition);
 
                 //check for winner
                 if (board.getWinner() != 0) {
@@ -374,14 +381,18 @@ public class online_game {
         final AI AI = new AI();
         final int p = AI.getNextMove(board, IAmNumber);
 
+
+        //declare gameMethods object for best practices
+        gameMethods game_Methods = new gameMethods();
+
         if (server != null) {
             if (server.AI_Mode) {
                 MyTurn = false;
                 final int[] i = board.populateBoard(p, IAmNumber);
                 server.payload1 = Arrays.toString(i).replace(",", "");
                 //set the image
-                gameMethods.setImage((ImageView) View.board[p].getChildren().get(0), Player_Image, Player_color);
-                gameMethods.animateMoves(View.board[p]);
+                game_Methods.setImage((ImageView) View.board[p].getChildren().get(0), Player_Image, Player_color);
+                game_Methods.animateMoves(View.board[p]);
 
                 if (board.getWinner() != 0)
                     setWinner();
@@ -395,8 +406,8 @@ public class online_game {
                     logger.log(Level.INFO, "client received: "+ Arrays.toString(s));
 
                     //set the image
-                    gameMethods.setImage((ImageView) View.board[p].getChildren().get(0), Player_Image, Player_color);
-                    gameMethods.animateMoves(View.board[p]);
+                    game_Methods.setImage((ImageView) View.board[p].getChildren().get(0), Player_Image, Player_color);
+                    game_Methods.animateMoves(View.board[p]);
                     if (board.getWinner() != 0)
                         setWinner();
 
@@ -411,6 +422,11 @@ public class online_game {
 
     //Update the UI and the game after declaring the winner
     public void setWinner() {
+
+
+        //declare gameMethods object for best practices
+        gameMethods game_Methods = new gameMethods();
+
 
         if (IAmNumber != board.getWinner())
             MyTurn = true;
@@ -456,7 +472,7 @@ public class online_game {
         //todo online statistics
         //userdata.setLoseGames();
 
-        gameMethods.setWinnerStroke(board, View);
+        game_Methods.setWinnerStroke(board, View);
     }
 
     // sourceNode is the Stage where the Event Source Node belongs to
