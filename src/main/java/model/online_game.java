@@ -82,183 +82,11 @@ public class online_game {
         //checking who is starting
         if (SERVER_CLIENT instanceof Server) {
             //we are the server
-            server = (Server) SERVER_CLIENT;
-
-            //getting the players from the server
-            Players = server.players;
-
-            //Evaluating who is starting with a random int
-            final Random r = new Random(System.currentTimeMillis());
-            final Boolean opponentStarts = Boolean.valueOf(r.nextInt(2) == 1 ? "false" : "true");
-
-            //Sending a message via the server
-            ((Server) SERVER_CLIENT).payload1 = "ready," + opponentStarts;
-
-            //setting the boolean who is starting
-            WhoStarts = !opponentStarts;
-
-            //Creating the board checking thread:
-            //check every 500millis if the board has changed, check if the change is valid ( fraud detection )
-            boardcheck_thread = new Thread() {
-                public void run() {
-                    //while the server is not closed, do the loop
-                    while (!server.server.isClosed()) {
-                        try {
-                            if(server.payload1.contains("ready"))
-                                sleep(2000);
-                            sleep(1000);
-                            //getting the board of the opponent
-                            board_of_opponent=server.board_in_serverClass;
-                            Platform.runLater(() -> {
-                                timeout++;
-                                //check whether everything is alright with the received board
-                                boardCheck();
-                                //send board to opponent
-                                server.payload1=Arrays.toString(board.getBoardAsArray()).replace(",","");
-                                //What to do in case of a timeout
-                                if(timeout>60){
-
-                                    Platform.runLater(() -> {
-
-                                        setChatMessage("Opponent has closed connection. ");
-                                        setChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-
-
-                                            //Stop everything and return to the main menu
-                                            if (server != null)
-                                                server.stop();
-                                            else
-                                                client.stop();
-
-                                            final MainMenuModel model = new MainMenuModel();
-                                            final MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
-                                            new MainMenuController(model, view2, null);
-
-
-                                        });
-                                        boardcheck_thread.stop();
-
-                                    });
-                                    boardcheck_thread.interrupt();
-
-                                }
-                            });
-
-                            //ACTUALIZE CHAT
-                            Platform.runLater(() -> View.chatRow.getChildren().clear());
-                            for(final String s : server.CHAT){
-                                final Label lbl = new Label(s);
-                                lbl.setTextFill(Color.WHITE);
-                                lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
-                                //update the UI
-                                Platform.runLater(() -> View.chatRow.getChildren().add(lbl));
-                            }
-
-                        } catch (InterruptedException e) {
-                            logger.log(Level.SEVERE, e.toString());
-
-                        }
-                    }
-                }
-            };
-            boardcheck_thread.start();
-
-
+            startServerHandler(SERVER_CLIENT);
 
         } else {
             //we are a client
-            this.client = (Client)SERVER_CLIENT;
-            try {
-                Players = client.getOnlinePlayers();
-            } catch (IOException e) {
-                logger.log(Level.SEVERE, e.toString());
-            } catch (ClassNotFoundException e) {
-                logger.log(Level.SEVERE, e.toString());
-            }
-            //If we are a client, we receive wheter we start or not.
-            WhoStarts = whostarts;
-
-
-            boardcheck_thread = new Thread() {
-                public void run() {
-                    //do this while the game is running
-                    while (!client.socket.isClosed()) {
-                        try {
-                            sleep(1000);
-                            //received a board message from a "Check" request to the server
-                            final String[] s =client.communication("check", "");
-                            logger.log(Level.INFO, "client received: "+ Arrays.toString(s));
-
-                            //if the check is unsuccesfull, close the game
-                            if(s==null){
-                                Platform.runLater(() -> {
-
-                                    setChatMessage("Opponent has closed connection. ");
-                                    setChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-
-
-                                        if (server != null)
-                                            server.stop();
-                                        else
-                                            client.stop();
-
-                                        final MainMenuModel model = new MainMenuModel();
-                                        final MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
-                                        new MainMenuController(model, view2, null);
-
-
-                                    });
-                                    boardcheck_thread.stop();
-
-                                });
-                                boardcheck_thread.stop();
-
-                                //if the check is successfull, update the game
-                            }else if(s[1].contains("[")){
-
-                                int i =0;
-                                //format the received board
-                                final String[] boardString=s[1].replace("[","").replace("]","").split(" ");
-                                for (final String str : boardString) {
-                                    if ("".equals(str))continue;
-                                    //update the board of the opponent inside of our own client class
-                                    board_of_opponent[i++] = Integer.parseInt(str);
-                                }
-
-                            }
-                            Platform.runLater(() -> {
-
-                                //check whether everything is okay with the game
-                                boardCheck();
-
-
-
-                            });
-
-                            //ACTUALIZE CHAT
-                            Platform.runLater(() -> {View.chatRow.getChildren().clear();});
-                            try {
-                                final ArrayList<String> j = client.chat("");
-                                for(final String k : j){
-                                    final Label lbl = new Label(k);
-                                    lbl.setTextFill(Color.WHITE);
-                                    lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
-                                    //Update UI
-                                    Platform.runLater(() -> {View.chatRow.getChildren().add(lbl);});
-                                }
-                            } catch (IOException | ClassNotFoundException e) {
-                                logger.log(Level.SEVERE, e.toString());
-                            }
-
-                        } catch (InterruptedException | IOException | ClassNotFoundException e) {
-                            logger.log(Level.SEVERE, e.toString());
-                        }
-                    }
-                }
-            };
-            boardcheck_thread.start();
-
-
+            startClientHandler(SERVER_CLIENT,whostarts);
         }
         //finished checking who is starting
 
@@ -302,6 +130,186 @@ public class online_game {
 
 
 
+
+    }
+
+    private void startClientHandler(Object SERVER_CLIENT, Boolean whostarts) {
+
+        this.client = (Client)SERVER_CLIENT;
+        try {
+            Players = client.getOnlinePlayers();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, e.toString());
+        } catch (ClassNotFoundException e) {
+            logger.log(Level.SEVERE, e.toString());
+        }
+        //If we are a client, we receive wheter we start or not.
+        WhoStarts = whostarts;
+
+
+        boardcheck_thread = new Thread() {
+            public void run() {
+                //do this while the game is running
+                while (!client.socket.isClosed()) {
+                    try {
+                        sleep(1000);
+                        //received a board message from a "Check" request to the server
+                        final String[] s =client.communication("check", "");
+                        logger.log(Level.INFO, "client received: "+ Arrays.toString(s));
+
+                        //if the check is unsuccesfull, close the game
+                        if(s==null){
+                            Platform.runLater(() -> {
+
+                                setChatMessage("Opponent has closed connection. ");
+                                setChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+
+
+                                    if (server != null)
+                                        server.stop();
+                                    else
+                                        client.stop();
+
+                                    final MainMenuModel model = new MainMenuModel();
+                                    final MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
+                                    new MainMenuController(model, view2, null);
+
+
+                                });
+                                boardcheck_thread.stop();
+
+                            });
+                            boardcheck_thread.stop();
+
+                            //if the check is successfull, update the game
+                        }else if(s[1].contains("[")){
+
+                            int i =0;
+                            //format the received board
+                            final String[] boardString=s[1].replace("[","").replace("]","").split(" ");
+                            for (final String str : boardString) {
+                                if ("".equals(str))continue;
+                                //update the board of the opponent inside of our own client class
+                                board_of_opponent[i++] = Integer.parseInt(str);
+                            }
+
+                        }
+                        Platform.runLater(() -> {
+
+                            //check whether everything is okay with the game
+                            boardCheck();
+
+
+
+                        });
+
+                        //ACTUALIZE CHAT
+                        Platform.runLater(() -> {View.chatRow.getChildren().clear();});
+                        try {
+                            final ArrayList<String> j = client.chat("");
+                            for(final String k : j){
+                                final Label lbl = new Label(k);
+                                lbl.setTextFill(Color.WHITE);
+                                lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
+                                //Update UI
+                                Platform.runLater(() -> {View.chatRow.getChildren().add(lbl);});
+                            }
+                        } catch (IOException | ClassNotFoundException e) {
+                            logger.log(Level.SEVERE, e.toString());
+                        }
+
+                    } catch (InterruptedException | IOException | ClassNotFoundException e) {
+                        logger.log(Level.SEVERE, e.toString());
+                    }
+                }
+            }
+        };
+        boardcheck_thread.start();
+
+
+    }
+
+    private void startServerHandler(Object SERVER_CLIENT) {
+        server = (Server) SERVER_CLIENT;
+
+        //getting the players from the server
+        Players = server.players;
+
+        //Evaluating who is starting with a random int
+        final Random r = new Random(System.currentTimeMillis());
+        final Boolean opponentStarts = Boolean.valueOf(r.nextInt(2) == 1 ? "false" : "true");
+
+        //Sending a message via the server
+        ((Server) SERVER_CLIENT).payload1 = "ready," + opponentStarts;
+
+        //setting the boolean who is starting
+        WhoStarts = !opponentStarts;
+
+        //Creating the board checking thread:
+        //check every 500millis if the board has changed, check if the change is valid ( fraud detection )
+        boardcheck_thread = new Thread() {
+            public void run() {
+                //while the server is not closed, do the loop
+                while (!server.server.isClosed()) {
+                    try {
+                        if(server.payload1.contains("ready"))
+                            sleep(2000);
+                        sleep(1000);
+                        //getting the board of the opponent
+                        board_of_opponent=server.board_in_serverClass;
+                        Platform.runLater(() -> {
+                            timeout++;
+                            //check whether everything is alright with the received board
+                            boardCheck();
+                            //send board to opponent
+                            server.payload1=Arrays.toString(board.getBoardAsArray()).replace(",","");
+                            //What to do in case of a timeout
+                            if(timeout>60){
+
+                                Platform.runLater(() -> {
+
+                                    setChatMessage("Opponent has closed connection. ");
+                                    setChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+
+
+                                        //Stop everything and return to the main menu
+                                        if (server != null)
+                                            server.stop();
+                                        else
+                                            client.stop();
+
+                                        final MainMenuModel model = new MainMenuModel();
+                                        final MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
+                                        new MainMenuController(model, view2, null);
+
+
+                                    });
+                                    boardcheck_thread.stop();
+
+                                });
+                                boardcheck_thread.interrupt();
+
+                            }
+                        });
+
+                        //ACTUALIZE CHAT
+                        Platform.runLater(() -> View.chatRow.getChildren().clear());
+                        for(final String s : server.CHAT){
+                            final Label lbl = new Label(s);
+                            lbl.setTextFill(Color.WHITE);
+                            lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
+                            //update the UI
+                            Platform.runLater(() -> View.chatRow.getChildren().add(lbl));
+                        }
+
+                    } catch (InterruptedException e) {
+                        logger.log(Level.SEVERE, e.toString());
+
+                    }
+                }
+            }
+        };
+        boardcheck_thread.start();
 
     }
 
