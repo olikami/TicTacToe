@@ -34,9 +34,9 @@ import static java.lang.Thread.sleep;
 public class online_game {
 
     //how many players are allowed in the game
-    public static int MAX_PLAYERS = 2;
+    public static final int MAX_PLAYERS = 2;
     //how many players are in the room
-    public static int PLAYERS = 1;
+    public static final int PLAYERS = 1;
     //Server object
     public Server server =null;
     //Client object
@@ -82,14 +82,14 @@ public class online_game {
         //checking who is starting
         if (SERVER_CLIENT instanceof Server) {
             //we are the server
-            server = ((Server) SERVER_CLIENT);
+            server = (Server) SERVER_CLIENT;
 
             //getting the players from the server
             Players = server.players;
 
             //Evaluating who is starting with a random int
             final Random r = new Random(System.currentTimeMillis());
-            final Boolean opponentStarts = (Boolean.valueOf(r.nextInt((2)) == 1 ? "false" : "true"));
+            final Boolean opponentStarts = Boolean.valueOf(r.nextInt(2) == 1 ? "false" : "true");
 
             //Sending a message via the server
             ((Server) SERVER_CLIENT).payload1 = "ready," + opponentStarts;
@@ -114,7 +114,7 @@ public class online_game {
                                 //check whether everything is alright with the received board
                                 boardCheck();
                                 //send board to opponent
-                                server.payload1=(Arrays.toString(board.getBoardAsArray()).replace(",",""));
+                                server.payload1=Arrays.toString(board.getBoardAsArray()).replace(",","");
                                 //What to do in case of a timeout
                                 if(timeout>60){
 
@@ -125,7 +125,7 @@ public class online_game {
 
 
                                             //Stop everything and return to the main menu
-                                            if ((server != null))
+                                            if (server != null)
                                                 server.stop();
                                             else
                                                 client.stop();
@@ -167,7 +167,7 @@ public class online_game {
 
         } else {
             //we are a client
-            this.client = ((Client)SERVER_CLIENT);
+            this.client = (Client)SERVER_CLIENT;
             try {
                 Players = client.getOnlinePlayers();
             } catch (IOException e) {
@@ -197,7 +197,7 @@ public class online_game {
                                     setChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 
 
-                                        if ((server != null))
+                                        if (server != null)
                                             server.stop();
                                         else
                                             client.stop();
@@ -218,7 +218,7 @@ public class online_game {
 
                                 int i =0;
                                 //format the received board
-                                final String[] boardString=((s[1].replace("[","")).replace("]","")).split(" ");
+                                final String[] boardString=s[1].replace("[","").replace("]","").split(" ");
                                 for (final String str : boardString) {
                                     if ("".equals(str))continue;
                                     //update the board of the opponent inside of our own client class
@@ -336,7 +336,7 @@ public class online_game {
                             MyTurn = true;
                         setChatMessage(Players.get(board.getWinner()).getName() + " wins with his move in field: ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
                     } else {
-                        if ((server != null))
+                        if (server != null)
                             MyTurn = true;
                         setChatMessage("It's a tie!");
                     }
@@ -366,7 +366,7 @@ public class online_game {
         final AI AI = new AI();
         final int p = AI.getNextMove(board, IAmNumber);
 
-        if ((server != null)) {
+        if (server != null) {
             if (server.AI_Mode) {
                 MyTurn = false;
                 final int[] i = board.populateBoard(p, IAmNumber);
@@ -422,7 +422,7 @@ public class online_game {
                     @Override
                     public void handle(Event event) {
 
-                        if ((server != null))
+                        if (server != null)
                             server.stop();
                         else
                             client.stop();
@@ -434,7 +434,7 @@ public class online_game {
                 }));
 
 
-        if((server!=null&&server.AI_Mode)||(client!=null&&client.AI_Mode)){
+        if(server!=null&&server.AI_Mode||client!=null&&client.AI_Mode){
             // The Stage where the Event Source Node belongs to
             final Stage sourceNode = (Stage) ((Node) View.gamePane).getScene().getWindow();
 
