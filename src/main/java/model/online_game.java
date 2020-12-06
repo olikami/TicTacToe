@@ -378,8 +378,8 @@ public class online_game {
 
     private void aiMove() {
         // here we implement the ai move as a response
-        final AI AI = new AI();
-        final int p = AI.getNextMove(board, IAmNumber);
+        final AI aiModel = new AI();
+        final int nextMove = aiModel.getNextMove(board, IAmNumber);
 
 
         //declare gameMethods object for best practices
@@ -388,27 +388,27 @@ public class online_game {
         if (server != null) {
             if (server.AI_Mode) {
                 MyTurn = false;
-                final int[] i = board.populateBoard(p, IAmNumber);
-                server.payload1 = Arrays.toString(i).replace(",", "");
+                final int[] boardArray = this.board.populateBoard(nextMove, IAmNumber);
+                server.payload1 = Arrays.toString(boardArray).replace(",", "");
                 //set the image
-                game_Methods.setImage((ImageView) View.board[p].getChildren().get(0), Player_Image, Player_color);
-                game_Methods.animateMoves(View.board[p]);
+                gameMethods.setImage((ImageView) View.board[nextMove].getChildren().get(0), Player_Image, Player_color);
+                gameMethods.animateMoves(View.board[nextMove]);
 
-                if (board.getWinner() != 0)
+                if (this.board.getWinner() != 0)
                     setWinner();
             }
         } else {
             if (client.AI_Mode) {
                 MyTurn = false;
-                final int[] i =board.populateBoard(p, IAmNumber);
+                final int[] boardArray = this.board.populateBoard(nextMove, IAmNumber);
                 try {
-                    final String[] s = client.communication("board", Arrays.toString(i).replace(",", ""));
-                    logger.log(Level.INFO, "client received: "+ Arrays.toString(s));
+                    final String[] msg = client.communication("board", Arrays.toString(boardArray).replace(",", ""));
+                    System.out.println("Client receives: " + Arrays.toString(msg));
 
                     //set the image
-                    game_Methods.setImage((ImageView) View.board[p].getChildren().get(0), Player_Image, Player_color);
-                    game_Methods.animateMoves(View.board[p]);
-                    if (board.getWinner() != 0)
+                    gameMethods.setImage((ImageView) View.board[nextMove].getChildren().get(0), Player_Image, Player_color);
+                    gameMethods.animateMoves(View.board[nextMove]);
+                    if (this.board.getWinner() != 0)
                         setWinner();
 
                 } catch (IOException | ClassNotFoundException e) {
