@@ -42,19 +42,19 @@ public class OnlineController {
         model = gamemodel;
         view = gameView;
 
-        IAmNumber = model.IAmNumber;
+        IAmNumber = model.iAmNumber;
 
 
 
 
         for (int i = 0; i < view.board.length; i++) {
             int a = i;
-            Color finalOpponent_color = model.Opponent_color;
+            Color finalOpponent_color = model.opponentColor;
             view.board[i].addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 
                 //Check if it's a possible move
-                if (model.board.PlaceIsEmpty(a) && !model.board.isLocked() && model.MyTurn) {
-                     model.MyTurn=false;
+                if (model.board.PlaceIsEmpty(a) && !model.board.isLocked() && model.myTurn) {
+                     model.myTurn =false;
 
 
                     //populate the gameboard
@@ -75,7 +75,7 @@ public class OnlineController {
                             }
                         }
                         //set the image
-                        gameMethods.setImage((ImageView) view.board[a].getChildren().get(0),model.Player_Image, model.Player_color);
+                        gameMethods.setImage((ImageView) view.board[a].getChildren().get(0),model.playerImage, model.playerColor);
                         gameMethods.animateMoves(view.board[a]).setOnFinished(event1 -> {
 
 
@@ -95,7 +95,7 @@ public class OnlineController {
                                 gameMethods.setWinnerStroke(model.board,view);
                                 return;
                             }else{
-                               model.setChatMessage(model.Players.get(IAmNumber-1).getName()+" has played in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
+                               model.setChatMessage(model.players.get(IAmNumber-1).getName()+" has played in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
 
                             }
 

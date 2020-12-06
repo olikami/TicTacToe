@@ -650,7 +650,7 @@ public class MainMenuController {
             view.row2.getChildren().clear();
 
 
-            Label lbl = new Label("Waiting for other Players...");
+            Label lbl = new Label("Waiting for other players...");
             lbl.setTextFill(Color.WHITE);
             lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 50));
             view.row1.setMaxSize(1000,200);

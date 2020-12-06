@@ -43,42 +43,42 @@ public class online_game {
     //Client object
     public Client client = null;
     //Boolean to determine who has the beginning turn
-    Boolean WhoStarts = true;
+    Boolean whoStarts = true;
     //Board object
     public Board board = new Board();
     //Boolean to evaluate whether it's the turn of the player of this game instance
-    public Boolean MyTurn = false;
+    public Boolean myTurn = false;
     //the avatar of the opponent
-    public Image Opponent_image;
+    public Image opponentImage;
     //the own avatar
-    public Image Player_Image  ;
+    public Image playerImage;
     //the own colour
-    public Color Player_color  ;
+    public Color playerColor;
     //the opponents colour
-    public Color Opponent_color;
+    public Color opponentColor;
     //the current board of the opponent as array
-    int[] board_of_opponent={0,0,0,0,0,0,0,0,0};
+    int[] boardOfOpponent ={0,0,0,0,0,0,0,0,0};
     //timeout for the game
     int timeout =0;
     //board check thread
-    Thread boardcheck_thread=null;
+    Thread boardcheckThread =null;
     //Logger
     Logger logger = Logger.getLogger(online_game.class.getName());
 
 
     //Am I player 1 or 2 ?
-    public int IAmNumber = 2;
+    public int iAmNumber = 2;
 
-    //the View part of the MVC pattern of the game
-    TicTacToeView View;
+    //the view part of the MVC pattern of the game
+    TicTacToeView view;
 
     //list of the players in this game
-    public ArrayList<OnlinePlayer> Players =null;
+    public ArrayList<OnlinePlayer> players =null;
 
 
     public online_game(TicTacToeView gameView, Object SERVER_CLIENT, Boolean whostarts) {
-        //the View part of the MVC pattern of the game
-        this.View = gameView;
+        //the view part of the MVC pattern of the game
+        this.view = gameView;
 
         //checking who is starting
         if (SERVER_CLIENT instanceof Server) {
@@ -93,10 +93,10 @@ public class online_game {
 
 
         //if I can start, I'll do a move.
-        if (WhoStarts) {
-            IAmNumber = 1;
-            MyTurn = true;
-            setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
+        if (whoStarts) {
+            iAmNumber = 1;
+            myTurn = true;
+            setChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
             aiMove();
         }
         //else, I'll wait for my move
@@ -104,16 +104,16 @@ public class online_game {
         final Random rand = new Random();
         //Set the Opponent Image
         figures_name figures;
-        if(Players.get((server)==null?0:1).getFigure()==null) {
+        if(players.get((server)==null?0:1).getFigure()==null) {
             figures = figures_name.values()[rand.nextInt(figures_name.values().length)];
             while (userdata.get_selected_figure() == figures) {
                 figures = figures_name.values()[rand.nextInt(figures_name.values().length)];
             }
         }else{
-            figures=Players.get((server)==null?0:1).getFigure();
+            figures= players.get((server)==null?0:1).getFigure();
         }
-        Opponent_image       = new Image("/img/" + figures + "/" + figures + ".png");
-        Player_Image           = new Image("/img/" + userdata.get_selected_figure() + "/" + userdata.get_selected_figure() + ".png");
+        opponentImage = new Image("/img/" + figures + "/" + figures + ".png");
+        playerImage = new Image("/img/" + userdata.get_selected_figure() + "/" + userdata.get_selected_figure() + ".png");
 
 
         //setting the color for the icons
@@ -123,10 +123,10 @@ public class online_game {
                 "#e1e832",
                 "#41e831",
                 "#30e8d2"};
-        Player_color      = gameMethods.hex2Rgb(neon_colors[rand.nextInt(4)]);
-        Opponent_color    = gameMethods.hex2Rgb(neon_colors[rand.nextInt(4)]);
-        while(Opponent_color.equals(Player_color)) {
-            Opponent_color = gameMethods.hex2Rgb(neon_colors[rand.nextInt(4)]);
+        playerColor = gameMethods.hex2Rgb(neon_colors[rand.nextInt(4)]);
+        opponentColor = gameMethods.hex2Rgb(neon_colors[rand.nextInt(4)]);
+        while(opponentColor.equals(playerColor)) {
+            opponentColor = gameMethods.hex2Rgb(neon_colors[rand.nextInt(4)]);
         }
 
 
@@ -138,17 +138,17 @@ public class online_game {
 
         this.client = (Client)SERVER_CLIENT;
         try {
-            Players = client.getOnlinePlayers();
+            players = client.getOnlinePlayers();
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.toString());
         } catch (ClassNotFoundException e) {
             logger.log(Level.SEVERE, e.toString());
         }
         //If we are a client, we receive wheter we start or not.
-        WhoStarts = whostarts;
+        whoStarts = whostarts;
 
 
-        boardcheck_thread = new Thread() {
+        boardcheckThread = new Thread() {
             public void run() {
                 //do this while the game is running
                 while (!client.socket.isClosed()) {
@@ -172,15 +172,15 @@ public class online_game {
                                         client.stop();
 
                                     final MainMenuModel model = new MainMenuModel();
-                                    final MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
+                                    final MainMenuView view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
                                     new MainMenuController(model, view2, null);
 
 
                                 });
-                                boardcheck_thread.stop();
+                                boardcheckThread.stop();
 
                             });
-                            boardcheck_thread.stop();
+                            boardcheckThread.stop();
 
                             //if the check is successfull, update the game
                         }else if(msg[1].contains("[")){
@@ -191,7 +191,7 @@ public class online_game {
                             for (final String str : boardString) {
                                 if ("".equals(str))continue;
                                 //update the board of the opponent inside of our own client class
-                                board_of_opponent[index++] = Integer.parseInt(str);
+                                boardOfOpponent[index++] = Integer.parseInt(str);
                             }
 
                         }
@@ -205,7 +205,8 @@ public class online_game {
                         });
 
                         //ACTUALIZE CHAT
-                        Platform.runLater(() -> {View.chatRow.getChildren().clear();});
+                        Platform.runLater(() -> {
+                            view.chatRow.getChildren().clear();});
                         try {
                             final ArrayList<String> strings = client.chat("");
                             for(final String k : strings){
@@ -213,7 +214,8 @@ public class online_game {
                                 lbl.setTextFill(Color.WHITE);
                                 lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
                                 //Update UI
-                                Platform.runLater(() -> {View.chatRow.getChildren().add(lbl);});
+                                Platform.runLater(() -> {
+                                    view.chatRow.getChildren().add(lbl);});
                             }
                         } catch (IOException | ClassNotFoundException e) {
                             logger.log(Level.SEVERE, e.toString());
@@ -225,7 +227,7 @@ public class online_game {
                 }
             }
         };
-        boardcheck_thread.start();
+        boardcheckThread.start();
 
 
     }
@@ -234,7 +236,7 @@ public class online_game {
         server = (Server) SERVER_CLIENT;
 
         //getting the players from the server
-        Players = server.players;
+        players = server.players;
 
         //Evaluating who is starting with a random int
         final Random rand = new Random(System.currentTimeMillis());
@@ -244,11 +246,11 @@ public class online_game {
         ((Server) SERVER_CLIENT).payload1 = "ready," + opponentStarts;
 
         //setting the boolean who is starting
-        WhoStarts = !opponentStarts;
+        whoStarts = !opponentStarts;
 
         //Creating the board checking thread:
         //check every 500millis if the board has changed, check if the change is valid ( fraud detection )
-        boardcheck_thread = new Thread() {
+        boardcheckThread = new Thread() {
             public void run() {
                 //while the server is not closed, do the loop
                 while (!server.server.isClosed()) {
@@ -257,7 +259,7 @@ public class online_game {
                             sleep(2000);
                         sleep(1000);
                         //getting the board of the opponent
-                        board_of_opponent=server.board_in_serverClass;
+                        boardOfOpponent =server.board_in_serverClass;
                         Platform.runLater(() -> {
                             timeout++;
                             //check whether everything is alright with the received board
@@ -280,27 +282,27 @@ public class online_game {
                                             client.stop();
 
                                         final MainMenuModel model = new MainMenuModel();
-                                        final MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
+                                        final MainMenuView view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
                                         new MainMenuController(model, view2, null);
 
 
                                     });
-                                    boardcheck_thread.stop();
+                                    boardcheckThread.stop();
 
                                 });
-                                boardcheck_thread.interrupt();
+                                boardcheckThread.interrupt();
 
                             }
                         });
 
                         //ACTUALIZE CHAT
-                        Platform.runLater(() -> View.chatRow.getChildren().clear());
+                        Platform.runLater(() -> view.chatRow.getChildren().clear());
                         for(final String s : server.CHAT){
                             final Label lbl = new Label(s);
                             lbl.setTextFill(Color.WHITE);
                             lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
                             //update the UI
-                            Platform.runLater(() -> View.chatRow.getChildren().add(lbl));
+                            Platform.runLater(() -> view.chatRow.getChildren().add(lbl));
                         }
 
                     } catch (InterruptedException e) {
@@ -310,7 +312,7 @@ public class online_game {
                 }
             }
         };
-        boardcheck_thread.start();
+        boardcheckThread.start();
 
     }
 
@@ -319,16 +321,16 @@ public class online_game {
         //declare gameMethods object for best practices
         final gameMethods game_Methods = new gameMethods();
 
-        //if (board_of_opponent != board.getBoardAsArray()) {
+        //if (boardOfOpponent != board.getBoardAsArray()) {
         //what to do if the boards are not equal: check if the other player has one move played in a valid field (loop through the board
         int move_counter = 0;
         final int[] boardArray =  board.getBoardAsArray();
         for (int i = 0; i < boardArray.length; i++) {
-            if (boardArray[i] != board_of_opponent[i] && board_of_opponent[i] != 0) {
+            if (boardArray[i] != boardOfOpponent[i] && boardOfOpponent[i] != 0) {
                 //thats a move!
                 move_counter++;
                 timeout = 0;
-                final HBox boardPosition = View.board[i];
+                final HBox boardPosition = view.board[i];
                 final ImageView fieldOnBoard = (ImageView) boardPosition.getChildren().get(0);
                 if (boardArray[i] != 0) {
                     //it's not a valid move! CHEATER!!!!
@@ -336,8 +338,8 @@ public class online_game {
                 }
                 if (boardArray[i] == 0) {
                     //populating the board with the opponent move
-                    board.populateBoard(i, IAmNumber == 2 ? 1 : 2);
-                    game_Methods.setImage(fieldOnBoard, Opponent_image, Opponent_color);
+                    board.populateBoard(i, iAmNumber == 2 ? 1 : 2);
+                    game_Methods.setImage(fieldOnBoard, opponentImage, opponentColor);
                     //animate the move
                     game_Methods.animateMoves(boardPosition);
 
@@ -347,21 +349,21 @@ public class online_game {
                     setWinner();
                     if (board.getWinner() != 3) {
 
-                        if (IAmNumber != board.getWinner())
-                            MyTurn = true;
-                        setChatMessage(Players.get(board.getWinner()).getName() + " wins with his move in field: ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
+                        if (iAmNumber != board.getWinner())
+                            myTurn = true;
+                        setChatMessage(players.get(board.getWinner()).getName() + " wins with his move in field: ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
                     } else {
                         if (server != null)
-                            MyTurn = true;
+                            myTurn = true;
                         setChatMessage("It's a tie!");
                     }
                     return;
                 } else {
-                    setChatMessage(Players.get(IAmNumber==1?1:0).getName() + " has played in field ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
-                    setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
+                    setChatMessage(players.get(iAmNumber ==1?1:0).getName() + " has played in field ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
+                    setChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
 
 
-                    MyTurn = true;
+                    myTurn = true;
 
                     aiMove();
 
@@ -379,7 +381,7 @@ public class online_game {
     private void aiMove() {
         // here we implement the ai move as a response
         final AI aiModel = new AI();
-        final int nextMove = aiModel.getNextMove(board, IAmNumber);
+        final int nextMove = aiModel.getNextMove(board, iAmNumber);
 
 
         //declare gameMethods object for best practices
@@ -387,27 +389,27 @@ public class online_game {
 
         if (server != null) {
             if (server.AI_Mode) {
-                MyTurn = false;
-                final int[] boardArray = this.board.populateBoard(nextMove, IAmNumber);
+                myTurn = false;
+                final int[] boardArray = this.board.populateBoard(nextMove, iAmNumber);
                 server.payload1 = Arrays.toString(boardArray).replace(",", "");
                 //set the image
-                gameMethods.setImage((ImageView) View.board[nextMove].getChildren().get(0), Player_Image, Player_color);
-                gameMethods.animateMoves(View.board[nextMove]);
+                gameMethods.setImage((ImageView) view.board[nextMove].getChildren().get(0), playerImage, playerColor);
+                gameMethods.animateMoves(view.board[nextMove]);
 
                 if (this.board.getWinner() != 0)
                     setWinner();
             }
         } else {
             if (client.AI_Mode) {
-                MyTurn = false;
-                final int[] boardArray = this.board.populateBoard(nextMove, IAmNumber);
+                myTurn = false;
+                final int[] boardArray = this.board.populateBoard(nextMove, iAmNumber);
                 try {
                     final String[] msg = client.communication("board", Arrays.toString(boardArray).replace(",", ""));
                     System.out.println("Client receives: " + Arrays.toString(msg));
 
                     //set the image
-                    gameMethods.setImage((ImageView) View.board[nextMove].getChildren().get(0), Player_Image, Player_color);
-                    gameMethods.animateMoves(View.board[nextMove]);
+                    gameMethods.setImage((ImageView) view.board[nextMove].getChildren().get(0), playerImage, playerColor);
+                    gameMethods.animateMoves(view.board[nextMove]);
                     if (this.board.getWinner() != 0)
                         setWinner();
 
@@ -428,11 +430,11 @@ public class online_game {
         final gameMethods game_Methods = new gameMethods();
 
 
-        if (IAmNumber != board.getWinner())
-            MyTurn = true;
+        if (iAmNumber != board.getWinner())
+            myTurn = true;
 
         //update UI
-        View.mainPane.getChildren().add(DialogCreator.alertDialog("Do you want to play again?",
+        view.mainPane.getChildren().add(DialogCreator.alertDialog("Do you want to play again?",
                 "YES", event -> {
 
                     // The Stage where the Event Source Node belongs to
@@ -452,7 +454,7 @@ public class online_game {
                             client.stop();
 
                         final MainMenuModel model = new MainMenuModel();
-                        final MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
+                        final MainMenuView view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
                         new MainMenuController(model, view2, null);
                     }
                 }));
@@ -460,7 +462,7 @@ public class online_game {
 
         if(server!=null&&server.AI_Mode||client!=null&&client.AI_Mode){
             // The Stage where the Event Source Node belongs to
-            final Stage sourceNode = (Stage) ((Node) View.gamePane).getScene().getWindow();
+            final Stage sourceNode = (Stage) ((Node) view.gamePane).getScene().getWindow();
 
             //If the player chooses to play again, restart everything
             playAgain(sourceNode);
@@ -472,7 +474,7 @@ public class online_game {
         //todo online statistics
         //userdata.setLoseGames();
 
-        game_Methods.setWinnerStroke(board, View);
+        game_Methods.setWinnerStroke(board, view);
     }
 
     // sourceNode is the Stage where the Event Source Node belongs to
@@ -482,38 +484,38 @@ public class online_game {
         //update the game UI and the internal game boards
         if (server != null) {
             board = new Board();
-            Arrays.fill(board_of_opponent, 0);
+            Arrays.fill(boardOfOpponent, 0);
             Arrays.fill(server.board_in_serverClass, 0);
-            View = new TicTacToeView(sourceNode);
-            new OnlineController(online_game.this, View);
-            if(MyTurn)
-                setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
+            view = new TicTacToeView(sourceNode);
+            new OnlineController(online_game.this, view);
+            if(myTurn)
+                setChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
         }
         else{
             final Thread wait_for_server = new Thread(() -> {
                 Platform.runLater(() -> {
 
                     //update UI
-                    View = new TicTacToeView(sourceNode);
-                    View.mainPane.getChildren().add(DialogCreator.vanillaDialog("Waiting for host","...",false));
+                    view = new TicTacToeView(sourceNode);
+                    view.mainPane.getChildren().add(DialogCreator.vanillaDialog("Waiting for host","...",false));
 
                 });
 
-                while (!Arrays.equals(board_of_opponent, new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0})) {
+                while (!Arrays.equals(boardOfOpponent, new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0})) {
                     try {
                         sleep(3000);
                     } catch (InterruptedException e) {
                         logger.log(Level.WARNING, e.toString());
                     }
                 }
-                Arrays.fill(board_of_opponent, 0);
+                Arrays.fill(boardOfOpponent, 0);
                 Platform.runLater(() -> {
                     //update internal game board
                     board = new Board();
-                    View = new TicTacToeView(sourceNode);
-                    new OnlineController(online_game.this,View);
-                    if(MyTurn)
-                        setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
+                    view = new TicTacToeView(sourceNode);
+                    new OnlineController(online_game.this, view);
+                    if(myTurn)
+                        setChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
 
 
                 });
@@ -532,7 +534,7 @@ public class online_game {
         final Label lbl = new Label(message);
         lbl.setTextFill(Color.WHITE);
         lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
-        View.chatRow.getChildren().add(lbl);
+        view.chatRow.getChildren().add(lbl);
         if(!"It's your turn!".equals(message))
             if(server!=null)
                 server.CHAT.add(message);
