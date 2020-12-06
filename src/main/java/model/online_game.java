@@ -35,7 +35,7 @@ public class online_game {
     //how many players are allowed in the game
     public static int MAX_PLAYERS = 2;
     //how many players are in the room
-    public static int CURRENT_PLAYERS_IN_ROOM = 1;
+    public static int PLAYERS = 1;
     //Server object
     public Server server =null;
     //Client object
@@ -86,13 +86,13 @@ public class online_game {
 
             //Evaluating who is starting with a random int
             Random r = new Random(System.currentTimeMillis());
-            Boolean doesTheOpponentStart = (Boolean.valueOf(r.nextInt((2)) == 1 ? "false" : "true"));
+            Boolean opponentStarts = (Boolean.valueOf(r.nextInt((2)) == 1 ? "false" : "true"));
 
             //Sending a message via the server
-            ((Server) SERVER_CLIENT).payload1 = "ready," + doesTheOpponentStart;
+            ((Server) SERVER_CLIENT).payload1 = "ready," + opponentStarts;
 
             //setting the boolean who is starting
-            WhoStarts = !doesTheOpponentStart;
+            WhoStarts = !opponentStarts;
 
             //Creating the board checking thread:
             //check every 500millis if the board has changed, check if the change is valid ( fraud detection )
@@ -405,8 +405,9 @@ public class online_game {
         View.mainPane.getChildren().add(DialogCreator.alertDialog("Do you want to play again?",
                 "YES", event -> {
 
-                    Stage stageTheEventSourceNodeBelongs = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                    playAgain(stageTheEventSourceNodeBelongs);
+                    // The Stage where the Event Source Node belongs to
+                    Stage sourceNode = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    playAgain(sourceNode);
 
 
 
@@ -428,10 +429,11 @@ public class online_game {
 
 
         if((server!=null&&server.AI_Mode)||(client!=null&&client.AI_Mode)){
-            Stage stageTheEventSourceNodeBelongs = (Stage) ((Node) View.gamePane).getScene().getWindow();
+            // The Stage where the Event Source Node belongs to
+            Stage sourceNode = (Stage) ((Node) View.gamePane).getScene().getWindow();
 
             //If the player chooses to play again, restart everything
-            playAgain(stageTheEventSourceNodeBelongs);
+            playAgain(sourceNode);
 
 
 
@@ -443,7 +445,8 @@ public class online_game {
         gameMethods.setWinnerStroke(board, View);
     }
 
-    private void playAgain(Stage stageTheEventSourceNodeBelongs){
+    // sourceNode is the Stage where the Event Source Node belongs to
+    private void playAgain(Stage sourceNode){
 
 
         //update the game UI and the internal game boards
@@ -451,7 +454,7 @@ public class online_game {
             board = new Board();
             Arrays.fill(board_of_opponent, 0);
             Arrays.fill(server.board_in_serverClass, 0);
-            View = new TicTacToeView(stageTheEventSourceNodeBelongs);
+            View = new TicTacToeView(sourceNode);
             new OnlineController(online_game.this, View);
             if(MyTurn)
                 setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
@@ -461,7 +464,7 @@ public class online_game {
                 Platform.runLater(() -> {
 
                     //update UI
-                    View = new TicTacToeView(stageTheEventSourceNodeBelongs);
+                    View = new TicTacToeView(sourceNode);
                     View.mainPane.getChildren().add(DialogCreator.vanillaDialog("Waiting for host","...",false));
 
                 });
@@ -477,7 +480,7 @@ public class online_game {
                 Platform.runLater(() -> {
                     //update internal game board
                     board = new Board();
-                    View = new TicTacToeView(stageTheEventSourceNodeBelongs);
+                    View = new TicTacToeView(sourceNode);
                     OnlineController game_1_controller = new OnlineController(online_game.this,View);
                     if(MyTurn)
                         setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");

@@ -1,7 +1,6 @@
 package model.net;
 
 
-import controller.OnlineController;
 import model.online_game;
 import model.player.OnlinePlayer;
 import model.player.figures_name;
@@ -101,8 +100,8 @@ public class Server {
                 if(s.equals("status")){
 
 
-                    ps.println((online_game.CURRENT_PLAYERS_IN_ROOM+"/"+online_game.MAX_PLAYERS+","+ userdata.getUsername()+end));
-                    System.out.println((online_game.CURRENT_PLAYERS_IN_ROOM+"/"+online_game.MAX_PLAYERS+","+ userdata.getUsername()+end));
+                    ps.println((online_game.PLAYERS +"/"+online_game.MAX_PLAYERS+","+ userdata.getUsername()+end));
+                    System.out.println((online_game.PLAYERS +"/"+online_game.MAX_PLAYERS+","+ userdata.getUsername()+end));
 
                 }
                 //client checks for server availability
