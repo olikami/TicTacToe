@@ -35,9 +35,9 @@ import static java.lang.Thread.sleep;
 public class online_game {
 
     //how many players are allowed in the game
-    public static int MAX_PLAYERS = 2;
+    public static final int MAX_PLAYERS = 2;
     //how many players are in the room
-    public static int PLAYERS = 1;
+    public static final int PLAYERS = 1;
     //Server object
     public Server server =null;
     //Client object
