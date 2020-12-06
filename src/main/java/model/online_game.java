@@ -117,16 +117,16 @@ public class online_game {
 
 
         //setting the color for the icons
-        final String[] neon_colors = {
+        final String[] neonColors = {
                 "#000cff",
                 "#2fa7e8",
                 "#e1e832",
                 "#41e831",
                 "#30e8d2"};
-        playerColor = gameMethods.hex2Rgb(neon_colors[rand.nextInt(4)]);
-        opponentColor = gameMethods.hex2Rgb(neon_colors[rand.nextInt(4)]);
+        playerColor = gameMethods.hex2Rgb(neonColors[rand.nextInt(4)]);
+        opponentColor = gameMethods.hex2Rgb(neonColors[rand.nextInt(4)]);
         while(opponentColor.equals(playerColor)) {
-            opponentColor = gameMethods.hex2Rgb(neon_colors[rand.nextInt(4)]);
+            opponentColor = gameMethods.hex2Rgb(neonColors[rand.nextInt(4)]);
         }
 
 
@@ -319,16 +319,16 @@ public class online_game {
     public void boardCheck() {
 
         //declare gameMethods object for best practices
-        final gameMethods game_Methods = new gameMethods();
+        final gameMethods gameMethods = new gameMethods();
 
         //if (boardOfOpponent != board.getBoardAsArray()) {
         //what to do if the boards are not equal: check if the other player has one move played in a valid field (loop through the board
-        int move_counter = 0;
+        int moveCounter = 0;
         final int[] boardArray =  board.getBoardAsArray();
         for (int i = 0; i < boardArray.length; i++) {
             if (boardArray[i] != boardOfOpponent[i] && boardOfOpponent[i] != 0) {
                 //thats a move!
-                move_counter++;
+                moveCounter++;
                 timeout = 0;
                 final HBox boardPosition = view.board[i];
                 final ImageView fieldOnBoard = (ImageView) boardPosition.getChildren().get(0);
@@ -339,9 +339,9 @@ public class online_game {
                 if (boardArray[i] == 0) {
                     //populating the board with the opponent move
                     board.populateBoard(i, iAmNumber == 2 ? 1 : 2);
-                    game_Methods.setImage(fieldOnBoard, opponentImage, opponentColor);
+                    gameMethods.setImage(fieldOnBoard, opponentImage, opponentColor);
                     //animate the move
-                    game_Methods.animateMoves(boardPosition);
+                    gameMethods.animateMoves(boardPosition);
 
                 //check for winner
                 if (board.getWinner() != 0) {
@@ -372,7 +372,7 @@ public class online_game {
             }
         }
 
-                if (move_counter > 1) {
+                if (moveCounter > 1) {
                     //Other player has played more than 1 field
                     setChatMessage("Other player is a cheater!");
                 }
@@ -385,7 +385,7 @@ public class online_game {
 
 
         //declare gameMethods object for best practices
-        final gameMethods game_Methods = new gameMethods();
+        final gameMethods gameMethods = new gameMethods();
 
         if (server != null) {
             if (server.AI_Mode) {
@@ -427,7 +427,7 @@ public class online_game {
 
 
         //declare gameMethods object for best practices
-        final gameMethods game_Methods = new gameMethods();
+        final gameMethods gameMethods = new gameMethods();
 
 
         if (iAmNumber != board.getWinner())
@@ -474,7 +474,7 @@ public class online_game {
         //todo online statistics
         //userdata.setLoseGames();
 
-        game_Methods.setWinnerStroke(board, view);
+        gameMethods.setWinnerStroke(board, view);
     }
 
     // sourceNode is the Stage where the Event Source Node belongs to
@@ -492,7 +492,7 @@ public class online_game {
                 setChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
         }
         else{
-            final Thread wait_for_server = new Thread(() -> {
+            final Thread waitForServer = new Thread(() -> {
                 Platform.runLater(() -> {
 
                     //update UI
@@ -521,7 +521,7 @@ public class online_game {
                 });
 
             });
-            wait_for_server.start();
+            waitForServer.start();
         }
 
 
