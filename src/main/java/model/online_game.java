@@ -9,7 +9,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -133,7 +132,7 @@ public class online_game {
 
                                             final MainMenuModel model = new MainMenuModel();
                                             final MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
-                                            final MainMenuController controller = new MainMenuController(model, view2, null);
+                                            new MainMenuController(model, view2, null);
 
 
                                         });
@@ -188,7 +187,7 @@ public class online_game {
                             sleep(1000);
                             //received a board message from a "Check" request to the server
                             final String[] s =client.communication("check", "");
-                            System.out.println("client received: "+ Arrays.toString(s));
+                            logger.log(Level.INFO, "client received: "+ Arrays.toString(s));
 
                             //if the check is unsuccesfull, close the game
                             if(s==null){
@@ -205,7 +204,7 @@ public class online_game {
 
                                         final MainMenuModel model = new MainMenuModel();
                                         final MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
-                                        final MainMenuController controller = new MainMenuController(model, view2, null);
+                                        new MainMenuController(model, view2, null);
 
 
                                     });
@@ -221,7 +220,7 @@ public class online_game {
                                 //format the received board
                                 final String[] boardString=((s[1].replace("[","")).replace("]","")).split(" ");
                                 for (final String str : boardString) {
-                                    if (str.equals(""))continue;
+                                    if ("".equals(str))continue;
                                     //update the board of the opponent inside of our own client class
                                     board_of_opponent[i++] = Integer.parseInt(str);
                                 }
@@ -385,7 +384,7 @@ public class online_game {
                 final int[] i =board.populateBoard(p, IAmNumber);
                 try {
                     final String[] s = client.communication("board", Arrays.toString(i).replace(",", ""));
-                    System.out.println("Client receives: " + Arrays.toString(s));
+                    logger.log(Level.INFO, "client received: "+ Arrays.toString(s));
 
                     //set the image
                     gameMethods.setImage((ImageView) View.board[p].getChildren().get(0), Player_Image, Player_color);
@@ -430,7 +429,7 @@ public class online_game {
 
                         final MainMenuModel model = new MainMenuModel();
                         final MainMenuView view2 = new MainMenuView((Stage) View.gamePane.getScene().getWindow());
-                        final MainMenuController controller = new MainMenuController(model, view2, null);
+                        new MainMenuController(model, view2, null);
                     }
                 }));
 
@@ -488,7 +487,7 @@ public class online_game {
                     //update internal game board
                     board = new Board();
                     View = new TicTacToeView(sourceNode);
-                    OnlineController game_1_controller = new OnlineController(online_game.this,View);
+                    new OnlineController(online_game.this,View);
                     if(MyTurn)
                         setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
 
@@ -510,7 +509,7 @@ public class online_game {
         lbl.setTextFill(Color.WHITE);
         lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
         View.chatRow.getChildren().add(lbl);
-        if(!message.equals("It's your turn!"))
+        if(!"It's your turn!".equals(message))
             if(server!=null)
                 server.CHAT.add(message);
         return lbl;
