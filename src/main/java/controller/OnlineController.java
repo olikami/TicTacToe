@@ -83,19 +83,19 @@ public class OnlineController {
                             if (model.board.getWinner() != 0) {
                                 model.setWinner();
                                 if (model.board.getWinner() != 3) {
-                                    model.setChatMessage("You win with your move in field: ( " + ((a + 1) % 3f == 0 ? 3 : ((a + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((a + 1) / 3f) + ") congrats!");
+                                    model.labelChatMessage("You win with your move in field: ( " + ((a + 1) % 3f == 0 ? 3 : ((a + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((a + 1) / 3f) + ") congrats!");
 
                                     // TODO: 15.04.2018 setting onlinestats
                                     //userdata.setWinGames();
                                 }else{
-                                    model.setChatMessage("It's a tie!");
+                                    model.labelChatMessage("It's a tie!");
                                 }
                                 //todo setting winner
                                 //setWinner(model.board.getWinner());
                                 gameMethods.setWinnerStroke(model.board,view);
                                 return;
                             }else{
-                               model.setChatMessage(model.players.get(IAmNumber-1).getName()+" has played in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
+                               model.labelChatMessage(model.players.get(IAmNumber-1).getName()+" has played in field ( "+ ((a+1)%3f==0?3:((a+1)%3f==2?2:1))+", "+(int)Math.ceil((a+1)/3f)+")");
 
                             }
 
