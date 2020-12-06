@@ -96,7 +96,7 @@ public class online_game {
         if (whoStarts) {
             iAmNumber = 1;
             myTurn = true;
-            setChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
+            labelChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
             aiMove();
         }
         //else, I'll wait for my move
@@ -162,8 +162,8 @@ public class online_game {
                         if(msg==null){
                             Platform.runLater(() -> {
 
-                                setChatMessage("Opponent has closed connection. ");
-                                setChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                                labelChatMessage("Opponent has closed connection. ");
+                                labelChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 
 
                                     if (server != null)
@@ -271,8 +271,8 @@ public class online_game {
 
                                 Platform.runLater(() -> {
 
-                                    setChatMessage("Opponent has closed connection. ");
-                                    setChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                                    labelChatMessage("Opponent has closed connection. ");
+                                    labelChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 
 
                                         //Stop everything and return to the main menu
@@ -334,7 +334,7 @@ public class online_game {
                 final ImageView fieldOnBoard = (ImageView) boardPosition.getChildren().get(0);
                 if (boardArray[i] != 0) {
                     //it's not a valid move! CHEATER!!!!
-                    setChatMessage("Other player is a cheater!");
+                    labelChatMessage("Other player is a cheater!");
                 }
                 if (boardArray[i] == 0) {
                     //populating the board with the opponent move
@@ -351,16 +351,16 @@ public class online_game {
 
                         if (iAmNumber != board.getWinner())
                             myTurn = true;
-                        setChatMessage(players.get(board.getWinner()).getName() + " wins with his move in field: ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
+                        labelChatMessage(players.get(board.getWinner()).getName() + " wins with his move in field: ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
                     } else {
                         if (server != null)
                             myTurn = true;
-                        setChatMessage("It's a tie!");
+                        labelChatMessage("It's a tie!");
                     }
                     return;
                 } else {
-                    setChatMessage(players.get(iAmNumber ==1?1:0).getName() + " has played in field ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
-                    setChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
+                    labelChatMessage(players.get(iAmNumber ==1?1:0).getName() + " has played in field ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
+                    labelChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
 
 
                     myTurn = true;
@@ -374,7 +374,7 @@ public class online_game {
 
                 if (moveCounter > 1) {
                     //Other player has played more than 1 field
-                    setChatMessage("Other player is a cheater!");
+                    labelChatMessage("Other player is a cheater!");
                 }
             }
 
@@ -489,7 +489,7 @@ public class online_game {
             view = new TicTacToeView(sourceNode);
             new OnlineController(online_game.this, view);
             if(myTurn)
-                setChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
+                labelChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
         }
         else{
             final Thread waitForServer = new Thread(() -> {
@@ -515,7 +515,7 @@ public class online_game {
                     view = new TicTacToeView(sourceNode);
                     new OnlineController(online_game.this, view);
                     if(myTurn)
-                        setChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
+                        labelChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
 
 
                 });
@@ -529,7 +529,7 @@ public class online_game {
     }
 
     //populate the chat UI element with chat messages
-    public Label setChatMessage(String message) {
+    public Label labelChatMessage(String message) {
 
         final Label lbl = new Label(message);
         lbl.setTextFill(Color.WHITE);
