@@ -140,7 +140,7 @@ public class OnlineGame {
         if (whoStarts) {
             iAmNumber = 1;
             myTurn = true;
-            labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() + ", please make your turn!");
+            labelChatMessage(players.get(iAmNumber).getName() + ", please make your turn!");
             aiMove();
         }
         /**else, I'll wait for my move */
