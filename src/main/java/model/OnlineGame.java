@@ -37,53 +37,88 @@ import static java.lang.Thread.sleep;
  */
 public class OnlineGame {
 
-    /**how many players are allowed in the game */
+    /**
+     * how many players are allowed in the game
+     */
     public static final int MAX_PLAYERS = 2;
-    /**how many players are in the room */
+    /**
+     * how many players are in the room
+     */
     public static final int PLAYERS = 1;
-    /**Server object */
-    public Server server =null;
-    /**Client object */
+    /**
+     * Server object
+     */
+    public Server server = null;
+    /**
+     * Client object
+     */
     public Client client = null;
-    /**Boolean to determine who has the beginning turn */
+    /**
+     * Boolean to determine who has the beginning turn
+     */
     Boolean whoStarts = true;
-    /**Board object */
+    /**
+     * Board object
+     */
     public Board board = new Board();
-    /**Boolean to evaluate whether it's the turn of the player of this game instance */
+    /**
+     * Boolean to evaluate whether it's the turn of the player of this game instance
+     */
     public Boolean myTurn = false;
-    /**the avatar of the opponent */
+    /**
+     * the avatar of the opponent
+     */
     public Image opponentImage;
-    /**the own avatar */
+    /**
+     * the own avatar
+     */
     public Image playerImage;
-    /**the own colour */
+    /**
+     * the own colour
+     */
     public Color playerColor;
-    /**the opponents colour */
+    /**
+     * the opponents colour
+     */
     public Color opponentColor;
-    /**the current board of the opponent as array */
-    int[] boardOfOpponent ={0,0,0,0,0,0,0,0,0};
-    /**timeout for the game */
-    int timeout =0;
-    /**board check thread */
-    Thread boardcheckThread =null;
-    /**Logger */
-    final static  Logger logger = Logger.getLogger(OnlineGame.class.getName());
-
-
-    /**Am I player 1 or 2 ? */
-    public int iAmNumber = 2;
-
-    /**the view part of the MVC pattern of the game */
-    TicTacToeView view;
-
-    /**list of the players in this game */
-    public ArrayList<OnlinePlayer> players =null;
+    /**
+     * the current board of the opponent as array
+     */
+    int[] boardOfOpponent = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    /**
+     * timeout for the game
+     */
+    int timeout = 0;
+    /**
+     * board check thread
+     */
+    Thread boardcheckThread = null;
+    /**
+     * Logger
+     */
+    final static Logger logger = Logger.getLogger(OnlineGame.class.getName());
 
 
     /**
-     *
-     * @param gameView The game View
+     * Am I player 1 or 2 ?
+     */
+    public int iAmNumber = 2;
+
+    /**
+     * the view part of the MVC pattern of the game
+     */
+    TicTacToeView view;
+
+    /**
+     * list of the players in this game
+     */
+    public ArrayList<OnlinePlayer> players = null;
+
+
+    /**
+     * @param gameView     The game View
      * @param serverClient Object determinging whether we are client or server
-     * @param whostarts If true, this instance makes first move
+     * @param whostarts    If true, this instance makes first move
      */
     public OnlineGame(TicTacToeView gameView, Object serverClient, Boolean whostarts) {
         /**the view part of the MVC pattern of the game */
@@ -96,7 +131,7 @@ public class OnlineGame {
 
         } else {
             /**we are a client */
-            startClientHandler(serverClient,whostarts);
+            startClientHandler(serverClient, whostarts);
         }
         /**finished checking who is starting */
 
@@ -105,7 +140,7 @@ public class OnlineGame {
         if (whoStarts) {
             iAmNumber = 1;
             myTurn = true;
-            labelChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
+            labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() + ", please make your turn!");
             aiMove();
         }
         /**else, I'll wait for my move */
@@ -113,13 +148,13 @@ public class OnlineGame {
         final Random rand = new Random();
         /**Set the Opponent Image */
         figures_name figures;
-        if(players.get((server)==null?0:1).getFigure()==null) {
+        if (players.get((server) == null ? 0 : 1).getFigure() == null) {
             figures = figures_name.values()[rand.nextInt(figures_name.values().length)];
             while (userdata.get_selected_figure() == figures) {
                 figures = figures_name.values()[rand.nextInt(figures_name.values().length)];
             }
-        }else{
-            figures= players.get((server)==null?0:1).getFigure();
+        } else {
+            figures = players.get((server) == null ? 0 : 1).getFigure();
         }
         opponentImage = new Image("/img/" + figures + "/" + figures + ".png");
         playerImage = new Image("/img/" + userdata.get_selected_figure() + "/" + userdata.get_selected_figure() + ".png");
@@ -134,18 +169,16 @@ public class OnlineGame {
                 "#30e8d2"};
         playerColor = gameMethods.hex2Rgb(neonColors[rand.nextInt(4)]);
         opponentColor = gameMethods.hex2Rgb(neonColors[rand.nextInt(4)]);
-        while(opponentColor.equals(playerColor)) {
+        while (opponentColor.equals(playerColor)) {
             opponentColor = gameMethods.hex2Rgb(neonColors[rand.nextInt(4)]);
         }
-
-
 
 
     }
 
     private void startClientHandler(Object serverClient, Boolean whostarts) {
 
-        this.client = (Client)serverClient;
+        this.client = (Client) serverClient;
         try {
             players = client.getOnlinePlayers();
         } catch (IOException e) {
@@ -164,11 +197,11 @@ public class OnlineGame {
                     try {
                         sleep(1000);
                         /**received a board message from a "Check" request to the server */
-                        final String[] msg =client.communication("check", "");
-                        logger.log(Level.INFO, "client received: "+ Arrays.toString(msg));
+                        final String[] msg = client.communication("check", "");
+                        logger.log(Level.INFO, "client received: " + Arrays.toString(msg));
 
                         /**if the check is unsuccesfull, close the game */
-                        if(msg==null){
+                        if (msg == null) {
                             Platform.runLater(() -> {
 
                                 labelChatMessage("Opponent has closed connection. ");
@@ -192,13 +225,13 @@ public class OnlineGame {
                             boardcheckThread.stop();
 
                             /**if the check is successfull, update the game */
-                        }else if(msg[1].contains("[")){
+                        } else if (msg[1].contains("[")) {
 
-                            int index =0;
+                            int index = 0;
                             /**format the received board */
-                            final String[] boardString=msg[1].replace("[","").replace("]","").split(" ");
+                            final String[] boardString = msg[1].replace("[", "").replace("]", "").split(" ");
                             for (final String str : boardString) {
-                                if ("".equals(str))continue;
+                                if ("".equals(str)) continue;
                                 /**update the board of the opponent inside of our own client class */
                                 boardOfOpponent[index++] = Integer.parseInt(str);
                             }
@@ -210,21 +243,22 @@ public class OnlineGame {
                             boardCheck();
 
 
-
                         });
 
                         /**ACTUALIZE CHAT */
                         Platform.runLater(() -> {
-                            view.chatRow.getChildren().clear();});
+                            view.chatRow.getChildren().clear();
+                        });
                         try {
                             final ArrayList<String> strings = client.chat("");
-                            for(final String k : strings){
+                            for (final String k : strings) {
                                 final Label lbl = new Label(k);
                                 lbl.setTextFill(Color.WHITE);
                                 lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
                                 /**Update UI */
                                 Platform.runLater(() -> {
-                                    view.chatRow.getChildren().add(lbl);});
+                                    view.chatRow.getChildren().add(lbl);
+                                });
                             }
                         } catch (IOException | ClassNotFoundException e) {
                             logger.log(Level.SEVERE, e.toString());
@@ -266,19 +300,19 @@ public class OnlineGame {
                 /**while the server is not closed, do the loop */
                 while (!server.server.isClosed()) {
                     try {
-                        if(server.payload1.contains("ready"))
+                        if (server.payload1.contains("ready"))
                             sleep(2000);
                         sleep(1000);
                         /**getting the board of the opponent */
-                        boardOfOpponent =server.board_in_serverClass;
+                        boardOfOpponent = server.board_in_serverClass;
                         Platform.runLater(() -> {
                             timeout++;
                             /**check whether everything is alright with the received board */
                             boardCheck();
                             /**send board to opponent */
-                            server.payload1=Arrays.toString(board.getBoardAsArray()).replace(",","");
+                            server.payload1 = Arrays.toString(board.getBoardAsArray()).replace(",", "");
                             /**What to do in case of a timeout */
-                            if(timeout>60){
+                            if (timeout > 60) {
 
                                 Platform.runLater(() -> {
 
@@ -308,7 +342,7 @@ public class OnlineGame {
 
                         /**ACTUALIZE CHAT */
                         Platform.runLater(() -> view.chatRow.getChildren().clear());
-                        for(final String s : server.CHAT){
+                        for (final String s : server.CHAT) {
                             final Label lbl = new Label(s);
                             lbl.setTextFill(Color.WHITE);
                             lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
@@ -337,7 +371,7 @@ public class OnlineGame {
          * check if the other player has one move played in a valid field
          * (loop through the board */
         int moveCounter = 0;
-        final int[] boardArray =  board.getBoardAsArray();
+        final int[] boardArray = board.getBoardAsArray();
         for (int i = 0; i < boardArray.length; i++) {
             if (boardArray[i] != boardOfOpponent[i] && boardOfOpponent[i] != 0) {
                 /**thats a move! */
@@ -356,40 +390,40 @@ public class OnlineGame {
                     /**animate the move */
                     gameMethods.animateMoves(boardPosition);
 
-                /**check for winner */
-                if (board.getWinner() != 0) {
+                    /**check for winner */
+                    if (board.getWinner() != 0) {
 
-                    setWinner();
-                    if (board.getWinner() != 3) {
+                        setWinner();
+                        if (board.getWinner() != 3) {
 
-                        if (iAmNumber != board.getWinner())
-                            myTurn = true;
-                        labelChatMessage(players.get(board.getWinner()).getName() + " wins with his move in field: ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
+                            if (iAmNumber != board.getWinner())
+                                myTurn = true;
+                            labelChatMessage(players.get(board.getWinner()).getName() + " wins with his move in field: ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
+                        } else {
+                            if (server != null)
+                                myTurn = true;
+                            labelChatMessage("It's a tie!");
+                        }
+                        return;
                     } else {
-                        if (server != null)
-                            myTurn = true;
-                        labelChatMessage("It's a tie!");
+                        labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() + " has played in field ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
+                        labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() + ", please make your turn!");
+
+
+                        myTurn = true;
+
+                        aiMove();
+
                     }
-                    return;
-                } else {
-                    labelChatMessage(players.get(iAmNumber ==1?1:0).getName() + " has played in field ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
-                    labelChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
-
-
-                    myTurn = true;
-
-                    aiMove();
-
                 }
-            }
             }
         }
 
-                if (moveCounter > 1) {
-                    /**Other player has played more than 1 field */
-                    labelChatMessage("Other player is a cheater!");
-                }
-            }
+        if (moveCounter > 1) {
+            /**Other player has played more than 1 field */
+            labelChatMessage("Other player is a cheater!");
+        }
+    }
 
     private void aiMove() {
         /** here we implement the ai move as a response */
@@ -435,7 +469,9 @@ public class OnlineGame {
     }
 
 
-    /**Update the UI and the game after declaring the winner */
+    /**
+     * Update the UI and the game after declaring the winner
+     */
     public void setWinner() {
 
 
@@ -455,8 +491,6 @@ public class OnlineGame {
                     playAgain(sourceNode);
 
 
-
-
                 }, "NO", new EventHandler() {
                     @Override
                     public void handle(Event event) {
@@ -473,13 +507,12 @@ public class OnlineGame {
                 }));
 
 
-        if(server!=null&&server.AI_Mode||client!=null&&client.AI_Mode){
+        if (server != null && server.AI_Mode || client != null && client.AI_Mode) {
             /** The Stage where the Event Source Node belongs to */
             final Stage sourceNode = (Stage) ((Node) view.gamePane).getScene().getWindow();
 
             /**If the player chooses to play again, restart everything */
             playAgain(sourceNode);
-
 
 
         }
@@ -490,8 +523,10 @@ public class OnlineGame {
         gameMethods.setWinnerStroke(board, view);
     }
 
-    /** sourceNode is the Stage where the Event Source Node belongs to */
-    private void playAgain(Stage sourceNode){
+    /**
+     * sourceNode is the Stage where the Event Source Node belongs to
+     */
+    private void playAgain(Stage sourceNode) {
 
 
         /**update the game UI and the internal game boards */
@@ -501,16 +536,15 @@ public class OnlineGame {
             Arrays.fill(server.board_in_serverClass, 0);
             view = new TicTacToeView(sourceNode);
             new OnlineController(OnlineGame.this, view);
-            if(myTurn)
-                labelChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
-        }
-        else{
+            if (myTurn)
+                labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() + ", please make your turn!");
+        } else {
             final Thread waitForServer = new Thread(() -> {
                 Platform.runLater(() -> {
 
                     /**update UI */
                     view = new TicTacToeView(sourceNode);
-                    view.mainPane.getChildren().add(DialogCreator.vanillaDialog("Waiting for host","...",false));
+                    view.mainPane.getChildren().add(DialogCreator.vanillaDialog("Waiting for host", "...", false));
 
                 });
 
@@ -527,8 +561,8 @@ public class OnlineGame {
                     board = new Board();
                     view = new TicTacToeView(sourceNode);
                     new OnlineController(OnlineGame.this, view);
-                    if(myTurn)
-                        labelChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
+                    if (myTurn)
+                        labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() + ", please make your turn!");
 
 
                 });
@@ -538,18 +572,19 @@ public class OnlineGame {
         }
 
 
-
     }
 
-    /**populate the chat UI element with chat messages */
+    /**
+     * populate the chat UI element with chat messages
+     */
     public Label labelChatMessage(String message) {
 
         final Label lbl = new Label(message);
         lbl.setTextFill(Color.WHITE);
         lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
         view.chatRow.getChildren().add(lbl);
-        if(!"It's your turn!".equals(message))
-            if(server!=null)
+        if (!"It's your turn!".equals(message))
+            if (server != null)
                 server.CHAT.add(message);
         return lbl;
     }
