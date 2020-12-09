@@ -16,7 +16,6 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -719,7 +718,7 @@ public class MainMenuController {
                             imageHolder3.setOnMouseClicked(e->{
 
                                 TicTacToeView gameView = new TicTacToeView((Stage)view.row1.getScene().getWindow());
-                                online_game gamemodel = new online_game(gameView,server,null);
+                                OnlineGame gamemodel = new OnlineGame(gameView,server,null);
                                 OnlineController game_1_controller = new OnlineController(gamemodel,gameView);
 
 
@@ -815,7 +814,7 @@ public class MainMenuController {
                                 this.interrupt();
                             }else{
                                 TicTacToeView gameView = new TicTacToeView((Stage)view.row1.getScene().getWindow());
-                                online_game gamemodel = new online_game(gameView,client[0],Boolean.valueOf(finalS[2]));
+                                OnlineGame gamemodel = new OnlineGame(gameView,client[0],Boolean.valueOf(finalS[2]));
                                 OnlineController game_1_controller = new OnlineController(gamemodel, gameView);
                                 this.interrupt();
 

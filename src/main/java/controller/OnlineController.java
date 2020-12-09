@@ -20,7 +20,7 @@ import model.DialogCreator;
 import model.gameMethods;
 import model.net.Client;
 import model.net.Server;
-import model.online_game;
+import model.OnlineGame;
 import model.player.figures_name;
 import model.player.userdata;
 import view.TicTacToeView;
@@ -29,16 +29,14 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Random;
-import java.util.Scanner;
 
 public class OnlineController {
-    online_game model;
+    OnlineGame model;
     TicTacToeView view;
     int IAmNumber;
 
 
-    public OnlineController(online_game gamemodel, TicTacToeView gameView) {
+    public OnlineController(OnlineGame gamemodel, TicTacToeView gameView) {
         model = gamemodel;
         view = gameView;
 

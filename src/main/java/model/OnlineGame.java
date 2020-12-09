@@ -35,7 +35,7 @@ import static java.lang.Thread.sleep;
 /**
  * @author Emanuel Graf
  */
-public class online_game {
+public class OnlineGame {
 
     /**how many players are allowed in the game */
     public static final int MAX_PLAYERS = 2;
@@ -66,7 +66,7 @@ public class online_game {
     /**board check thread */
     Thread boardcheckThread =null;
     /**Logger */
-    final static  Logger logger = Logger.getLogger(online_game.class.getName());
+    final static  Logger logger = Logger.getLogger(OnlineGame.class.getName());
 
 
     /**Am I player 1 or 2 ? */
@@ -85,7 +85,7 @@ public class online_game {
      * @param serverClient Object determinging whether we are client or server
      * @param whostarts If true, this instance makes first move
      */
-    public online_game(TicTacToeView gameView, Object serverClient, Boolean whostarts) {
+    public OnlineGame(TicTacToeView gameView, Object serverClient, Boolean whostarts) {
         /**the view part of the MVC pattern of the game */
         this.view = gameView;
 
@@ -500,7 +500,7 @@ public class online_game {
             Arrays.fill(boardOfOpponent, 0);
             Arrays.fill(server.board_in_serverClass, 0);
             view = new TicTacToeView(sourceNode);
-            new OnlineController(online_game.this, view);
+            new OnlineController(OnlineGame.this, view);
             if(myTurn)
                 labelChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
         }
@@ -526,7 +526,7 @@ public class online_game {
                     /**update internal game board */
                     board = new Board();
                     view = new TicTacToeView(sourceNode);
-                    new OnlineController(online_game.this, view);
+                    new OnlineController(OnlineGame.this, view);
                     if(myTurn)
                         labelChatMessage(players.get(iAmNumber ==1?1:0).getName()+", please make your turn!");
 
