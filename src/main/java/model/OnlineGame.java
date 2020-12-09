@@ -117,7 +117,7 @@ public class OnlineGame {
 
     /**
      * @param gameView     The game View
-     * @param serverClient Object determinging whether we are client or server
+     * @param serverClient Object determining whether we are client or server
      * @param whostarts    If true, this instance makes first move
      */
     public OnlineGame(TicTacToeView gameView, Object serverClient, Boolean whostarts) {
@@ -200,7 +200,7 @@ public class OnlineGame {
                         final String[] msg = client.communication("check", "");
                         logger.log(Level.INFO, "client received: " + Arrays.toString(msg));
 
-                        /**if the check is unsuccesfull, close the game */
+                        /**if the check is unsuccessful, close the game */
                         if (msg == null) {
                             Platform.runLater(() -> {
 
@@ -224,7 +224,7 @@ public class OnlineGame {
                             });
                             boardcheckThread.stop();
 
-                            /**if the check is successfull, update the game */
+                            /**if the check is successful, update the game */
                         } else if (msg[1].contains("[")) {
 
                             int index = 0;
@@ -374,7 +374,7 @@ public class OnlineGame {
         final int[] boardArray = board.getBoardAsArray();
         for (int i = 0; i < boardArray.length; i++) {
             if (boardArray[i] != boardOfOpponent[i] && boardOfOpponent[i] != 0) {
-                /**thats a move! */
+                /**that's a move! */
                 moveCounter++;
                 timeout = 0;
                 final HBox boardPosition = view.board[i];
@@ -391,6 +391,7 @@ public class OnlineGame {
                     gameMethods.animateMoves(boardPosition);
 
                     /**check for winner */
+                    final int decisiveField = (i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1);
                     if (board.getWinner() != 0) {
 
                         setWinner();
@@ -398,7 +399,7 @@ public class OnlineGame {
 
                             if (iAmNumber != board.getWinner())
                                 myTurn = true;
-                            labelChatMessage(players.get(board.getWinner()).getName() + " wins with his move in field: ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
+                            labelChatMessage(players.get(board.getWinner()).getName() + " wins with his move in field: ( " + decisiveField + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
                         } else {
                             if (server != null)
                                 myTurn = true;
@@ -406,7 +407,7 @@ public class OnlineGame {
                         }
                         return;
                     } else {
-                        labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() + " has played in field ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
+                        labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() + " has played in field ( " + decisiveField + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
                         labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() + ", please make your turn!");
 
 
