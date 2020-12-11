@@ -141,7 +141,12 @@ public class OnlineGame {
         if (this.whoStarts) {
             iAmNumber = 1;
             myTurn = true;
-            labelChatMessage(players.get(iAmNumber).getName() + ", please make your turn!");
+            labelChatMessage(
+                String.format(
+                        "%s, please make your turn!",
+                        players.get(iAmNumber).getName()
+                )
+            );
             aiMove();
         }
         /**else, I'll wait for my move */
@@ -157,7 +162,9 @@ public class OnlineGame {
         } else {
             figures = players.get((server) == null ? 0 : 1).getFigure();
         }
-        opponentImage = new Image("/img/" + figures + "/" + figures + ".png");
+        opponentImage = new Image(
+                "/img/" + figures + "/" + figures + ".png"
+        );
         playerImage = new Image(
                 "/img/" + userdata.get_selected_figure() + "/" + userdata.get_selected_figure() + ".png"
         );
@@ -169,7 +176,8 @@ public class OnlineGame {
                 "#2fa7e8",
                 "#e1e832",
                 "#41e831",
-                "#30e8d2"};
+                "#30e8d2"
+        };
         playerColor = gameMethods.hex2Rgb(neonColors[rand.nextInt(4)]);
         opponentColor = gameMethods.hex2Rgb(neonColors[rand.nextInt(4)]);
         while (opponentColor.equals(playerColor)) {
@@ -255,7 +263,7 @@ public class OnlineGame {
          */
         Platform.runLater(() -> {
 
-            labelChatMessage("Opponent has closed connection. ");
+            labelChatMessage("Opponent has closed connection.");
             labelChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 
                 if (server != null)
@@ -376,11 +384,13 @@ public class OnlineGame {
                             if (iAmNumber != board.getWinner())
                                 myTurn = true;
                             labelChatMessage(
-                                    players.get(board.getWinner()).getName() +
-                                            " wins with his move in field: ( " +
-                                            decisiveField +
-                                            ", " +
-                                            (int) Math.ceil((i + 1) / 3f) + ")");
+                                String.format(
+                                        "%s wins with his move in field: (%s, %s)",
+                                        players.get(board.getWinner()).getName(),
+                                        decisiveField,
+                                        (int) Math.ceil((i + 1) / 3f)
+                                    )
+                            );
                         } else {
                             if (server != null)
                                 myTurn = true;
@@ -388,14 +398,20 @@ public class OnlineGame {
                         }
                         return;
                     } else {
-                        labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() +
-                                " has played in field ( " +
-                                decisiveField +
-                                ", " +
-                                (int) Math.ceil((i + 1) / 3f) + ")"
+                        labelChatMessage(
+                            String.format(
+                                "%s has played in field (%s, %S)",
+                                players.get(iAmNumber == 1 ? 1 : 0).getName(),
+                                    decisiveField,
+                                    (int) Math.ceil((i + 1) / 3f)
+                            )
                         );
-                        labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() + ", please make your turn!");
-
+                        labelChatMessage(
+                            String.format(
+                                    "%s, please make your turn!",
+                                    players.get(iAmNumber == 1 ? 1 : 0).getName()
+                            )
+                        );
 
                         myTurn = true;
 
@@ -442,7 +458,12 @@ public class OnlineGame {
                             "board",
                             Arrays.toString(boardArray).replace(",", "")
                     );
-                    System.out.println("Client receives: " + Arrays.toString(msg));
+                    System.out.println(
+                        String.format(
+                            "Client receives: %s",
+                            Arrays.toString(msg)
+                        )
+                    );
 
                     /**set the image */
                     gameMethods.setImage(
@@ -525,7 +546,12 @@ public class OnlineGame {
             view = new TicTacToeView(sourceNode);
             new OnlineController(OnlineGame.this, view);
             if (myTurn)
-                labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() + ", please make your turn!");
+                labelChatMessage(
+                    String.format(
+                        "%s, please make your turn",
+                        players.get(iAmNumber == 1 ? 1 : 0).getName()
+                    )
+                );
         } else {
             final Thread waitForServer = new Thread(() -> {
                 Platform.runLater(() -> {
@@ -551,11 +577,13 @@ public class OnlineGame {
                     view = new TicTacToeView(sourceNode);
                     new OnlineController(OnlineGame.this, view);
                     if (myTurn)
-                        labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() + ", please make your turn!");
-
-
+                        labelChatMessage(
+                            String.format(
+                                "%s, please make your turn!",
+                                players.get(iAmNumber == 1 ? 1 : 0).getName()
+                            )
+                        );
                 });
-
             });
             waitForServer.start();
         }
