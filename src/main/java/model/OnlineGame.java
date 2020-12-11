@@ -282,68 +282,66 @@ public class OnlineGame {
         /**check every 500millis
          * if the board has changed, check if the change is valid
          * ( fraud detection ) */
-        boardCheckThread = new Thread() {
-            public void run() {
-                /**while the server is not closed, do the loop */
-                while (!server.server.isClosed()) {
-                    try {
-                        if (server.payload1.contains("ready"))
-                            sleep(2000);
-                        sleep(1000);
-                        /**getting the board of the opponent */
-                        boardOfOpponent = server.board_in_serverClass;
-                        Platform.runLater(() -> {
-                            timeout++;
-                            /**check whether everything is alright with the received board */
-                            boardCheck();
-                            /**send board to opponent */
-                            server.payload1 = Arrays.toString(board.getBoardAsArray()).replace(",", "");
-                            /**What to do in case of a timeout */
-                            if (timeout > 60) {
+        boardCheckThread = new Thread(() -> {
+            /**while the server is not closed, do the loop */
+            while (!server.server.isClosed()) {
+                try {
+                    if (server.payload1.contains("ready"))
+                        sleep(2000);
+                    sleep(1000);
+                    /**getting the board of the opponent */
+                    boardOfOpponent = server.board_in_serverClass;
+                    Platform.runLater(() -> {
+                        timeout++;
+                        /**check whether everything is alright with the received board */
+                        boardCheck();
+                        /**send board to opponent */
+                        server.payload1 = Arrays.toString(board.getBoardAsArray()).replace(",", "");
+                        /**What to do in case of a timeout */
+                        if (timeout > 60) {
 
-                                Platform.runLater(() -> {
+                            Platform.runLater(() -> {
 
-                                    labelChatMessage("Opponent has closed connection. ");
-                                    labelChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-
-
-                                        /**Stop everything and return to the main menu */
-                                        if (server != null)
-                                            server.stop();
-                                        else
-                                            client.stop();
-
-                                        final MainMenuModel model = new MainMenuModel();
-                                        final MainMenuView view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
-                                        new MainMenuController(model, view2, null);
+                                labelChatMessage("Opponent has closed connection. ");
+                                labelChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 
 
-                                    });
-                                    boardCheckThread.stop();
+                                    /**Stop everything and return to the main menu */
+                                    if (server != null)
+                                        server.stop();
+                                    else
+                                        client.stop();
+
+                                    final MainMenuModel model = new MainMenuModel();
+                                    final MainMenuView view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
+                                    new MainMenuController(model, view2, null);
+
 
                                 });
-                                boardCheckThread.interrupt();
+                                boardCheckThread.stop();
 
-                            }
-                        });
+                            });
+                            boardCheckThread.interrupt();
 
-                        /**ACTUALIZE CHAT */
-                        Platform.runLater(() -> view.chatRow.getChildren().clear());
-                        for (final String s : server.CHAT) {
-                            final Label lbl = new Label(s);
-                            lbl.setTextFill(Color.WHITE);
-                            lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
-                            /**update the UI */
-                            Platform.runLater(() -> view.chatRow.getChildren().add(lbl));
                         }
+                    });
 
-                    } catch (InterruptedException e) {
-                        logger.log(Level.SEVERE, e.toString());
-
+                    /**ACTUALIZE CHAT */
+                    Platform.runLater(() -> view.chatRow.getChildren().clear());
+                    for (final String s : server.CHAT) {
+                        final Label lbl = new Label(s);
+                        lbl.setTextFill(Color.WHITE);
+                        lbl.setFont(Font.font("ARIAL", FontWeight.BOLD, 20));
+                        /**update the UI */
+                        Platform.runLater(() -> view.chatRow.getChildren().add(lbl));
                     }
+
+                } catch (InterruptedException e) {
+                    logger.log(Level.SEVERE, e.toString());
+
                 }
             }
-        };
+        });
         boardCheckThread.start();
 
     }
@@ -375,7 +373,7 @@ public class OnlineGame {
                     board.populateBoard(i, iAmNumber == 2 ? 1 : 2);
                     gameMethods.setImage(fieldOnBoard, opponentImage, opponentColor);
                     /**animate the move */
-                    gameMethods.animateMoves(boardPosition);
+                    model.gameMethods.animateMoves(boardPosition);
 
                     /**check for winner */
                     final int decisiveField = (i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1);
@@ -429,7 +427,7 @@ public class OnlineGame {
                 server.payload1 = Arrays.toString(boardArray).replace(",", "");
                 /**set the image */
                 gameMethods.setImage((ImageView) view.board[nextMove].getChildren().get(0), playerImage, playerColor);
-                gameMethods.animateMoves(view.board[nextMove]);
+                model.gameMethods.animateMoves(view.board[nextMove]);
 
                 if (this.board.getWinner() != 0)
                     setWinner();
@@ -444,7 +442,7 @@ public class OnlineGame {
 
                     /**set the image */
                     gameMethods.setImage((ImageView) view.board[nextMove].getChildren().get(0), playerImage, playerColor);
-                    gameMethods.animateMoves(view.board[nextMove]);
+                    model.gameMethods.animateMoves(view.board[nextMove]);
                     if (this.board.getWinner() != 0)
                         setWinner();
 
@@ -464,7 +462,6 @@ public class OnlineGame {
 
 
         /**declare gameMethods object for best practices */
-        final gameMethods gameMethods = new gameMethods();
 
 
         if (iAmNumber != board.getWinner())
@@ -479,19 +476,16 @@ public class OnlineGame {
                     playAgain(sourceNode);
 
 
-                }, "NO", new EventHandler() {
-                    @Override
-                    public void handle(Event event) {
+                }, "NO", event -> {
 
-                        if (server != null)
-                            server.stop();
-                        else
-                            client.stop();
+                    if (server != null)
+                        server.stop();
+                    else
+                        client.stop();
 
-                        final MainMenuModel model = new MainMenuModel();
-                        final MainMenuView view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
-                        new MainMenuController(model, view2, null);
-                    }
+                    final MainMenuModel model = new MainMenuModel();
+                    final MainMenuView view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
+                    new MainMenuController(model, view2, null);
                 }));
 
 
@@ -508,7 +502,7 @@ public class OnlineGame {
         /**todo online statistics */
         /**userdata.setLoseGames(); */
 
-        gameMethods.setWinnerStroke(board, view);
+        model.gameMethods.setWinnerStroke(board, view);
     }
 
     /**
