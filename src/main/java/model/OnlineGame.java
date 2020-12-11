@@ -2,6 +2,16 @@ package model;
 
 import controller.MainMenuController;
 import controller.OnlineController;
+
+import model.net.Client;
+import model.net.Server;
+import model.player.OnlinePlayer;
+import model.player.figures_name;
+import model.player.userdata;
+
+import view.MainMenuView;
+import view.TicTacToeView;
+
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -13,13 +23,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import model.net.Client;
-import model.net.Server;
-import model.player.OnlinePlayer;
-import model.player.figures_name;
-import model.player.userdata;
-import view.MainMenuView;
-import view.TicTacToeView;
 
 import java.io.IOException;
 import java.util.ArrayList;
