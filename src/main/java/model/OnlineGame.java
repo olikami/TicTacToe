@@ -158,7 +158,9 @@ public class OnlineGame {
             figures = players.get((server) == null ? 0 : 1).getFigure();
         }
         opponentImage = new Image("/img/" + figures + "/" + figures + ".png");
-        playerImage = new Image("/img/" + userdata.get_selected_figure() + "/" + userdata.get_selected_figure() + ".png");
+        playerImage = new Image(
+                "/img/" + userdata.get_selected_figure() + "/" + userdata.get_selected_figure() + ".png"
+        );
 
 
         /**setting the color for the icons */
@@ -208,7 +210,10 @@ public class OnlineGame {
 
                         int index = 0;
                         /**format the received board */
-                        final String[] boardString = msg[1].replace("[", "").replace("]", "").split(" ");
+                        final String[] boardString = msg[1]
+                                .replace("[", "")
+                                .replace("]", "")
+                                .split(" ");
                         for (final String str : boardString) {
                             if ("".equals(str)) continue;
                             /**update the board of the opponent inside of our own client class */
@@ -252,7 +257,6 @@ public class OnlineGame {
 
             labelChatMessage("Opponent has closed connection. ");
             labelChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-
 
                 if (server != null)
                     server.stop();
@@ -371,7 +375,12 @@ public class OnlineGame {
 
                             if (iAmNumber != board.getWinner())
                                 myTurn = true;
-                            labelChatMessage(players.get(board.getWinner()).getName() + " wins with his move in field: ( " + decisiveField + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
+                            labelChatMessage(
+                                    players.get(board.getWinner()).getName() +
+                                            " wins with his move in field: ( " +
+                                            decisiveField +
+                                            ", " +
+                                            (int) Math.ceil((i + 1) / 3f) + ")");
                         } else {
                             if (server != null)
                                 myTurn = true;
@@ -379,7 +388,12 @@ public class OnlineGame {
                         }
                         return;
                     } else {
-                        labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() + " has played in field ( " + decisiveField + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
+                        labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() +
+                                " has played in field ( " +
+                                decisiveField +
+                                ", " +
+                                (int) Math.ceil((i + 1) / 3f) + ")"
+                        );
                         labelChatMessage(players.get(iAmNumber == 1 ? 1 : 0).getName() + ", please make your turn!");
 
 
@@ -424,11 +438,16 @@ public class OnlineGame {
                 myTurn = false;
                 final int[] boardArray = this.board.populateBoard(nextMove, iAmNumber);
                 try {
-                    final String[] msg = client.communication("board", Arrays.toString(boardArray).replace(",", ""));
+                    final String[] msg = client.communication(
+                            "board",
+                            Arrays.toString(boardArray).replace(",", "")
+                    );
                     System.out.println("Client receives: " + Arrays.toString(msg));
 
                     /**set the image */
-                    gameMethods.setImage((ImageView) view.board[nextMove].getChildren().get(0), playerImage, playerColor);
+                    gameMethods.setImage(
+                            (ImageView) view.board[nextMove].getChildren().get(0), playerImage, playerColor
+                    );
                     model.gameMethods.animateMoves(view.board[nextMove]);
                     if (this.board.getWinner() != 0)
                         setWinner();
@@ -513,8 +532,9 @@ public class OnlineGame {
 
                     /**update UI */
                     view = new TicTacToeView(sourceNode);
-                    view.mainPane.getChildren().add(DialogCreator.vanillaDialog("Waiting for host", "...", false));
-
+                    view.mainPane.getChildren().add(
+                            DialogCreator.vanillaDialog("Waiting for host", "...", false)
+                    );
                 });
 
                 while (!Arrays.equals(boardOfOpponent, new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0})) {
