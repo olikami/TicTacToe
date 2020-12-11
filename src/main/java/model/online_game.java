@@ -16,7 +16,6 @@ import model.net.Server;
 import model.player.OnlinePlayer;
 import model.player.figures_name;
 import model.player.userdata;
-import view.MainMenuView;
 import view.TicTacToeView;
 
 import java.io.IOException;
@@ -65,7 +64,7 @@ public class online_game {
     TicTacToeView View;
 
     //list of the players in this game
-    public ArrayList<OnlinePlayer> Players =null;
+    public ArrayList<OnlinePlayer> Players = null;
 
 
     public online_game(TicTacToeView gameView, Object SERVER_CLIENT, Boolean who_starts) {
@@ -106,13 +105,13 @@ public class online_game {
                             //check whether everything is alright with the received board
                             boardCheck();
                             //send board to opponent
-                            server.payload1=(Arrays.toString(board.getBoardAsArray()).replace(",",""));
+                            server.payload1 = (Arrays.toString(board.getBoardAsArray()).replace(",",""));
                             //What to do in case of a timeout
-                            if(timeout>60){
+                            if(timeout > 60){
 
                                 Platform.runLater(() -> {
 
-                                    setChatMessage("Opponent has closed connection. ");
+                                    setChatMessage("Opponent has closed connection.");
                                     setChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 
 
@@ -167,13 +166,13 @@ public class online_game {
                         sleep(1000);
                         //received a board message from a "Check" request to the server
                         String[] s =client.communication("check", "");
-                        System.out.println("client received: "+ Arrays.toString(s));
+                        System.out.println("client received: " + Arrays.toString(s));
 
                         //if the check is unsuccessful, close the game
-                        if(s==null){
+                        if(s == null){
                             Platform.runLater(() -> {
 
-                                setChatMessage("Opponent has closed connection. ");
+                                setChatMessage("Opponent has closed connection.");
                                 setChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 
 
@@ -190,7 +189,7 @@ public class online_game {
                             board_check_thread.stop();
 
                             //if the check is successful, update the game
-                        }else if(s[1].contains("[")){
+                        } else if(s[1].contains("[")){
 
                             int i =0;
                             //format the received board
@@ -236,7 +235,7 @@ public class online_game {
         if (WhoStarts) {
             IAmNumber = 1;
             MyTurn = true;
-            setChatMessage(Players.get(1).getName()+", please make your turn!");
+            setChatMessage(String.format("%s, please make your turn!", Players.get(1).getName()));
             AImove();
         }
         //else, I'll wait for my move
@@ -251,8 +250,8 @@ public class online_game {
         }else{
             fn=Players.get((server)==null?0:1).getFigure();
         }
-        Opponent_image       = new Image("/img/" + fn + "/" + fn + ".png");
-        Player_Image           = new Image("/img/" + userdata.get_selected_figure() + "/" + userdata.get_selected_figure() + ".png");
+        Opponent_image = new Image("/img/" + fn + "/" + fn + ".png");
+        Player_Image = new Image("/img/" + userdata.get_selected_figure() + "/" + userdata.get_selected_figure() + ".png");
 
 
         //setting the color for the icons
@@ -264,12 +263,9 @@ public class online_game {
                 "#30e8d2"};
         Player_color      = gameMethods.hex2Rgb(neon_colors[r.nextInt(4)]);
         Opponent_color    = gameMethods.hex2Rgb(neon_colors[r.nextInt(4)]);
-        while(Opponent_color.equals(Player_color))
+        while(Opponent_color.equals(Player_color)) {
             Opponent_color = gameMethods.hex2Rgb(neon_colors[r.nextInt(4)]);
-
-
-
-
+        }
     }
 
     public void boardCheck() {
@@ -310,7 +306,7 @@ public class online_game {
                         return;
                     } else {
                         setChatMessage(Players.get(IAmNumber==1?1:0).getName() + " has played in field ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
-                        setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
+                        setChatMessage(Players.get(IAmNumber==1?1:0).getName() + ", please make your turn!");
 
 
                         MyTurn = true;
@@ -418,7 +414,7 @@ public class online_game {
             View = new TicTacToeView(stageTheEventSourceNodeBelongs);
             new OnlineController(online_game.this, View);
             if(MyTurn)
-                setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
+                setChatMessage(Players.get(IAmNumber==1?1:0).getName() + ", please make your turn!");
         }
         else{
             Thread wait_for_server = new Thread(() -> {
@@ -443,7 +439,7 @@ public class online_game {
                     board = new Board();
                     View = new TicTacToeView(stageTheEventSourceNodeBelongs);
                     if(MyTurn)
-                        setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
+                        setChatMessage(Players.get(IAmNumber==1?1:0).getName() + ", please make your turn!");
 
 
                 });
