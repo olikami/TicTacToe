@@ -3,8 +3,6 @@ package model;
 import controller.MainMenuController;
 import controller.OnlineController;
 import javafx.application.Platform;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -199,26 +197,7 @@ public class OnlineGame {
 
                     /**if the check is unsuccessful, close the game */
                     if (msg == null) {
-                        Platform.runLater(() -> {
-
-                            labelChatMessage("Opponent has closed connection. ");
-                            labelChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-
-
-                                if (server != null)
-                                    server.stop();
-                                else
-                                    client.stop();
-
-                                final MainMenuModel model = new MainMenuModel();
-                                final MainMenuView view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
-                                new MainMenuController(model, view2, null);
-
-
-                            });
-                            boardCheckThread.stop();
-
-                        });
+                        closeGame();
                         boardCheckThread.stop();
 
                         /**if the check is successful, update the game */
@@ -262,6 +241,31 @@ public class OnlineGame {
 
     }
 
+    private void closeGame() {
+        /**
+         * Close the game and inform player that opponent has closed the connection.
+         */
+        Platform.runLater(() -> {
+
+            labelChatMessage("Opponent has closed connection. ");
+            labelChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+
+
+                if (server != null)
+                    server.stop();
+                else
+                    client.stop();
+
+                final MainMenuModel model = new MainMenuModel();
+                final MainMenuView view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
+                new MainMenuController(model, view2, null);
+
+            });
+            boardCheckThread.stop();
+
+        });
+    }
+
     private void startServerHandler(Object serverClient) {
         server = (Server) serverClient;
 
@@ -300,27 +304,7 @@ public class OnlineGame {
                         /**What to do in case of a timeout */
                         if (timeout > 60) {
 
-                            Platform.runLater(() -> {
-
-                                labelChatMessage("Opponent has closed connection. ");
-                                labelChatMessage("Click to go back to main menu").addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-
-
-                                    /**Stop everything and return to the main menu */
-                                    if (server != null)
-                                        server.stop();
-                                    else
-                                        client.stop();
-
-                                    final MainMenuModel model = new MainMenuModel();
-                                    final MainMenuView view2 = new MainMenuView((Stage) view.gamePane.getScene().getWindow());
-                                    new MainMenuController(model, view2, null);
-
-
-                                });
-                                boardCheckThread.stop();
-
-                            });
+                            closeGame();
                             boardCheckThread.interrupt();
 
                         }
