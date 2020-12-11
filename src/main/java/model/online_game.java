@@ -169,7 +169,7 @@ public class online_game {
                         String[] s =client.communication("check", "");
                         System.out.println("client received: "+ Arrays.toString(s));
 
-                        //if the check is unsuccesfull, close the game
+                        //if the check is unsuccessful, close the game
                         if(s==null){
                             Platform.runLater(() -> {
 
@@ -189,7 +189,7 @@ public class online_game {
                             });
                             board_check_thread.stop();
 
-                            //if the check is successfull, update the game
+                            //if the check is successful, update the game
                         }else if(s[1].contains("[")){
 
                             int i =0;
@@ -279,7 +279,7 @@ public class online_game {
         int move_counter = 0;
         for (int i = 0; i < board.getBoardAsArray().length; i++) {
             if (board.getBoardAsArray()[i] != board_of_opponent[i] && board_of_opponent[i] != 0) {
-                //thats a move!
+                //that's a move!
                 move_counter++;
                 timeout = 0;
                 if (board.getBoardAsArray()[i] != 0) {
@@ -293,32 +293,32 @@ public class online_game {
                     //animate the move
                     gameMethods.animateMoves(View.board[i]);
 
-                //check for winner
-                if (board.getWinner() != 0) {
+                    //check for winner
+                    if (board.getWinner() != 0) {
 
-                    setWinner();
-                    if (board.getWinner() != 3) {
+                        setWinner();
+                        if (board.getWinner() != 3) {
 
-                        if (IAmNumber != board.getWinner())
-                            MyTurn = true;
-                        setChatMessage(Players.get(board.getWinner()).getName() + " wins with his move in field: ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
+                            if (IAmNumber != board.getWinner())
+                                MyTurn = true;
+                            setChatMessage(Players.get(board.getWinner()).getName() + " wins with his move in field: ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
+                        } else {
+                            if ((server != null))
+                                MyTurn = true;
+                            setChatMessage("It's a tie!");
+                        }
+                        return;
                     } else {
-                        if ((server != null))
-                            MyTurn = true;
-                        setChatMessage("It's a tie!");
+                        setChatMessage(Players.get(IAmNumber==1?1:0).getName() + " has played in field ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
+                        setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
+
+
+                        MyTurn = true;
+
+                        AImove();
+
                     }
-                    return;
-                } else {
-                    setChatMessage(Players.get(IAmNumber==1?1:0).getName() + " has played in field ( " + ((i + 1) % 3f == 0 ? 3 : ((i + 1) % 3f == 2 ? 2 : 1)) + ", " + (int) Math.ceil((i + 1) / 3f) + ")");
-                    setChatMessage(Players.get(IAmNumber==1?1:0).getName()+", please make your turn!");
-
-
-                    MyTurn = true;
-
-                    AImove();
-
                 }
-            }
             }
         }
 
@@ -380,9 +380,6 @@ public class online_game {
 
                     Stage stageTheEventSourceNodeBelongs = (Stage) ((Node) event.getSource()).getScene().getWindow();
                     playAgain(stageTheEventSourceNodeBelongs);
-
-
-
 
                 }, "NO", event -> {
 
