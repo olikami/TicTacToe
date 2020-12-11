@@ -6,7 +6,7 @@ import controller.OnlineController;
 import model.net.Client;
 import model.net.Server;
 import model.player.OnlinePlayer;
-import model.player.figures_name;
+import model.player.figuresName;
 import model.player.userdata;
 
 import view.MainMenuView;
@@ -153,11 +153,11 @@ public class OnlineGame {
 
         final Random rand = new Random();
         /**Set the Opponent Image */
-        figures_name figures;
+        figuresName figures;
         if (players.get((server) == null ? 0 : 1).getFigure() == null) {
-            figures = figures_name.values()[rand.nextInt(figures_name.values().length)];
-            while (userdata.get_selected_figure() == figures) {
-                figures = figures_name.values()[rand.nextInt(figures_name.values().length)];
+            figures = figuresName.values()[rand.nextInt(figuresName.values().length)];
+            while (userdata.getSelectedFigure() == figures) {
+                figures = figuresName.values()[rand.nextInt(figuresName.values().length)];
             }
         } else {
             figures = players.get((server) == null ? 0 : 1).getFigure();
@@ -172,8 +172,8 @@ public class OnlineGame {
         playerImage = new Image(
             String.format(
                 "/img/%s/%s.png",
-                    userdata.get_selected_figure(),
-                    userdata.get_selected_figure()
+                    userdata.getSelectedFigure(),
+                    userdata.getSelectedFigure()
             )
         );
 
@@ -317,7 +317,7 @@ public class OnlineGame {
                         sleep(2000);
                     sleep(1000);
                     /**getting the board of the opponent */
-                    boardOfOpponent = server.board_in_serverClass;
+                    boardOfOpponent = server.boardInServerClass;
                     Platform.runLater(() -> {
                         timeout++;
                         /**check whether everything is alright with the received board */
@@ -446,7 +446,7 @@ public class OnlineGame {
         final gameMethods gameMethods = new gameMethods();
 
         if (server != null) {
-            if (server.AI_Mode) {
+            if (server.aiMode) {
                 myTurn = false;
                 final int[] boardArray = this.board.populateBoard(nextMove, iAmNumber);
                 server.payload1 = Arrays.toString(boardArray).replace(",", "");
@@ -458,7 +458,7 @@ public class OnlineGame {
                     setWinner();
             }
         } else {
-            if (client.AI_Mode) {
+            if (client.aiMode) {
                 myTurn = false;
                 final int[] boardArray = this.board.populateBoard(nextMove, iAmNumber);
                 try {
@@ -524,7 +524,7 @@ public class OnlineGame {
                 }));
 
 
-        if (server != null && server.AI_Mode || client != null && client.AI_Mode) {
+        if (server != null && server.aiMode || client != null && client.aiMode) {
             /** The Stage where the Event Source Node belongs to */
             final Stage sourceNode = (Stage) view.gamePane.getScene().getWindow();
 
@@ -550,7 +550,7 @@ public class OnlineGame {
         if (server != null) {
             board = new Board();
             Arrays.fill(boardOfOpponent, 0);
-            Arrays.fill(server.board_in_serverClass, 0);
+            Arrays.fill(server.boardInServerClass, 0);
             view = new TicTacToeView(sourceNode);
             new OnlineController(OnlineGame.this, view);
             if (myTurn)

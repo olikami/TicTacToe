@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 public class userdata {
 
 
-    private static figures_name selected_figure = figures_name.CIRCLE;
+    private static figuresName selected_figure = figuresName.CIRCLE;
     static private int  playedGames ;
     static private int wins;
     static private int loses;
@@ -60,12 +60,12 @@ public class userdata {
     }
 
 
-    static public void change_selected_figure(figures_name newFigure) {
+    static public void change_selected_figure(figuresName newFigure) {
         selected_figure = newFigure;
         save();
     }
 
-    static public figures_name get_selected_figure() {
+    static public figuresName getSelectedFigure() {
         return selected_figure;
     }
 
@@ -155,7 +155,7 @@ public class userdata {
                 unlockedFigures[i] = jarray.getBoolean(i);
 
 
-            selected_figure = figures_name.valueOf(obj.getString("selected_figure"));
+            selected_figure = figuresName.valueOf(obj.getString("selected_figure"));
 
 
 
@@ -172,7 +172,7 @@ public class userdata {
 
 
     }
-    public static void unlockFigure(figures_name figure){
+    public static void unlockFigure(figuresName figure){
         unlockedFigures[figure.ordinal()] = true;
         save();
     }

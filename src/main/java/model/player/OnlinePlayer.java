@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class OnlinePlayer implements Serializable {
 
     private String IPAddress;
-    private figures_name figure;
+    private figuresName figure;
     private String Name;
 
     public OnlinePlayer(String IP, String N) {
@@ -21,11 +21,11 @@ public class OnlinePlayer implements Serializable {
     }
 
 
-    public figures_name getFigure() {
+    public figuresName getFigure() {
         return figure;
     }
 
-    public void setFigure(figures_name figure) {
+    public void setFigure(figuresName figure) {
         this.figure = figure;
     }
 

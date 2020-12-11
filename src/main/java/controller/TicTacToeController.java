@@ -5,16 +5,13 @@ import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.effect.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 
-import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
@@ -24,7 +21,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.*;
-import model.player.figures_name;
+import model.player.figuresName;
 import model.player.userdata;
 import view.MainMenuView;
 import view.TicTacToeView;
@@ -73,11 +70,11 @@ public class TicTacToeController {
 
         //Set the AI Image
         Random r = new Random();
-        figures_name fn = figures_name.values()[r.nextInt(figures_name.values().length)];
-        while (userdata.get_selected_figure() == fn)
-            fn = figures_name.values()[r.nextInt(figures_name.values().length)];
+        figuresName fn = figuresName.values()[r.nextInt(figuresName.values().length)];
+        while (userdata.getSelectedFigure() == fn)
+            fn = figuresName.values()[r.nextInt(figuresName.values().length)];
         AI_image       = new Image("/img/" + fn + "/" + fn + ".png");
-        Player_Image   = new Image("/img/" + userdata.get_selected_figure() + "/" + userdata.get_selected_figure() + ".png");
+        Player_Image   = new Image("/img/" + userdata.getSelectedFigure() + "/" + userdata.getSelectedFigure() + ".png");
 
 
         //setting the color for the icons
@@ -400,22 +397,22 @@ public class TicTacToeController {
 
     private void createDialog() {
 
-        if (userdata.getWins()>=3 && !userdata.getUnlockedFigures()[(figures_name.SUN.ordinal())]){
-            createUnlockedDialog(figures_name.SUN);
+        if (userdata.getWins()>=3 && !userdata.getUnlockedFigures()[(figuresName.SUN.ordinal())]){
+            createUnlockedDialog(figuresName.SUN);
             return;
         }
-        if (userdata.getWins()>=10 && !userdata.getUnlockedFigures()[(figures_name.DIAMOND.ordinal())]){
-            createUnlockedDialog(figures_name.DIAMOND);
-            return;
-        }
-
-        if (userdata.getLoses()>=10 && !userdata.getUnlockedFigures()[(figures_name.SKULL.ordinal())]){
-            createUnlockedDialog(figures_name.SKULL);
+        if (userdata.getWins()>=10 && !userdata.getUnlockedFigures()[(figuresName.DIAMOND.ordinal())]){
+            createUnlockedDialog(figuresName.DIAMOND);
             return;
         }
 
-        if (userdata.getLoses()>=3 && !userdata.getUnlockedFigures()[(figures_name.MOON.ordinal())]){
-            createUnlockedDialog(figures_name.MOON);
+        if (userdata.getLoses()>=10 && !userdata.getUnlockedFigures()[(figuresName.SKULL.ordinal())]){
+            createUnlockedDialog(figuresName.SKULL);
+            return;
+        }
+
+        if (userdata.getLoses()>=3 && !userdata.getUnlockedFigures()[(figuresName.MOON.ordinal())]){
+            createUnlockedDialog(figuresName.MOON);
             return;
         }
 
@@ -438,7 +435,7 @@ public class TicTacToeController {
         }));
     }
 
-    private void createUnlockedDialog(figures_name fig) {
+    private void createUnlockedDialog(figuresName fig) {
         view.mainPane.getChildren().add(DialogCreator.unlockedDialog(fig,"YES!",event -> {
 
             userdata.unlockFigure(fig);

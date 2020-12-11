@@ -892,7 +892,7 @@ public class MainMenuController {
                             String[] k =null;
 
                             try {
-                                k = client[0].communication("join",userdata.getUsername() + "," + userdata.get_selected_figure());
+                                k = client[0].communication("join",userdata.getUsername() + "," + userdata.getSelectedFigure());
                             } catch (IOException | ClassNotFoundException e1) {
                                 e1.printStackTrace();
                             }

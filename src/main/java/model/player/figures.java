@@ -1,8 +1,6 @@
 
 package model.player;
 
-        import javafx.event.ActionEvent;
-        import javafx.event.EventHandler;
         import javafx.geometry.Pos;
         import javafx.scene.image.Image;
         import javafx.scene.image.ImageView;
@@ -11,8 +9,6 @@ package model.player;
         import javafx.scene.layout.StackPane;
         import javafx.scene.layout.VBox;
         import model.DialogCreator;
-
-        import java.awt.event.MouseEvent;
 
 public class figures {
 
@@ -23,7 +19,7 @@ public class figures {
 
 
 
-        IV_p.setImage(new Image("/img/"+userdata.get_selected_figure()+"/"+userdata.get_selected_figure()+".png"));
+        IV_p.setImage(new Image("/img/"+userdata.getSelectedFigure()+"/"+userdata.getSelectedFigure()+".png"));
         IV_p.setFitWidth(W_H);
         IV_p.setFitHeight(W_H);
         Player_figure.getChildren().add(IV_p);
@@ -32,7 +28,7 @@ public class figures {
         int linelength =0;
         HBox selection_figures = new HBox();
 
-        for(int i =0; i<figures_name.values().length;i++){
+        for(int i = 0; i< figuresName.values().length; i++){
 
 
 
@@ -46,7 +42,7 @@ public class figures {
 
             ImageView IV = new ImageView();
 
-            IV.setImage(new Image("/img/"+figures_name.values()[i]+"/"+figures_name.values()[i]+".png"));
+            IV.setImage(new Image("/img/"+ figuresName.values()[i]+"/"+ figuresName.values()[i]+".png"));
             IV.setFitHeight(W_H);
             IV.setFitWidth(W_H);
             IV.setPreserveRatio(true);
@@ -57,8 +53,8 @@ public class figures {
             pane.setOnMouseClicked(event -> {
                 if(userdata.unlockedFigures[finalI]) {
 
-                    userdata.change_selected_figure(figures_name.values()[finalI]);
-                    IV_p.setImage(new Image("/img/" + userdata.get_selected_figure() + "/" + userdata.get_selected_figure() + ".png"));
+                    userdata.change_selected_figure(figuresName.values()[finalI]);
+                    IV_p.setImage(new Image("/img/" + userdata.getSelectedFigure() + "/" + userdata.getSelectedFigure() + ".png"));
 
                 }
 
@@ -66,11 +62,11 @@ public class figures {
             final HBox[] box = new HBox[1];
 
             pane.setOnMouseEntered(event -> {
-                IV.setImage(new Image("/img/"+(figures_name.values()[finalI])+"/"+(figures_name.values()[finalI])+"_hover.png"));
+                IV.setImage(new Image("/img/"+(figuresName.values()[finalI])+"/"+(figuresName.values()[finalI])+"_hover.png"));
 
                 if(!userdata.unlockedFigures[finalI]) {
 
-                    box[0] = DialogCreator.vanillaDialog((figures_name.values()[finalI]).toString(),getManual(figures_name.values()[finalI]),true);
+                    box[0] = DialogCreator.vanillaDialog((figuresName.values()[finalI]).toString(),getManual(figuresName.values()[finalI]),true);
 
                     mainPane.getChildren().add(box[0]);
                 }
@@ -78,7 +74,7 @@ public class figures {
 
                         });
             pane.setOnMouseExited(event -> {
-                IV.setImage(new Image("/img/"+(figures_name.values()[finalI])+"/"+(figures_name.values()[finalI])+".png"));
+                IV.setImage(new Image("/img/"+(figuresName.values()[finalI])+"/"+(figuresName.values()[finalI])+".png"));
                         if(!userdata.unlockedFigures[finalI]) {
                             mainPane.getChildren().remove(box[0]);
                         }
@@ -102,7 +98,7 @@ public class figures {
         return box;
     }
 
-    private static String getManual(figures_name figures_name) {
+    private static String getManual(figuresName figures_name) {
 
         switch(figures_name){
 

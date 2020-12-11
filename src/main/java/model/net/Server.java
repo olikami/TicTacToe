@@ -3,7 +3,7 @@ package model.net;
 
 import model.OnlineGame;
 import model.player.OnlinePlayer;
-import model.player.figures_name;
+import model.player.figuresName;
 import model.player.userdata;
 
 import java.io.*;
@@ -24,8 +24,8 @@ public class Server {
     public String payload1 = new String();
     public String payload2 ="";
     String end = ",end";
-    public int[] board_in_serverClass = {0,0,0,0,0,0,0,0,0};
-    public Boolean AI_Mode = false;
+    public int[] boardInServerClass = {0,0,0,0,0,0,0,0,0};
+    public Boolean aiMode = false;
     public ArrayList<String> CHAT = new ArrayList<>();
 
 
@@ -39,7 +39,7 @@ public class Server {
 
     public Server(int port, int backlog, String bindAddr) throws IOException {
         if(port == -1) {
-            AI_Mode = true;
+            aiMode = true;
             port=14909;
         }
 
@@ -49,7 +49,7 @@ public class Server {
 
         //create the host player.
         OnlinePlayer p = new OnlinePlayer(bindAddr,userdata.getUsername());
-        p.setFigure(userdata.get_selected_figure());
+        p.setFigure(userdata.getSelectedFigure());
         players.add(p);
 
 
@@ -118,9 +118,9 @@ public class Server {
                 for (String str : ((rein.readLine().replace("[","")).replace("]","")).split(" ")) {
                     if (str.equals("")) continue;
 
-                    board_in_serverClass[i++] = Integer.parseInt(str);
+                    boardInServerClass[i++] = Integer.parseInt(str);
                 }
-                ps.println("1,"+ Arrays.toString(board_in_serverClass) +",BoardReceiveOk"+end);
+                ps.println("1,"+ Arrays.toString(boardInServerClass) +",BoardReceiveOk"+end);
 
             }
 
@@ -136,13 +136,13 @@ public class Server {
 
                 //client sends his move
                 if(s.equals("join")){
-                    ps.println("accept"+userdata.getUsername() + "," + userdata.get_selected_figure()+","+ userdata.getUsername()+end);
+                    ps.println("accept"+userdata.getUsername() + "," + userdata.getSelectedFigure()+","+ userdata.getUsername()+end);
                      String[] sarr = rein.readLine().split(",");
 
                     OnlinePlayer p = new OnlinePlayer(socket.getRemoteSocketAddress().toString(),sarr[0]);
 
                     if(sarr.length>1)
-                        p.setFigure(figures_name.valueOf(sarr[1]));
+                        p.setFigure(figuresName.valueOf(sarr[1]));
 
                     players.add(p);
 

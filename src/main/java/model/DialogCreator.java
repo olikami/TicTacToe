@@ -4,21 +4,17 @@ import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
-import model.player.figures_name;
-
-import java.io.IOException;
+import model.player.figuresName;
 
 
 public class DialogCreator {
@@ -229,7 +225,7 @@ public class DialogCreator {
 
 
 
-    public static HBox unlockedDialog( figures_name figure,String btn1_msg, EventHandler button1, String btn2_msg, EventHandler button2){
+    public static HBox unlockedDialog(figuresName figure, String btn1_msg, EventHandler button1, String btn2_msg, EventHandler button2){
 
 
         //Create dialog

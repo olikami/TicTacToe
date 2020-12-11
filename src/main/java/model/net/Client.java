@@ -8,7 +8,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Client {
 
@@ -19,13 +18,13 @@ public class Client {
     private PrintStream ps;
     boolean stop = false;
     public Socket socket = null;
-    public Boolean AI_Mode = false;
+    public Boolean aiMode = false;
     int i = 0;
 
     public Client(String host,int port) {
         host ="192.168ö1.1.";
         if(port == -1) {
-            AI_Mode = true;
+            aiMode = true;
             port=14909;
         }
         try {
