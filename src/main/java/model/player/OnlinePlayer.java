@@ -1,7 +1,5 @@
 package model.player;
 
-import sun.security.x509.IPAddressName;
-
 import java.io.Serializable;
 
 public class OnlinePlayer implements Serializable {
