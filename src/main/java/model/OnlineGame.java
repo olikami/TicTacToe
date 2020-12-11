@@ -143,8 +143,8 @@ public class OnlineGame {
             myTurn = true;
             labelChatMessage(
                 String.format(
-                        "%s, please make your turn!",
-                        players.get(iAmNumber).getName()
+                    "%s, please make your turn!",
+                    players.get(iAmNumber).getName()
                 )
             );
             aiMove();
@@ -163,10 +163,18 @@ public class OnlineGame {
             figures = players.get((server) == null ? 0 : 1).getFigure();
         }
         opponentImage = new Image(
-                "/img/" + figures + "/" + figures + ".png"
+            String.format(
+                "/img/%s/%s.png",
+                figures,
+                figures
+            )
         );
         playerImage = new Image(
-                "/img/" + userdata.get_selected_figure() + "/" + userdata.get_selected_figure() + ".png"
+            String.format(
+                "/img/%s/%s.png",
+                    userdata.get_selected_figure(),
+                    userdata.get_selected_figure()
+            )
         );
 
 
